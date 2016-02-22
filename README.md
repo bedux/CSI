@@ -1,2 +1,0 @@
-# CSI
- Corollary System Information 
