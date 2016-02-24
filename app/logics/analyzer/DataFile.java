@@ -17,6 +17,7 @@ public class DataFile implements Component{
 
     @Override
     public Features operation() {
+        System.out.println(features.getPath());
         return features;
     }
 

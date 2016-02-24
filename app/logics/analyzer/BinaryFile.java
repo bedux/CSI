@@ -20,6 +20,7 @@ public class BinaryFile implements Component {
 
     @Override
     public Features operation() {
+        System.out.println(features.getPath());
         return features;
     }
 
@@ -31,7 +32,4 @@ public class BinaryFile implements Component {
         return false;
     }
 
-
-
-
-    }
+}

@@ -39,6 +39,7 @@ public class RepoAnalyzer{
         }catch (IOException e1) {
                 e1.printStackTrace();
         }
+        root.operation();
     }
 
     private String clearPath(String s){

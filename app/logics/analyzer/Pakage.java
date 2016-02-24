@@ -3,6 +3,7 @@ package logics.analyzer;
 import interfaces.Component;
 
 import java.io.File;
+import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
@@ -21,6 +22,9 @@ public class Pakage implements Component {
 
     @Override
     public Features operation() {
+        System.out.print(this.features.getPath()+"\n");
+        componentList.stream().forEach(Component::operation);
+
         return features;
     }
 
@@ -31,15 +35,12 @@ public class Pakage implements Component {
 
     public boolean add(String search,Path f,String remainPath) {
             if(features.getPath().equals(search)){
-                System.out.println(search);
-                System.out.println(remainPath);
-
 
                 if(remainPath.indexOf('/')!=-1) {
                     String toSearch = features.getPath() +"/"+remainPath.substring(0,remainPath.indexOf('/'));
-                    System.out.println(toSearch);
+//                    System.out.println(toSearch);
                     String remain = remainPath.substring(remainPath.indexOf('/')+1);
-                    System.out.println(remain);
+//                    System.out.println(remain);
                     for(Component c:componentList){
                        if( c.add(toSearch,f,remain)){
                            return true;
@@ -53,9 +54,15 @@ public class Pakage implements Component {
 
                 }else{
                     //add file
+                    if(Files.isReadable(f)){
+                        DataFile file = new DataFile(new Features(search,this.features.getPath()+"/"+remainPath));
+                        componentList.add(file);
+                    }else{
+                        BinaryFile file = new BinaryFile(new Features(search,this.features.getPath()+"/"+remainPath));
+                        componentList.add(file);
+                    }
                 }
 
-                System.out.println();
                 return true;
             }else{
                 return false;
