@@ -5,6 +5,13 @@
 # Home page
 GET     /                           controllers.Application.index
 
+GET     /addRepo                           controllers.Registration.repoRegistrationTemplate
+
+POST     /addRepo                           controllers.Registration.repoRegistrationSubmit
+
+GET     /testing                           controllers.Registration.getFiles
+
+
 # Map static resources from the /public folder to the /assets URL path
 GET     /assets/*file               controllers.Assets.at(path="/public", file)
 

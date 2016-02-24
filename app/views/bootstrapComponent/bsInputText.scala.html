@@ -1,0 +1,11 @@
+@(fieldName:play.api.data.Field ,args:(Symbol,Any)*)(typeElem:String  = "text")
+
+
+<fieldset class="form-group">
+    @if(args.toMap.contains('title)) {
+        <label for="exampleInputEmail1">@args.toMap.get('title)</label>
+    }
+    <input type="@typeElem" class="form-control"  name="@fieldName.name" @toHtmlArgs(args.filter(_._1 != 'title).toMap)>
+</fieldset>
+
+

@@ -1,0 +1,12 @@
+@(myForm: Form[logics.data.RepoForm])
+@main("loadStudd"){
+        <form action=" @routes.Registration.repoRegistrationSubmit()" method="post">
+        @bootstrapComponent.bsInputText(fieldName = myForm("uri"), args = 'type -> "text" ,  'required -> "true", 'title -> "Please insert the url of the repository")()
+        @bootstrapComponent.bsInputText(fieldName = myForm("user"), args = 'type -> "text"  , 'title -> "Please insert the user name of the repository")()
+        @bootstrapComponent.bsInputText(fieldName = myForm("psw"), args = 'type -> "password" , 'title -> "Please insert the password name of the repository")()
+        @bootstrapComponent.bsMultiSelect(fieldName = myForm("type"), elems = "GIT","SVN")
+
+            <button type="submit" class="btn btn-primary">Submit</button>
+        </form>
+}
+

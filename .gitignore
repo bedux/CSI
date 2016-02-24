@@ -6,3 +6,5 @@ tmp
 *.prefs
 
 *.iml
+
+repoDownload/**

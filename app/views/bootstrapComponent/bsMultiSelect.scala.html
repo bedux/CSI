@@ -1,0 +1,10 @@
+@(fieldName:play.api.data.Field ,elems : String*)
+
+<fieldset class="form-group">
+    <label for="exampleSelect2">Example multiple select</label>
+    <select class="form-control" id="exampleSelect2" name="@fieldName.name">
+    @for(p <- elems) {
+        <option value="@p">@p</option>
+    }
+    </select>
+</fieldset>
