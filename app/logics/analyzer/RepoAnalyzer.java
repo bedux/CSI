@@ -3,6 +3,7 @@ package logics.analyzer;
 import interfaces.Component;
 import logics.models.Repo;
 import org.apache.commons.lang3.StringUtils;
+import play.Logger;
 
 import java.io.File;
 import java.io.IOException;
@@ -82,7 +83,7 @@ public class RepoAnalyzer {
     }
 
     private void printStatistics(Component c){
-        System.out.println(c.getFeatures().toString());
+        Logger.debug(c.getFeatures().toString());
     }
 }
 

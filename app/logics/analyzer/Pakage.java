@@ -77,7 +77,6 @@ public class Pakage implements Component {
     public void applyIndependent(Consumer<Component> function){
         componentList.parallelStream().forEach((x) -> x.applyIndependent(function));
         function.accept(this);
-
     }
 
     @Override
