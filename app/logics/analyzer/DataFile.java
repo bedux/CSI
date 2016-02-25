@@ -3,6 +3,7 @@ package logics.analyzer;
 import interfaces.Component;
 
 import java.nio.file.Path;
+import java.util.function.Consumer;
 
 /**
  * Created by bedux on 24/02/16.
@@ -17,7 +18,6 @@ public class DataFile implements Component{
 
     @Override
     public Features operation() {
-        System.out.println(features.getPath());
         return features;
     }
 
@@ -29,6 +29,17 @@ public class DataFile implements Component{
     public boolean add(String s,Path f,String allPath) {
         return false;
 
+    }
+
+
+    @Override
+    public void applyIndependent(Consumer<Component> function){
+        function.accept(this);
+    }
+
+    @Override
+    public Features getFeatures() {
+        return this.features;
     }
 
 }

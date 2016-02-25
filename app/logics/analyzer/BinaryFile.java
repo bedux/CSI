@@ -6,6 +6,7 @@ import java.io.File;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.function.Consumer;
 
 /**
  * Created by bedux on 24/02/16.
@@ -20,7 +21,6 @@ public class BinaryFile implements Component {
 
     @Override
     public Features operation() {
-        System.out.println(features.getPath());
         return features;
     }
 
@@ -30,6 +30,16 @@ public class BinaryFile implements Component {
     }
     public boolean add(String s,Path f,String allPath) {
         return false;
+    }
+
+    @Override
+    public Features getFeatures() {
+        return this.features;
+    }
+
+    @Override
+    public void applyIndependent(Consumer<Component> function){
+        function.accept(this);
     }
 
 }

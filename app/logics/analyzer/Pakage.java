@@ -2,11 +2,14 @@ package logics.analyzer;
 
 import interfaces.Component;
 
-import java.io.File;
+import java.nio.charset.Charset;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.function.Consumer;
+import java.util.function.Function;
+import java.util.stream.Stream;
 
 /**
  * Created by bedux on 24/02/16.
@@ -22,9 +25,8 @@ public class Pakage implements Component {
 
     @Override
     public Features operation() {
-        System.out.print(this.features.getPath()+"\n");
+        System.out.print("Directory:" + this.features.getName()+"\n");
         componentList.stream().forEach(Component::operation);
-
         return features;
     }
 
@@ -33,9 +35,9 @@ public class Pakage implements Component {
         return null;
     }
 
+    @Override
     public boolean add(String search,Path f,String remainPath) {
             if(features.getPath().equals(search)){
-
                 if(remainPath.indexOf('/')!=-1) {
                     String toSearch = features.getPath() +"/"+remainPath.substring(0,remainPath.indexOf('/'));
 //                    System.out.println(toSearch);
@@ -47,18 +49,20 @@ public class Pakage implements Component {
                        }
                     }
 
-                    Pakage p = new Pakage(new Features(toSearch,toSearch));
+                    Pakage p = new Pakage(new Features(toSearch.substring(toSearch.lastIndexOf('/')+1),toSearch,f));
                     p.add(toSearch,f,remain);
                     componentList.add(p);
 
 
                 }else{
+                    String name = remainPath;
+
                     //add file
-                    if(Files.isReadable(f)){
-                        DataFile file = new DataFile(new Features(search,this.features.getPath()+"/"+remainPath));
+                    if(isTextFile(f)){
+                        DataFile file = new DataFile(new Features(name,this.features.getPath()+"/"+remainPath,f));
                         componentList.add(file);
                     }else{
-                        BinaryFile file = new BinaryFile(new Features(search,this.features.getPath()+"/"+remainPath));
+                        BinaryFile file = new BinaryFile(new Features(name,this.features.getPath()+"/"+remainPath,f));
                         componentList.add(file);
                     }
                 }
@@ -68,4 +72,32 @@ public class Pakage implements Component {
                 return false;
             }
     }
+
+    @Override
+    public void applyIndependent(Consumer<Component> function){
+        componentList.parallelStream().forEach((x) -> x.applyIndependent(function));
+        function.accept(this);
+
+    }
+
+    @Override
+    public Features getFeatures() {
+        return this.features;
+    }
+    private boolean isTextFile(Path p){
+
+
+            try (Stream<String> fileLinesStream = Files.lines(p)){
+                fileLinesStream.count();
+                return true;
+
+            } catch (Exception e) {
+                return false;
+            }
+
+    }
+
 }
+
+
+
