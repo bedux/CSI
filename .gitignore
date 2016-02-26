@@ -8,3 +8,4 @@ tmp
 *.iml
 
 repoDownload/**
+public/node_modules/**
