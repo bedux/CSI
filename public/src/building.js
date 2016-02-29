@@ -6,12 +6,11 @@ var BABYLON = require("babylonjs");
 function createBuilding(scene, position, data) {
 
     var cylinder;
-    console.log(data);
-    if (data.children == null){
-        cylinder = BABYLON.Mesh.CreateCylinder(data.id + "_model", 1, 1, 1, data.segment, scene, false);
-    } else{
+    //if (data.children == null){
+    //    cylinder = BABYLON.Mesh.CreateCylinder(data.id + "_model", 1, 1, 1, data.segment, scene, false);
+    //} else{
         cylinder = BABYLON.Mesh.CreateBox(data.id + "_model", 1, scene, false);
-    }
+    //}
 
     cylinder.scaling = new BABYLON.Vector3(data.width, data.height, data.deep);
     cylinder.position = new BABYLON.Vector3(position.x+data.width/2,position.y+data.height/2,position.z+data.deep/2);
@@ -35,7 +34,7 @@ function recursiveDraw(scene,position,data){
 
         if(data.children.length>0){
             for(var i of  data.children){
-                recursiveDraw(scene,position.add(new BABYLON.Vector3(i.position[0],i.position[1],i.position[2])),i.data);
+                recursiveDraw(scene,position.add(new BABYLON.Vector3(i.position[0],i.position[1]+data.height,i.position[2])),i.data);
             }
         }
 

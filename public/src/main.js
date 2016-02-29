@@ -18,7 +18,7 @@ class MainScene{
 
         // attach the camera to the canvas
         this.camera.attachControl(canvas, false);
-        this.camera.speed=54;
+        this.camera.speed=4;
         // create a basic light, aiming 0,1,0 - meaning, to the sky
        this.light = new BABYLON.HemisphericLight('light1', new BABYLON.Vector3(10,10,0), this.scene);
 

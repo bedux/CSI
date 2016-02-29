@@ -39,6 +39,18 @@ public class BoundingBox {
         this.left = left;
     }
 
+
+    public BoundingBox( float left,float top,float width, float height ,int n) {
+
+
+        this.top = top;
+        this.left = left;
+        this.right = left+width;
+        this.bottom = top+height;
+
+
+    }
+
     public Fitting isFit(BoundingBox bb){
         if ((this.getHeight() == bb.getHeight()) && (this.getWidth() == bb.getWidth())) return Fitting.PERFECT;
         if ((this.getHeight() >= bb.getHeight()) && (this.getWidth() >= bb.getWidth())) return Fitting.BIG;
@@ -80,6 +92,6 @@ public class BoundingBox {
     }
 
     public String toString(){
-        return "Top: "+getTop()+" Left:"+getLeft()+" Right:"+this.getRight()+" Button:"+this.getButton() + " Center:"+getCenter().toString();
+        return "Top: "+getTop()+" Left:"+getLeft()+" Right:"+this.getRight()+" Button:"+this.getButton();
     }
 }

@@ -2,8 +2,8 @@ package logics.analyzer;
 
 import interfaces.Component;
 import logics.models.db.Repo;
+import logics.renderTools.BinaryTreePack;
 import logics.renderTools.PakageNode;
-import logics.renderTools.PakageTools;
 import play.Logger;
 import play.libs.Json;
 
@@ -51,10 +51,16 @@ public class RepoAnalyzer {
 
         root.applyIndependent(this::worldCout);
 //        root.applyIndependent(this::printStatistics);
+        root.applyIndependent(BinaryTreePack::funcToCall);
+
+
+        System.out.println(Json.stringify(Json.toJson(root.applyRenderer())));
+
+
 
 //        root.applyIndependent(roots::insert);
 
-        System.out.println(Json.stringify(Json.toJson(root.applyRenderer(roots::insert))));
+       // System.out.println(Json.stringify(Json.toJson(root.applyRenderer(roots::insert))));
 //        PakageNode pn = new  PakageNode();
 //        pn.setBoundingBox();
 //        root.applyIndependent();

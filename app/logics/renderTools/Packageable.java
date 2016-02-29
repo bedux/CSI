@@ -57,7 +57,11 @@ public class Packageable {
         return  bb;
     }
     public void setBB(BoundingBox bb){
+        this.setWidth(bb.getWidth());
+        this.setDeep(bb.getHeight());
         this.bb = bb;
+
+
     }
 
     public float[] getColor() {

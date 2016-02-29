@@ -22,9 +22,10 @@ public interface Component {
     //Compute the statistics independently from level to level
     void applyIndependent(Consumer<Component> function);
 
-    public RenderChild applyRenderer(Consumer<Component> function) ;
+     RenderChild applyRenderer() ;
 
-    void applyIndependentArray(Consumer<List<Component>> function);
+     List<Component> getComponentList();
+
 
 
 }
