@@ -1,18 +1,16 @@
 package logics.analyzer;
 
 import interfaces.Component;
-import logics.models.Repo;
-import org.apache.commons.lang3.StringUtils;
+import logics.models.db.Repo;
+import logics.renderTools.PakageNode;
+import logics.renderTools.PakageTools;
 import play.Logger;
+import play.libs.Json;
 
 import java.io.File;
 import java.io.IOException;
-import java.nio.charset.Charset;
-import java.nio.charset.MalformedInputException;
 import java.nio.file.FileSystems;
 import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.stream.Stream;
 
 /**
@@ -44,8 +42,22 @@ public class RepoAnalyzer {
         } catch (IOException e1) {
             e1.printStackTrace();
         }
+
+        PakageNode roots = new PakageNode();
+        Features f1 = new Features("","",null);
+        f1.setSize(Long.MAX_VALUE);
+        f1.setWorldCount(Long.MAX_VALUE);
+        roots.insert(f1);
+
         root.applyIndependent(this::worldCout);
-        root.applyIndependent(this::printStatistics);
+//        root.applyIndependent(this::printStatistics);
+
+//        root.applyIndependent(roots::insert);
+
+        System.out.println(Json.stringify(Json.toJson(root.applyRenderer(roots::insert))));
+//        PakageNode pn = new  PakageNode();
+//        pn.setBoundingBox();
+//        root.applyIndependent();
 
     }
 
@@ -67,6 +79,9 @@ public class RepoAnalyzer {
                     return line.split("\\s+").length;
                 }).sum());
                 c.getFeatures().setSize(Files.size(c.getFeatures().getFilePath()));
+
+                c.getFeatures().setSegment((int) (Math.random() * 20 + 3));
+
             } catch (IOException e) {
 
             }
@@ -76,9 +91,13 @@ public class RepoAnalyzer {
             try {
                 c.getFeatures().setSize(Files.size(c.getFeatures().getFilePath()));
                 c.getFeatures().setWorldCount(1);
+                c.getFeatures().setHeight(10);
+
             } catch (IOException e) {
                 e.printStackTrace();
             }
+        }else{
+
         }
     }
 

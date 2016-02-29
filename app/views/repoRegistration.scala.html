@@ -1,4 +1,5 @@
-@(myForm: Form[logics.data.RepoForm])
+@import logics.models.form.RepoForm
+@(myForm: Form[RepoForm])
 @main("loadStudd"){
         <form action=" @routes.Registration.repoRegistrationSubmit()" method="post">
         @bootstrapComponent.bsInputText(fieldName = myForm("uri"), args = 'type -> "text" ,  'required -> "true", 'title -> "Please insert the url of the repository")()

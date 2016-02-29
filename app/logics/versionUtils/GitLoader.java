@@ -1,7 +1,7 @@
 package logics.versionUtils;
 
 import logics.Status;
-import logics.models.Repo;
+import logics.models.db.Repo;
 import org.eclipse.jgit.api.CloneCommand;
 import org.eclipse.jgit.api.Git;
 import org.eclipse.jgit.api.errors.GitAPIException;

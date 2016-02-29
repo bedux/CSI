@@ -1,7 +1,7 @@
-package logics.models;
+package logics.models.db;
 
 import interfaces.VersionedSystem;
-import logics.data.RepoForm;
+import logics.models.form.RepoForm;
 import logics.versionUtils.GitRepo;
 import play.data.validation.Constraints;
 import play.db.ebean.Model;

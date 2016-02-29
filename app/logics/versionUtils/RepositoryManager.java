@@ -1,12 +1,9 @@
 package logics.versionUtils;
 
 import interfaces.VersionedSystem;
-import logics.models.Repo;
-import org.eclipse.jgit.revwalk.RevCommit;
+import logics.models.db.Repo;
 import play.Logger;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Queue;
 import java.util.concurrent.ConcurrentLinkedQueue;
 

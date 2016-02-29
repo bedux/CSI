@@ -1,4 +1,4 @@
-package logics.models;
+package logics.models.db;
 
 import play.db.ebean.Model;
 

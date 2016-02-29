@@ -1,4 +1,4 @@
-package logics.models;
+package logics.models.db;
 
 import play.data.validation.Constraints;
 import play.db.ebean.Model;

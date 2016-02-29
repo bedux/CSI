@@ -1,4 +1,4 @@
-package logics.data;
+package logics.models.form;
 
 import play.data.validation.Constraints;
 

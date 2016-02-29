@@ -1,9 +1,9 @@
 package controllers;
 
 import logics.analyzer.RepoAnalyzer;
-import logics.data.RepoForm;
+import logics.models.form.RepoForm;
 import logics.versionUtils.RepositoryManager;
-import logics.models.Repo;
+import logics.models.db.Repo;
 import play.data.Form;
 import play.libs.F;
 import play.mvc.*;
@@ -55,7 +55,6 @@ public class Registration extends Controller {
                 RepoAnalyzer repoAnalyzer = new RepoAnalyzer( Repo.find.all().get(0));
 
                 repoAnalyzer.getTree();
-
 
                 return ok(index.render("Repo Added"));
             });
