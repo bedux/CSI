@@ -24,15 +24,7 @@ public class BinaryFile implements Component {
         features = current;
     }
 
-    @Override
-    public Features operation() {
-        return features;
-    }
 
-    @Override
-    public Features operation(Features features) {
-        return null;
-    }
     public boolean add(String s,Path f,String allPath) {
         return false;
     }
@@ -58,6 +50,6 @@ public class BinaryFile implements Component {
 
     @Override
     public RenderChild applyRenderer() {
-        return new RenderChild(new float[]{features.getBoundingBox().getTop(),0,features.getBoundingBox().getLeft()},new RenderComponent(this.getFeatures().getWidth(),this.getFeatures().getHeight(),this.getFeatures().getDeep(),new float[]{(float)Math.random(),(float)Math.random(),(float)Math.random()},4,this.getFeatures().getPath(),null));
+        return new RenderChild(new float[]{features.getBoundingBox().getLeft(),0,features.getBoundingBox().getTop()},new RenderComponent(this.getFeatures().getRendererWidth(),this.getFeatures().getHeight(),this.getFeatures().getRendererDeep(),new float[]{(float)Math.random(),(float)Math.random(),(float)Math.random()},4,this.getFeatures().getPath(),null));
     }
 }

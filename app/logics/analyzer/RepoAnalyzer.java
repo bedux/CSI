@@ -3,7 +3,6 @@ package logics.analyzer;
 import interfaces.Component;
 import logics.models.db.Repo;
 import logics.renderTools.BinaryTreePack;
-import logics.renderTools.PakageNode;
 import play.Logger;
 import play.libs.Json;
 
@@ -26,7 +25,7 @@ public class RepoAnalyzer {
 
     public void getTree() {
         File f = new File("./repoDownload/" + repo.id);
-        Pakage root = new Pakage(new Features("root", repo.id.toString(), f.toPath()));
+        Package root = new Package(new Features("root", repo.id.toString(), f.toPath()));
         try {
             Files.walk(FileSystems.getDefault().getPath(f.getAbsolutePath())).forEach((x) -> {
 
@@ -44,7 +43,7 @@ public class RepoAnalyzer {
         }
 
 
-        root.applyIndependent(this::worldCout);
+        root.applyIndependent(this::wordCount);
 //        root.applyIndependent(this::printStatistics);
         root.applyIndependent(BinaryTreePack::funcToCall);
 
@@ -53,13 +52,6 @@ public class RepoAnalyzer {
 
 
 
-//        root.applyIndependent(roots::insert);
-
-       // System.out.println(Json.stringify(Json.toJson(root.applyRenderer(roots::insert))));
-//        PakageNode pn = new  PakageNode();
-//        pn.setBoundingBox();
-//        root.applyIndependent();
-
     }
 
     private String clearPath(String s) {
@@ -67,7 +59,7 @@ public class RepoAnalyzer {
 
     }
 
-    private void worldCout(Component c) {
+    private void wordCount(Component c) {
         if (c instanceof BinaryFile) {
 //           System.out.println("BinaryFile");
 
@@ -75,7 +67,9 @@ public class RepoAnalyzer {
         } else if (c instanceof DataFile) {
 
             try (Stream<String> fileLinesStream = Files.lines(c.getFeatures().getFilePath())) {
-                c.getFeatures().setWorldCount(fileLinesStream.filter((line) ->{ return line.replace("\\s+","").length()>0;}).mapToInt((line) -> {
+                c.getFeatures().setWordCount(fileLinesStream.filter((line) -> {
+                    return line.replace("\\s+", "").length() > 0;
+                }).mapToInt((line) -> {
                     line = line.trim();
                     return line.split("\\s+").length;
                 }).sum());
@@ -88,11 +82,14 @@ public class RepoAnalyzer {
             }
 
 
-        } else if (c instanceof Pakage) {
-//                c.getFeatures().setSize(Files.size(c.getFeatures().getFilePath()));
-//                c.getFeatures().setWorldCount(1);
-                c.getFeatures().setHeight(10);
+        } else if (c instanceof Package) {
 
+            float w = 0;
+            for(Component c1 :c.getComponentList())
+                w+=c1.getFeatures().getHeight();
+            c.getFeatures().setHeight(10);
+            float f = (float)Math.random();
+            c.getFeatures().setColor(new float[]{f,f,f});
 
         }else{
 

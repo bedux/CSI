@@ -1,11 +1,22 @@
 package logics.renderTools;
 
 public class BoundingBox {
+
     public  enum Fitting {SMALL,BIG,PERFECT}
     private float right;
     private float bottom;
     private float top=0;
     private float left=0;
+
+    public float getRendererWidth(){
+        return getWidth();
+    }
+
+    public float getRendererDeep(){
+        return this.getWidth();
+    }
+
+
 
     public float getTop() {
         return top;
@@ -75,14 +86,7 @@ public class BoundingBox {
     }
 
 
-    public boolean isIntersect(BoundingBox bb1){
 
-        return !(bb1.left > right
-                || bb1.right < left
-                || bb1.top > bottom
-                || bb1.bottom < top);
-
-    }
     public float getRight(){
         return right;
     }
@@ -100,9 +104,11 @@ public class BoundingBox {
     }
 
 
+
+
     public Point3d getCenter(){
-//        return new Point3d(((this.getRight()-this.getLeft())/2)+this.getLeft(),0,((this.getButton()-this.getTop())/2)+this.getTop());
-        return new Point3d(top,0,left);
+        return new Point3d(((this.getRight()-this.getLeft())/2)+this.getLeft(),0,((this.getButton()-this.getTop())/2)+this.getTop());
+//        return new Point3d(left,0,top);
 
     }
 

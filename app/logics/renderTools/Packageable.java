@@ -5,10 +5,21 @@ import java.util.Arrays;
 /**
  * Created by bedux on 27/02/16.
  */
-public class Packageable {
+public abstract class Packageable {
+    public  float gap = 15;
     private float height;
     private float[] color;
     private int segment;
+
+
+    public float getRendererWidth(){
+        return bb.getWidth()-gap;
+    }
+
+    public float getRendererDeep(){
+        return bb.getDeep()-gap;
+
+    }
     private BoundingBox bb = new BoundingBox(0,0);
 
     public float getWidth() {
@@ -16,9 +27,7 @@ public class Packageable {
     }
 
     public void setWidth(float width) {
-
-        bb.setWidth(width);
-
+        bb.setWidth(width+gap);
     }
 
     public float getHeight() {
@@ -34,7 +43,7 @@ public class Packageable {
     }
 
     public void setDeep(float deep) {
-        bb.setDeep(deep);
+        bb.setDeep(deep+gap);
     }
 
     public Packageable(float width, float height, float deep) {
@@ -73,6 +82,7 @@ public class Packageable {
 
 
     }
+    protected abstract void  bindingToPakageble();
 
     @Override
     public String toString() {

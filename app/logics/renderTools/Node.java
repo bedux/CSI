@@ -85,10 +85,6 @@ public class Node {
 
 
         component.getFeatures().getBoundingBox().setBB(this.boundingBox);
-        System.out.println(component.getFeatures().getFilePath()+" "+component.getFeatures().getBoundingBox());
-        System.out.println(this.getBoundingBox());
-        System.out.println("___________________________");
-
         this.component = component;
         occupaid = true;
     }

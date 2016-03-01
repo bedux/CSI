@@ -23,19 +23,10 @@ public class DataFile implements Component{
         features = current;
     }
 
-    @Override
-    public Features operation() {
-        return features;
-    }
 
-    @Override
-    public Features operation(Features features) {
-        return null;
-    }
 
     public boolean add(String s,Path f,String allPath) {
         return false;
-
     }
 
 
@@ -47,7 +38,7 @@ public class DataFile implements Component{
 
     @Override
     public RenderChild applyRenderer() {
-        return new RenderChild(new float[]{features.getBoundingBox().getTop(),0,features.getBoundingBox().getLeft()},new RenderComponent(this.getFeatures().getWidth(),this.getFeatures().getHeight(),this.getFeatures().getDeep(),new float[]{(float)Math.random(),(float)Math.random(),(float)Math.random()},4,this.getFeatures().getPath(),null));
+        return new RenderChild(new float[]{features.getBoundingBox().getLeft(),0,features.getBoundingBox().getTop()},new RenderComponent(this.getFeatures().getRendererWidth(),this.getFeatures().getHeight(),this.getFeatures().getRendererDeep(),new float[]{(float)Math.random(),(float)Math.random(),(float)Math.random()},4,this.getFeatures().getPath(),null));
     }
 
     @Override
@@ -55,12 +46,6 @@ public class DataFile implements Component{
         return this.features;
     }
 
-//    @Override
-//    public RenderChild applyRenderer() {
-//        Features f = this.getFeatures();
-//        RenderChild rc =   new RenderChild(new float[3],new RenderComponent((float)f.getBoundingBox().getWidth(),(float)f.getBoundingBox().getHeight(),(float)f.getBoundingBox().getWidth(),f.getColor(), f.getSegment(),this.getFeatures().getPath(),null));
-//        rc.setFeatures(features);
-//        return rc;
-//    }
+
 
 }

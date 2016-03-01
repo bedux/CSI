@@ -14,8 +14,7 @@ import java.util.function.Function;
  * Created by bedux on 24/02/16.
  */
 public interface Component {
-    Features operation();
-    Features operation(Features features);
+
     boolean add(String s,Path f,String allPath);
 
     Features getFeatures();

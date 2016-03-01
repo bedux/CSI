@@ -13,16 +13,17 @@ class MainScene{
 
         // create a FreeCamera, and set its position to (x:0, y:5, z:-10)
         this.camera = new BABYLON.FreeCamera("FreeCamera", new BABYLON.Vector3(mock.pipoo.data.width, mock.pipoo.data.height, mock.pipoo.data.deep), this.scene);
+        this.camera.maxZ = 100000;
         // target the camera to scene origin
         this.camera.setTarget(BABYLON.Vector3.Zero());
 
         // attach the camera to the canvas
         this.camera.attachControl(canvas, false);
-        this.camera.speed=4;
+        this.camera.speed=40;
         // create a basic light, aiming 0,1,0 - meaning, to the sky
        this.light = new BABYLON.HemisphericLight('light1', new BABYLON.Vector3(10,10,0), this.scene);
 
-
+        this.scene.data = {};
 
 
 
@@ -35,7 +36,6 @@ class MainScene{
 
         build.recursiveDraw(this.scene,new BABYLON.Vector3(0,0,0),mock.pipoo.data);
 
-        var cylinder = BABYLON.Mesh.CreateCylinder("zeerp", 100,1,1, 4,  this.scene, false);
 
         // the canvas/window resize event handler
         window.addEventListener('resize', (function(){
@@ -43,6 +43,16 @@ class MainScene{
             this.engine.resize();
         }).bind(this));
 
+
+        window.addEventListener("click", (function () {
+            // We try to pick an object
+            var pickResult = this.scene.pick(this.scene.pointerX, this.scene.pointerY);
+
+            var info = this.scene.data[pickResult.pickedMesh.id];
+            document.getElementById("bar").innerHTML="Name:"+ info.id+ " | Deep: "+info.deep + " | Height: "+info.height + " | Deep: "+info.deep  + " | Width: "+info.width;
+
+
+        }).bind(this));
 
     }
 

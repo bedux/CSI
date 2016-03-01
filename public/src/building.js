@@ -6,6 +6,8 @@ var BABYLON = require("babylonjs");
 function createBuilding(scene, position, data) {
 
     var cylinder;
+
+    scene.data[data.id+ "_model"] = data;
     //if (data.children == null){
     //    cylinder = BABYLON.Mesh.CreateCylinder(data.id + "_model", 1, 1, 1, data.segment, scene, false);
     //} else{
@@ -23,7 +25,6 @@ function createBuilding(scene, position, data) {
     material.specularColor = BABYLON.Color3.Black();
 
     cylinder.material = material;
-    cylinder.convertToFlatShadedMesh();
 
 
 }
