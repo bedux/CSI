@@ -48,9 +48,10 @@ public class Node {
             }
             if(bottom!=null && retur==null) {
                 retur = bottom.insert(component);
+
             }
             return retur;
-        }else if((this.getBoundingBox().getWidth()>=component.getFeatures().getBoundingBox().getWidth())&& (this.getBoundingBox().getHeight()>=component.getFeatures().getBoundingBox().getHeight())){
+        }else if((this.getBoundingBox().isFit(component.getFeatures().getBoundingBox())!= BoundingBox.Fitting.SMALL)){
             return this;
         }else{
             return null;
@@ -59,27 +60,35 @@ public class Node {
 
     public Node split(Component component){
             //orizontal splitt
-//        boundingBox =       (new BoundingBox(boundingBox.getLeft(),
-//                                             boundingBox.getTop(),
-//                                             boundingBox.getLeft()+component.getFeatures().getBoundingBox().getWidth(),
-//                                             boundingBox.getTop()+component.getFeatures().getBoundingBox().getHeight()));
+
 
 
         left  = new Node(new BoundingBox(boundingBox.getLeft()+component.getFeatures().getBoundingBox().getWidth(),
                                          boundingBox.getTop(),
                                          boundingBox.getWidth()-component.getFeatures().getBoundingBox().getWidth(),
-                                         component.getFeatures().getBoundingBox().getHeight(),1));
+                                         component.getFeatures().getBoundingBox().getDeep(),1));
 
         bottom = new Node(new BoundingBox(boundingBox.getLeft(),
-                                          boundingBox.getTop()+component.getFeatures().getBoundingBox().getHeight(),
+                                          boundingBox.getTop()+component.getFeatures().getBoundingBox().getDeep(),
                                           boundingBox.getWidth(),
-                                          boundingBox.getHeight()-component.getFeatures().getBoundingBox().getHeight(),1));
+                                          boundingBox.getDeep()-component.getFeatures().getBoundingBox().getDeep(), 1));
 
+        boundingBox =       (new BoundingBox(boundingBox.getLeft(),
+                boundingBox.getTop(),
+                boundingBox.getLeft()+component.getFeatures().getBoundingBox().getWidth(),
+                boundingBox.getTop()+component.getFeatures().getBoundingBox().getDeep()));
 
         return this;
     }
 
     public void assign(Component component){
+
+
+        component.getFeatures().getBoundingBox().setBB(this.boundingBox);
+        System.out.println(component.getFeatures().getFilePath()+" "+component.getFeatures().getBoundingBox());
+        System.out.println(this.getBoundingBox());
+        System.out.println("___________________________");
+
         this.component = component;
         occupaid = true;
     }

@@ -44,6 +44,7 @@ public class BinaryFile implements Component {
 
     @Override
     public void applyIndependent(Consumer<Component> function){
+
         function.accept(this);
     }
 

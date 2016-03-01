@@ -93,7 +93,7 @@ public class Pakage implements Component {
     @Override
     public RenderChild applyRenderer() {
         RenderChild[] renderComponent = componentList.stream().map((x)->x.applyRenderer()).toArray(x->new RenderChild[x]);
-        return new RenderChild(new float[]{features.getBoundingBox().getTop(),features.getHeight(),features.getBoundingBox().getLeft()},new RenderComponent(this.getFeatures().getWidth(),this.getFeatures().getHeight(),this.getFeatures().getDeep(),this.getFeatures().getColor(),4,this.getFeatures().getPath(),renderComponent));
+        return new RenderChild(new float[]{features.getBoundingBox().getTop(),0,features.getBoundingBox().getLeft()},new RenderComponent(this.getFeatures().getWidth(),this.getFeatures().getHeight(),this.getFeatures().getDeep(),this.getFeatures().getColor(),4,this.getFeatures().getPath(),renderComponent));
     }
 
 

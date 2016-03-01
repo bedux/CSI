@@ -1,6 +1,7 @@
 package logics.analyzer;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import logics.renderTools.BoundingBox;
 import logics.renderTools.Packageable;
 
 import java.nio.file.Path;
@@ -16,6 +17,7 @@ public class Features extends Packageable {
     private long size=0;
 
     public Features(String name, String path,Path filePath, int methodsNumber, long worldCount) {
+        super();
         this.name = name;
         this.path = path;
         this.methodsNumber = methodsNumber;
@@ -26,6 +28,7 @@ public class Features extends Packageable {
     }
 
     public Features(String name, String path,Path filePath, int worldCount) {
+        super();
 
         this.name = name;
         this.path = path;
@@ -35,7 +38,7 @@ public class Features extends Packageable {
     }
 
     public Features(String name, String path,Path filePath) {
-
+        super();
         this.name = name;
         this.path = path;
         this.filePath=filePath;
@@ -43,14 +46,13 @@ public class Features extends Packageable {
     }
 
 
-    //Modifie this function for map the different information over the sytem
+    //Modifie this function for map the different information over the system
     private void bindingToPakageble(){
         super.setWidth(size/100);
         super.setDeep(size/100);
         super.setHeight(worldCount/10);
         super.setColor(new float[]{1,0,1});
         super.setSegment(4);
-
     }
 
     public long getWorldCount() {
@@ -74,7 +76,8 @@ public class Features extends Packageable {
 
 
     public void setSize(Long size) {
-        this.size = size; bindingToPakageble();
+        this.size = size;
+        bindingToPakageble();
     }
     public void setMethodsNumber(int methodsNumber) {
         this.methodsNumber = methodsNumber;

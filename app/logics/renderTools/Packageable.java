@@ -6,22 +6,18 @@ import java.util.Arrays;
  * Created by bedux on 27/02/16.
  */
 public class Packageable {
-    private float width;
     private float height;
-    private float deep;
     private float[] color;
     private int segment;
-
-    private BoundingBox bb;
+    private BoundingBox bb = new BoundingBox(0,0);
 
     public float getWidth() {
-        return width;
+        return bb.getWidth();
     }
 
     public void setWidth(float width) {
 
-        this.width = width;
-        bb = new BoundingBox(width,deep);
+        bb.setWidth(width);
 
     }
 
@@ -34,20 +30,16 @@ public class Packageable {
     }
 
     public float getDeep() {
-        return deep;
+        return bb.getDeep();
     }
 
     public void setDeep(float deep) {
-        this.deep = deep;
-        bb = new BoundingBox(width,deep);
-
+        bb.setDeep(deep);
     }
 
     public Packageable(float width, float height, float deep) {
 
-        this.width = width;
         this.height = height;
-        this.deep = deep;
         bb = new BoundingBox(width,deep);
     }
 
@@ -55,13 +47,6 @@ public class Packageable {
 
     public BoundingBox getBoundingBox(){
         return  bb;
-    }
-    public void setBB(BoundingBox bb){
-        this.setWidth(bb.getWidth());
-        this.setDeep(bb.getHeight());
-        this.bb = bb;
-
-
     }
 
     public float[] getColor() {
@@ -81,9 +66,7 @@ public class Packageable {
     }
 
     public Packageable(float width, float height, float deep, float[] color, int segment) {
-        this.width = width;
         this.height = height;
-        this.deep = deep;
         this.color = color;
         this.segment = segment;
         bb = new BoundingBox(width,deep);
@@ -94,9 +77,7 @@ public class Packageable {
     @Override
     public String toString() {
         return "Packageable{" +
-                "width=" + width +
                 ", height=" + height +
-                ", deep=" + deep +
                 ", color=" + Arrays.toString(color) +
                 ", segment=" + segment +
                 ", bb=" + bb +

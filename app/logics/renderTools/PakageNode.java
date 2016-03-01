@@ -80,7 +80,7 @@ public class PakageNode {
         this.right = new PakageNode();
 
         double dw = bb.getWidth() - featureBb.getWidth();
-        double dh = bb.getHeight() - featureBb.getHeight();
+        double dh = bb.getDeep() - featureBb.getDeep();
         System.out.println(featureBb.toString());
         if(dw > dh){
             left.setBoundingBox(new BoundingBox(bb.getLeft(),bb.getTop(),bb.getLeft()+featureBb.getRight(),bb.getButton()));

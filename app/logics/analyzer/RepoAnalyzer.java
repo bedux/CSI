@@ -43,11 +43,6 @@ public class RepoAnalyzer {
             e1.printStackTrace();
         }
 
-        PakageNode roots = new PakageNode();
-        Features f1 = new Features("","",null);
-        f1.setSize(Long.MAX_VALUE);
-        f1.setWorldCount(Long.MAX_VALUE);
-        roots.insert(f1);
 
         root.applyIndependent(this::worldCout);
 //        root.applyIndependent(this::printStatistics);
@@ -94,14 +89,11 @@ public class RepoAnalyzer {
 
 
         } else if (c instanceof Pakage) {
-            try {
-                c.getFeatures().setSize(Files.size(c.getFeatures().getFilePath()));
-                c.getFeatures().setWorldCount(1);
+//                c.getFeatures().setSize(Files.size(c.getFeatures().getFilePath()));
+//                c.getFeatures().setWorldCount(1);
                 c.getFeatures().setHeight(10);
 
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
+
         }else{
 
         }

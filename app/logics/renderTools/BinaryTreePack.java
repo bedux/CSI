@@ -14,15 +14,33 @@ public class BinaryTreePack {
 
 
     public static  void funcToCall(Component c){
+
+
         if(c.getComponentList().size()==0)return;
+
         BinaryTreePack r;
-        Stream<Component> strm = c.getComponentList().stream().sorted((y,x)->((x.getFeatures().getWidth()+x.getFeatures().getDeep())-(y.getFeatures().getWidth() + y.getFeatures().getDeep()))<0?-1:1);
-        r = new BinaryTreePack(strm.findFirst().get());
-        c.getComponentList().stream().sorted((y,x)->((x.getFeatures().getWidth()+x.getFeatures().getDeep())-(y.getFeatures().getWidth() + y.getFeatures().getDeep()))<0?-1:1).forEachOrdered((x -> r.insert(x)));
-        float deep = (float) c.getComponentList().stream().max((x,y)->x.getFeatures().getBoundingBox().getRight()<y.getFeatures().getBoundingBox().getRight()?-1:1).get().getFeatures().getBoundingBox().getRight();
-        float width =(float) c.getComponentList().stream().max((x,y)->x.getFeatures().getBoundingBox().getButton()<y.getFeatures().getBoundingBox().getButton()?-1:1).get().getFeatures().getBoundingBox().getButton();
-        c.getFeatures().setDeep(deep);
-        c.getFeatures().setWidth(width);
+        Component[] strm = c.getComponentList().stream().sorted((x,y)->((x.getFeatures().getWidth()+x.getFeatures().getDeep())-(y.getFeatures().getWidth() + y.getFeatures().getDeep()))>0?-1:1).toArray(x->new Component[x]);
+        r = new BinaryTreePack(strm[0]);
+        System.out.println(strm[0].getFeatures().getPath());
+        Arrays.stream(strm).forEach((x -> {
+            if (x.getFeatures().getWidth() > 0 && x.getFeatures().getDeep() > 0)
+                r.insert(x);
+        }));
+
+
+        float w=0;
+        float d=0;
+       for(Component x:c.getComponentList()){
+           System.out.println(x.getFeatures().getBoundingBox());
+            w =w < x.getFeatures().getBoundingBox().getRight()?x.getFeatures().getBoundingBox().getRight():w;
+           d = d < x.getFeatures().getBoundingBox().getButton()?x.getFeatures().getBoundingBox().getButton():d;
+
+
+
+       }
+        c.getFeatures().setDeep(w>d?w:d);
+        c.getFeatures().setWidth( w>d?w:d);
+//        System.out.println( r.root.getBoundingBox());
 
     }
     public BinaryTreePack(Component rootCP){
@@ -35,9 +53,10 @@ public class BinaryTreePack {
         if(toInsert!=null){
             toInsert = toInsert.split(component);
             toInsert.assign(component);
-            component.getFeatures().setBB(toInsert.getBoundingBox());
-            System.out.println(toInsert.getBoundingBox().toString()+"asdasd1");
-            System.out.println( component.getFeatures().getBoundingBox());
+
+            component.getFeatures().setWidth(toInsert.getBoundingBox().getWidth());
+            component.getFeatures().setDeep(toInsert.getBoundingBox().getDeep());
+
 
         }else{
              resize(component);
@@ -45,12 +64,12 @@ public class BinaryTreePack {
             if(n!=null) {
                 n = n.split(component);
                 n.assign(component);
-                component.getFeatures().setBB(n.getBoundingBox());
-                System.out.println(n.getBoundingBox().toString()+"asdasd2");
-                System.out.println( component.getFeatures().getBoundingBox());
+
+                component.getFeatures().setWidth(n.getBoundingBox().getWidth());
+                component.getFeatures().setDeep(n.getBoundingBox().getDeep());
 
             }else{
-                System.out.println("   asdasd   ");
+                System.out.println("Cazzoooo");
             }
 
 
@@ -63,10 +82,10 @@ public class BinaryTreePack {
         BoundingBox target = c.getFeatures().getBoundingBox();
 
         boolean cantGoButton =  target.getWidth()<=root.getBoundingBox().getWidth();
-        boolean cantGoRight =  target.getHeight()<=root.getBoundingBox().getHeight();
+        boolean cantGoRight =  target.getDeep()<=root.getBoundingBox().getDeep();
 
-        boolean shouldGoRight =  cantGoButton && (root.getBoundingBox().getWidth() + target.getWidth() <= root.getBoundingBox().getHeight());
-        boolean shouldGoButton = cantGoRight && (root.getBoundingBox().getHeight() + target.getHeight() <= root.getBoundingBox().getWidth());
+        boolean shouldGoRight =  cantGoRight && ((root.getBoundingBox().getWidth() + target.getWidth()) < root.getBoundingBox().getDeep());
+        boolean shouldGoButton = cantGoButton && ((root.getBoundingBox().getDeep() + target.getDeep()) < root.getBoundingBox().getWidth());
 
 
         if(shouldGoRight){
@@ -91,21 +110,18 @@ public class BinaryTreePack {
                                             0,
                                             0,
                                             root.getBoundingBox().getWidth(),
-                                            root.getBoundingBox().getButton()+bb.getHeight()));
+                                            root.getBoundingBox().getButton()+bb.getDeep()));
 
 
             root.setbottom(new Node(new BoundingBox(
                     0,
-                    helper.getBoundingBox().getHeight(),
+                    helper.getBoundingBox().getDeep(),
                     helper.getBoundingBox().getWidth(),
-                    bb.getHeight(),1
+                    bb.getDeep(),1
                     )));
 
             root.setRight(helper);
-//        System.out.println(bb+ " current 0 ");
-//        System.out.println(root.getBoundingBox()+ " current 0 ");
-//        System.out.println(root.getBottom().getBoundingBox()+ " Button ");
-//        System.out.println(root.getRight().getBoundingBox()+ " Right ");
+
         root.assign();
         return  root;
     }
@@ -115,13 +131,13 @@ public class BinaryTreePack {
         root = new Node(new BoundingBox(0,
                                         0,
                                         root.getBoundingBox().getRight()+bb.getWidth(),
-                                        root.getBoundingBox().getHeight()));
+                                        root.getBoundingBox().getDeep()));
 
         root.setRight(new Node(new BoundingBox(
                 helper.getBoundingBox().getWidth(),
                                                 0,
                                                 bb.getWidth(),
-                helper.getBoundingBox().getHeight(),1)));
+                helper.getBoundingBox().getDeep(), 1)));
 
         root.setbottom(helper);
 

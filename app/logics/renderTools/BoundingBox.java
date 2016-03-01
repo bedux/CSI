@@ -26,9 +26,24 @@ public class BoundingBox {
     public BoundingBox(float width, float deep){
         this.right=deep;
         this.bottom = width;
+    }
+
+
+    public void setBB(BoundingBox bb){
+        this.right=bb.right;
+        this.left=bb.left;
+        this.top=bb.top;
+        this.bottom=bb.bottom;
 
     }
 
+    public void setWidth(float w){
+        this.right = this.left+w;
+    }
+
+    public void setDeep(float d){
+        this.bottom = this.top+d;
+    }
 
     public BoundingBox( float left,float top,float right, float bottom ) {
 
@@ -40,20 +55,20 @@ public class BoundingBox {
     }
 
 
-    public BoundingBox( float left,float top,float width, float height ,int n) {
+    public BoundingBox( float left,float top,float width, float deep ,int n) {
 
 
         this.top = top;
         this.left = left;
         this.right = left+width;
-        this.bottom = top+height;
+        this.bottom = top+deep;
 
 
     }
 
     public Fitting isFit(BoundingBox bb){
-        if ((this.getHeight() == bb.getHeight()) && (this.getWidth() == bb.getWidth())) return Fitting.PERFECT;
-        if ((this.getHeight() >= bb.getHeight()) && (this.getWidth() >= bb.getWidth())) return Fitting.BIG;
+        if ((this.getDeep() == bb.getDeep()) && (this.getWidth() == bb.getWidth())) return Fitting.PERFECT;
+        if ((this.getDeep() >= bb.getDeep()) && (this.getWidth() >= bb.getWidth())) return Fitting.BIG;
         return  Fitting.SMALL;
 
 
@@ -80,7 +95,7 @@ public class BoundingBox {
     }
 
 
-    public float getHeight() {
+    public float getDeep() {
         return bottom-top;
     }
 
