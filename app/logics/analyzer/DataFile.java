@@ -38,7 +38,7 @@ public class DataFile implements Component{
 
     @Override
     public RenderChild applyRenderer() {
-        return new RenderChild(new float[]{features.getBoundingBox().getLeft(),0,features.getBoundingBox().getTop()},new RenderComponent(this.getFeatures().getRendererWidth(),this.getFeatures().getHeight(),this.getFeatures().getRendererDeep(),new float[]{(float)Math.random(),(float)Math.random(),(float)Math.random()},4,this.getFeatures().getPath(),null));
+        return new RenderChild(new float[]{features.getRendererLeft(),0,features.getRendererTop()},new RenderComponent(this.getFeatures().getRendererWidth(),this.getFeatures().getHeight(),this.getFeatures().getRendererDeep(),new float[]{(float)Math.random(),(float)Math.random(),(float)Math.random()},4,this.getFeatures().getPath(),null));
     }
 
     @Override

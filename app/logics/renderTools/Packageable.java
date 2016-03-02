@@ -6,21 +6,30 @@ import java.util.Arrays;
  * Created by bedux on 27/02/16.
  */
 public abstract class Packageable {
-    public  float gap = 15;
+    public  float gap = 40;
     private float height;
     private float[] color;
     private int segment;
+    private BoundingBox bb = new BoundingBox(0,0);
 
 
     public float getRendererWidth(){
-        return bb.getWidth()-gap;
+        return bb.getWidth()-gap/2;
     }
 
     public float getRendererDeep(){
-        return bb.getDeep()-gap;
+        return bb.getDeep()-gap/2;
 
     }
-    private BoundingBox bb = new BoundingBox(0,0);
+
+    public float getRendererTop(){
+        return bb.getTop()+gap/2;
+    }
+
+    public float getRendererLeft(){
+        return bb.getLeft()+gap/2;
+
+    }
 
     public float getWidth() {
         return bb.getWidth();

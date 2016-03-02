@@ -1,13 +1,21 @@
 package logics.analyzer;
 
+import com.fasterxml.jackson.databind.JsonNode;
+import com.github.javaparser.JavaParser;
+import com.github.javaparser.ParseException;
+import com.github.javaparser.ast.CompilationUnit;
+import com.github.javaparser.ast.body.MethodDeclaration;
+import com.github.javaparser.ast.visitor.VoidVisitorAdapter;
+import exception.CustumException;
 import interfaces.Component;
 import logics.models.db.Repo;
 import logics.renderTools.BinaryTreePack;
-import play.Logger;
 import play.libs.Json;
 
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.nio.file.FileSystems;
 import java.nio.file.Files;
 import java.util.stream.Stream;
@@ -23,7 +31,7 @@ public class RepoAnalyzer {
         this.repo = repo;
     }
 
-    public void getTree() {
+    public JsonNode getTree() {
         File f = new File("./repoDownload/" + repo.id);
         Package root = new Package(new Features("root", repo.id.toString(), f.toPath()));
         try {
@@ -39,16 +47,16 @@ public class RepoAnalyzer {
                 }
             });
         } catch (IOException e1) {
-            e1.printStackTrace();
+            throw new CustumException(e1);
         }
 
 
         root.applyIndependent(this::wordCount);
 //        root.applyIndependent(this::printStatistics);
         root.applyIndependent(BinaryTreePack::funcToCall);
-
-
-        System.out.println(Json.stringify(Json.toJson(root.applyRenderer())));
+//
+//
+       return (Json.toJson(root.applyRenderer()));
 
 
 
@@ -78,9 +86,46 @@ public class RepoAnalyzer {
                 c.getFeatures().setSegment((int) (Math.random() * 20 + 3));
 
             } catch (IOException e) {
-
+                throw new CustumException(e);
             }
 
+
+            ///TEST OF THE LIBRARY
+
+            String fn = c.getFeatures().getPath().substring(c.getFeatures().getPath().lastIndexOf(".") + 1);
+
+            if(fn.contains(".java")) {
+                try (InputStream is = Files.newInputStream(c.getFeatures().getFilePath())) {
+                    CompilationUnit p = JavaParser.parse(is);
+
+                    class Increment{
+                        int i = 0;
+                    }
+
+                    class MethodVisitor extends VoidVisitorAdapter<Increment> {
+
+                        @Override
+                        public void visit(MethodDeclaration n, Increment arg) {
+                            arg.i++;
+                            super.visit(n, arg);
+                        }
+                    }
+
+
+                    Increment i =new Increment();
+                    new MethodVisitor().visit(p, i);
+                    c.getFeatures().setMethodsNumber(i.i);
+
+                    is.close();
+
+                } catch (IOException e) {
+                    throw new CustumException(e);
+                } catch (ParseException e) {
+                    throw new CustumException(e);
+                }
+            }else{
+                c.getFeatures().setMethodsNumber(5);
+            }
 
         } else if (c instanceof Package) {
 
@@ -94,10 +139,6 @@ public class RepoAnalyzer {
         }else{
 
         }
-    }
-
-    private void printStatistics(Component c){
-        Logger.debug(c.getFeatures().toString());
     }
 }
 

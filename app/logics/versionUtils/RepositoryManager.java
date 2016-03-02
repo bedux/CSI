@@ -1,5 +1,6 @@
 package logics.versionUtils;
 
+import exception.CustumException;
 import interfaces.VersionedSystem;
 import logics.models.db.Repo;
 import play.Logger;
@@ -36,10 +37,8 @@ public class RepositoryManager  {
 
 
           }catch (Exception inv ){
-
-              Logger.error(inv.getMessage());
+              throw new CustumException(inv);
           }
-
       };
       Thread t = new Thread(runn);
       t.start();

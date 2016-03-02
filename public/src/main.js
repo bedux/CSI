@@ -5,6 +5,8 @@ var build = require("./building.js");
 var mock = require("../mock/templateScene.js");
 
 
+
+
 class MainScene{
     constructor(canvans){
         this.engine = new BABYLON.Engine(canvas, true);
@@ -34,7 +36,6 @@ class MainScene{
         }).bind(this));
 
 
-        build.recursiveDraw(this.scene,new BABYLON.Vector3(0,0,0),mock.pipoo.data);
 
 
         // the canvas/window resize event handler
@@ -57,6 +58,13 @@ class MainScene{
     }
 
 
+    updateScene(data){
+        console.log(data,this.scene)
+        this.scene.data = {};
+        build.recursiveDraw(this.scene,new BABYLON.Vector3(0,0,0),data.dta.data);
+
+    }
+
 
     render(){
 
@@ -70,3 +78,5 @@ class MainScene{
 
 var canvas = document.getElementById('renderCanvas');
 var scn = new MainScene(canvas);
+
+    $.post("/getData",scn.updateScene.bind(scn));

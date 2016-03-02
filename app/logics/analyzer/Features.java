@@ -47,9 +47,32 @@ public class Features extends Packageable {
 
     // this function for map the different information over the system
     protected void bindingToPakageble(){
-        super.setWidth(wordCount);
-        super.setDeep(wordCount);
-        super.setHeight(5+size/128);
+
+        int mn = 0;
+        if(this.getMethodsNumber()>20){
+            mn = 100;
+        }else if(this.getMethodsNumber()>10){
+            mn=50;
+        }else if(this.getMethodsNumber()>5){
+            mn = 24;
+        }else{
+            mn=10;
+        }
+
+        int hg = 0;
+
+        if(this.getSize()>1000){
+            hg = 100;
+        }else if(this.getSize()>500){
+            hg=50;
+        }else if(this.getSize()>200){
+            hg = 24;
+        }else{
+            hg=10;
+        }
+        super.setWidth(mn);
+        super.setDeep(mn);
+        super.setHeight(hg);
         super.setColor(new float[]{1,0,1});
         super.setSegment(4);
     }

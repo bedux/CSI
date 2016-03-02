@@ -1,5 +1,6 @@
 package controllers;
 
+import exception.CustumException;
 import logics.analyzer.RepoAnalyzer;
 import logics.models.form.RepoForm;
 import logics.versionUtils.RepositoryManager;
@@ -52,9 +53,14 @@ public class Registration extends Controller {
             F.Promise<Result> trs =   F.Promise.promise(() ->
             {
                 //Add to database the repository
-                RepoAnalyzer repoAnalyzer = new RepoAnalyzer( Repo.find.all().get(0));
+                try {
+                    RepoAnalyzer repoAnalyzer = new RepoAnalyzer(Repo.find.all().get(0));
+                    repoAnalyzer.getTree();
 
-                repoAnalyzer.getTree();
+                }catch (CustumException e){
+                    System.out.println(e.getException().getStackTrace().toString());
+                }
+
 
                 return ok(index.render("Repo Added"));
             });

@@ -8,13 +8,7 @@ public class BoundingBox {
     private float top=0;
     private float left=0;
 
-    public float getRendererWidth(){
-        return getWidth();
-    }
 
-    public float getRendererDeep(){
-        return this.getWidth();
-    }
 
 
 

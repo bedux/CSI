@@ -33,6 +33,7 @@ function recursiveDraw(scene,position,data){
         createBuilding(scene,position,data);
         if(data.children==null) return;
 
+        console.log(data);
         if(data.children.length>0){
             for(var i of  data.children){
                 recursiveDraw(scene,position.add(new BABYLON.Vector3(i.position[0],i.position[1]+data.height,i.position[2])),i.data);

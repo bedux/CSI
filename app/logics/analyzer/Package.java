@@ -76,7 +76,7 @@ public class Package implements Component {
     @Override
     public RenderChild applyRenderer() {
         RenderChild[] renderComponent = componentList.stream().map((x)->x.applyRenderer()).toArray(x->new RenderChild[x]);
-        return new RenderChild(new float[]{features.getBoundingBox().getLeft(),0,features.getBoundingBox().getTop()},new RenderComponent(this.getFeatures().getRendererWidth(),this.getFeatures().getHeight(),this.getFeatures().getRendererDeep(),this.getFeatures().getColor(),4,this.getFeatures().getPath(),renderComponent));
+        return new RenderChild(new float[]{features.getRendererLeft(),0,features.getRendererTop()},new RenderComponent(this.getFeatures().getRendererWidth(),this.getFeatures().getHeight(),this.getFeatures().getRendererDeep(),this.getFeatures().getColor(),4,this.getFeatures().getPath(),renderComponent));
     }
 
 
