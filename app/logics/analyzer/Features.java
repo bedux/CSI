@@ -14,6 +14,7 @@ public class Features extends Packageable {
     private int methodsNumber=0;
     private final Path filePath;
     private long size=0;
+    private float scale = 0;
 
     public Features(String name, String path,Path filePath, int methodsNumber, long wordCount) {
         super();

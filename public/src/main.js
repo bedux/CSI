@@ -23,14 +23,22 @@ class MainScene{
         this.camera.attachControl(canvas, false);
         this.camera.speed=40;
         // create a basic light, aiming 0,1,0 - meaning, to the sky
-       this.light = new BABYLON.HemisphericLight('light1', new BABYLON.Vector3(10,10,0), this.scene);
+        this.light = new BABYLON.HemisphericLight('light1', new BABYLON.Vector3(10,10,0), this.scene);
 
         this.scene.data = {};
+        this.pivot =  BABYLON.Mesh.CreateBox("sphere",0, this.scene);
+        this.pivot1 =  BABYLON.Mesh.CreateBox("sphere1",1, this.scene);
+        this.pivot1.scaling =   new BABYLON.Vector3(1, 1000,1);
+
+        this.width = 0;
+        this.deep = 0;
 
 
-
-
+        this.angle = 0.001;
         this.engine.runRenderLoop((function(){
+
+        //    this.pivot.rotate(BABYLON.Axis.Y,  this.angle, BABYLON.Space.WORLD);
+          //  this.pivot.translate(BABYLON.Axis.X, this.width, BABYLON.Space.LOCAL);
             this.render();
             this.scene.render();
         }).bind(this));
@@ -52,7 +60,6 @@ class MainScene{
             var info = this.scene.data[pickResult.pickedMesh.id];
             document.getElementById("bar").innerHTML="Name:"+ info.id+ " | Deep: "+info.deep + " | Height: "+info.height + " | Deep: "+info.deep  + " | Width: "+info.width;
 
-
         }).bind(this));
 
     }
@@ -61,7 +68,14 @@ class MainScene{
     updateScene(data){
         console.log(data,this.scene)
         this.scene.data = {};
-        build.recursiveDraw(this.scene,new BABYLON.Vector3(0,0,0),data.dta.data);
+
+      this.width = data.dta.data.width;
+        this.deep = data.dta.data.deep;
+        this.pivot = new BABYLON.Mesh.CreatePlane("plane", 0, this.scene, false, BABYLON.Mesh.DEFAULTSIDE);
+
+        build.recursiveDraw(this.scene,new BABYLON.Vector3(0,0,0),data.dta.data,this.pivot);
+
+       // this.pivot.position = new BABYLON.Vector3(-this.width ,0,-this.deep );
 
     }
 

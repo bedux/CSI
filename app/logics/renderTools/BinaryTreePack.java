@@ -24,7 +24,7 @@ public class BinaryTreePack {
             float b = y.getFeatures().getWidth() * y.getFeatures().getDeep();
 
             if(a==b)return 0;
-            else return a>b?1:-1;
+            else return a>b?-1:1;
         }).toArray(x->new Component[x]);
         r = new BinaryTreePack(strm[0]);
         Arrays.stream(strm).forEach((x -> {
