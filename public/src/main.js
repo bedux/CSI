@@ -58,7 +58,7 @@ class MainScene{
             var pickResult = this.scene.pick(this.scene.pointerX, this.scene.pointerY);
 
             var info = this.scene.data[pickResult.pickedMesh.id];
-            document.getElementById("bar").innerHTML="Name:"+ info.id+ " | Deep: "+info.deep + " | Height: "+info.height + " | Deep: "+info.deep  + " | Width: "+info.width;
+            document.getElementById("bar").innerHTML="Name:"+ info.id+ " | NOM: "+info.NOM + " | WC: "+info.WC + " | Size: "+info.size  + " | Width: "+info.width;
 
         }).bind(this));
 

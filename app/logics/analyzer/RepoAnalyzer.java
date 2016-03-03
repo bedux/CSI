@@ -9,11 +9,11 @@ import com.github.javaparser.ast.visitor.VoidVisitorAdapter;
 import exception.CustumException;
 import interfaces.Component;
 import logics.models.db.Repo;
+import logics.models.tools.MaximumMinimumData;
 import logics.renderTools.BinaryTreePack;
 import play.libs.Json;
 
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.FileSystems;
@@ -51,12 +51,20 @@ public class RepoAnalyzer {
         }
 
 
-        root.applyIndependent(this::wordCount);
-//        root.applyIndependent(this::printStatistics);
-        root.applyIndependent(BinaryTreePack::funcToCall);
-//
-//
-       return (Json.toJson(root.applyRenderer()));
+        root.applyFunction(new WordCountAnalyser()::analysis);
+        root.applyFunction(new MethodCountAnalyser()::analysis);
+        MaximumMinimumData mmd = root.applyFunction(new MaximumDimentionAnalyser()::analysis);
+        System.out.println(mmd);
+        root.applyFunction(new AdjustSizeAnalyser(mmd)::analysis);
+
+        root.applyFunction(new PackingAnalyzer()::analysis);
+
+        int max = root.applyFunction(new DepthAnalyser()::analysis);
+        root.applyFunction(new ColoringAnalyser(max)::analysis);
+
+
+
+        return (Json.toJson(root.getRenderJSON()));
 
 
 
@@ -67,79 +75,7 @@ public class RepoAnalyzer {
 
     }
 
-    private void wordCount(Component c) {
-        if (c instanceof BinaryFile) {
-//           System.out.println("BinaryFile");
 
-
-        } else if (c instanceof DataFile) {
-
-            try (Stream<String> fileLinesStream = Files.lines(c.getFeatures().getFilePath())) {
-                c.getFeatures().setWordCount(fileLinesStream.filter((line) -> {
-                    return line.replace("\\s+", "").length() > 0;
-                }).mapToInt((line) -> {
-                    line = line.trim();
-                    return line.split("\\s+").length;
-                }).sum());
-                c.getFeatures().setSize(Files.size(c.getFeatures().getFilePath()));
-
-                c.getFeatures().setSegment((int) (Math.random() * 20 + 3));
-
-            } catch (IOException e) {
-                throw new CustumException(e);
-            }
-
-
-            ///TEST OF THE LIBRARY
-
-            String fn = c.getFeatures().getPath().substring(c.getFeatures().getPath().lastIndexOf(".") + 1);
-
-            if(fn.contains(".java")) {
-                try (InputStream is = Files.newInputStream(c.getFeatures().getFilePath())) {
-                    CompilationUnit p = JavaParser.parse(is);
-
-                    class Increment{
-                        int i = 0;
-                    }
-
-                    class MethodVisitor extends VoidVisitorAdapter<Increment> {
-
-                        @Override
-                        public void visit(MethodDeclaration n, Increment arg) {
-                            arg.i++;
-                            super.visit(n, arg);
-                        }
-                    }
-
-
-                    Increment i =new Increment();
-                    new MethodVisitor().visit(p, i);
-                    c.getFeatures().setMethodsNumber(i.i);
-
-                    is.close();
-
-                } catch (IOException e) {
-                    throw new CustumException(e);
-                } catch (ParseException e) {
-                    throw new CustumException(e);
-                }
-            }else{
-                c.getFeatures().setMethodsNumber(5);
-            }
-
-        } else if (c instanceof Package) {
-
-            float w = 0;
-            for(Component c1 :c.getComponentList())
-                w+=c1.getFeatures().getHeight();
-            c.getFeatures().setHeight(10);
-            float f = (float)Math.random();
-            c.getFeatures().setColor(new float[]{f,f,f});
-
-        }else{
-
-        }
-    }
 }
 
 

@@ -4,11 +4,10 @@ import interfaces.Component;
 import logics.models.json.RenderChild;
 import logics.models.json.RenderComponent;
 
-import java.io.File;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.function.Consumer;
+import java.util.function.Function;
 
 /**
  * Created by bedux on 24/02/16.
@@ -35,10 +34,10 @@ public class BinaryFile implements Component {
     }
 
     @Override
-    public void applyIndependent(Consumer<Component> function){
-
-        function.accept(this);
+    public <T> T applyFunction(Function< Component, T> function) {
+        return function.apply(this);
     }
+
 
 //    @Override
 //    public RenderChild applyRenderer() {
@@ -49,7 +48,7 @@ public class BinaryFile implements Component {
 //    }
 
     @Override
-    public RenderChild applyRenderer() {
-        return new RenderChild(new float[]{features.getRendererLeft(),0,features.getRendererTop()},new RenderComponent(this.getFeatures().getRendererWidth(),this.getFeatures().getHeight(),this.getFeatures().getRendererDeep(),new float[]{(float)Math.random(),(float)Math.random(),(float)Math.random()},4,this.getFeatures().getPath(),null));
+    public RenderChild getRenderJSON() {
+        return new RenderChild(new float[]{features.getRendererLeft(),0,features.getRendererTop()},new RenderComponent(features,null));
     }
 }

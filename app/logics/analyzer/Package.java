@@ -3,13 +3,12 @@ package logics.analyzer;
 import interfaces.Component;
 import logics.models.json.RenderChild;
 import logics.models.json.RenderComponent;
-import logics.renderTools.Point3d;
 
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.function.Consumer;
+import java.util.function.Function;
 import java.util.stream.Stream;
 
 
@@ -66,17 +65,13 @@ public class Package implements Component {
             }
     }
 
-    @Override
-    public void applyIndependent(Consumer<Component> function){
-        componentList.stream().forEach((x) -> x.applyIndependent(function));
-        function.accept(this);
-    }
+
 
 
     @Override
-    public RenderChild applyRenderer() {
-        RenderChild[] renderComponent = componentList.stream().map((x)->x.applyRenderer()).toArray(x->new RenderChild[x]);
-        return new RenderChild(new float[]{features.getRendererLeft(),0,features.getRendererTop()},new RenderComponent(this.getFeatures().getRendererWidth(),this.getFeatures().getHeight(),this.getFeatures().getRendererDeep(),this.getFeatures().getColor(),4,this.getFeatures().getPath(),renderComponent));
+    public RenderChild getRenderJSON() {
+        RenderChild[] renderComponent = componentList.stream().map((x)->x.getRenderJSON()).toArray(x->new RenderChild[x]);
+        return new RenderChild(new float[]{features.getRendererLeft(),0,features.getRendererTop()},new RenderComponent(features,renderComponent));
     }
 
 
@@ -84,6 +79,12 @@ public class Package implements Component {
     public Features getFeatures() {
         return this.features;
     }
+
+    @Override
+    public <T> T applyFunction(Function< Component, T> function) {
+        return function.apply(this);
+    }
+
     private boolean isTextFile(Path p){
             try (Stream<String> fileLinesStream = Files.lines(p)){
                 fileLinesStream.count();

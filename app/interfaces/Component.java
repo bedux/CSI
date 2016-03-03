@@ -19,9 +19,9 @@ public interface Component {
 
     Features getFeatures();
     //Compute the statistics independently from level to level
-    void applyIndependent(Consumer<Component> function);
+     <T> T  applyFunction(Function< Component, T> function);
 
-     RenderChild applyRenderer() ;
+     RenderChild getRenderJSON() ;
 
      List<Component> getComponentList();
 

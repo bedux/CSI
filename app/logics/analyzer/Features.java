@@ -15,6 +15,15 @@ public class Features extends Packageable {
     private final Path filePath;
     private long size=0;
     private float scale = 0;
+    private int remoteness = 0;
+
+    public void setRemoteness(int remoteness){
+        this.remoteness = remoteness;
+    }
+    public int getRemotness(){
+       return this.remoteness;
+    }
+
 
     public Features(String name, String path,Path filePath, int methodsNumber, long wordCount) {
         super();
@@ -49,31 +58,10 @@ public class Features extends Packageable {
     // this function for map the different information over the system
     protected void bindingToPakageble(){
 
-        int mn = 0;
-        if(this.getMethodsNumber()>20){
-            mn = 100;
-        }else if(this.getMethodsNumber()>10){
-            mn=50;
-        }else if(this.getMethodsNumber()>5){
-            mn = 24;
-        }else{
-            mn=10;
-        }
 
-        int hg = 0;
-
-        if(this.getSize()>1000){
-            hg = 100;
-        }else if(this.getSize()>500){
-            hg=50;
-        }else if(this.getSize()>200){
-            hg = 24;
-        }else{
-            hg=10;
-        }
-        super.setWidth(mn);
-        super.setDeep(mn);
-        super.setHeight(hg);
+        super.setWidth(getMethodsNumber());
+        super.setDeep(getMethodsNumber());
+        super.setHeight(getWordCount());
         super.setColor(new float[]{1,0,1});
         super.setSegment(4);
     }
@@ -110,6 +98,7 @@ public class Features extends Packageable {
         this.wordCount = wordCount;
         bindingToPakageble();
     }
+
 
 
 
