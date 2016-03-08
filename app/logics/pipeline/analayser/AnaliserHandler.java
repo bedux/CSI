@@ -1,14 +1,19 @@
 package logics.pipeline.analayser;
 
+import com.fasterxml.jackson.databind.JsonNode;
+import exception.CustumException;
 import interfaces.Handler;
 import logics.analyzer.*;
 import logics.analyzer.Package;
+import logics.analyzer.analysis.*;
 import logics.models.db.ComponentInfo;
 import logics.models.db.RepositoryVersion;
 import logics.models.tools.MaximumMinimumData;
+import org.eclipse.jgit.util.FileUtils;
 import play.libs.Json;
 
-import java.io.File;
+import java.io.*;
+import java.nio.file.Files;
 import java.util.List;
 
 /**
@@ -35,13 +40,31 @@ public class AnaliserHandler implements Handler<AnalyserHandlerParam,AnalyserHan
         root.applyFunction(new MethodCountAnalyser()::analysis);
         MaximumMinimumData mmd = root.applyFunction(new MaximumDimentionAnalyser()::analysis);
         root.applyFunction(new AdjustSizeAnalyser(mmd)::analysis);
-
         root.applyFunction(new PackingAnalyzer()::analysis);
-
         int max = root.applyFunction(new DepthAnalyser()::analysis);
         root.applyFunction(new ColoringAnalyser(max)::analysis);
+        root.applyFunction(new SaveFeaturesInDbAnalyser(param.repositoryVersion)::analysis);
 
-        return new AnalyserHandlerResult(Json.toJson(root.getRenderJSON()));
+        JsonNode json = Json.toJson(root.getRenderJSON());
+
+        if(Files.exists(new File("./public/data/"+param.repositoryVersion.id+".json").toPath())){
+            try {
+                Files.delete(new File("./public/data/"+param.repositoryVersion.id+".json").toPath());
+            } catch (IOException e) {
+                new CustumException(e);
+            }
+        }
+        try (Writer writer = new BufferedWriter(new OutputStreamWriter(
+                new FileOutputStream("./public/data/"+param.repositoryVersion.id+".json"), "utf-8"))) {
+            writer.write(Json.stringify(json));
+            param.repositoryVersion.setJson("/assets/data/"+param.repositoryVersion.id+".json");
+            param.repositoryVersion.update();
+
+        }catch (Exception e){
+            new CustumException(e);
+        }
+
+        return new AnalyserHandlerResult(json);
     }
 
     private String clearPath(String s,RepositoryVersion rpv) {

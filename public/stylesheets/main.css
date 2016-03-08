@@ -9,5 +9,31 @@ html, body {
 #renderCanvas {
     width   : 100%;
     height  : 100%;
-    touch-action: none;
+}
+
+#droppy{
+    position:absolute;
+    right:130px;
+    display: flex;
+    flex-direction:column;
+    justify-content: center;
+    align-items:center;
+
+}
+
+#droppyContent{
+    padding: 10px;
+
+
+}
+
+#dropdownMenu1{
+    padding: 10px;
+
+}
+
+#bar{
+    position:absolute;
+    background: darkgreen;
+
 }

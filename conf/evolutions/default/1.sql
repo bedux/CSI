@@ -3,7 +3,7 @@
 
 # --- !Ups
 
-create table REPO_INFO (
+create table ComponentInfo (
   id                        bigint auto_increment not null,
   parent                    varchar(255),
   file_name                 varchar(255),
@@ -11,39 +11,42 @@ create table REPO_INFO (
   size                      integer,
   wc                        integer,
   repository_id             bigint,
-  constraint pk_REPO_INFO primary key (id))
+  constraint pk_ComponentInfo primary key (id))
 ;
 
-create table REPOSITORY (
+create table Repository (
   id                        bigint auto_increment not null,
   user                      varchar(255),
   uri                       varchar(255),
   pwd                       varchar(255),
   usr_id                    bigint,
   type                      varchar(255),
-  constraint pk_REPOSITORY primary key (id))
+  constraint pk_Repository primary key (id))
 ;
 
-create table REPOSITORY_VERSION (
+create table RepositoryVersion (
   id                        bigint auto_increment not null,
   hss                       varchar(255),
+  num_of_file               integer,
+  mama                      varchar(255),
+  json                      varchar(255),
   repository_id             bigint,
-  constraint pk_REPOSITORY_VERSION primary key (id))
+  constraint pk_RepositoryVersion primary key (id))
 ;
 
-create table USER (
+create table User (
   id                        bigint auto_increment not null,
   name                      varchar(255),
-  constraint uq_USER_name unique (name),
-  constraint pk_USER primary key (id))
+  constraint uq_User_name unique (name),
+  constraint pk_User primary key (id))
 ;
 
-alter table REPO_INFO add constraint fk_REPO_INFO_repository_1 foreign key (repository_id) references REPOSITORY_VERSION (id) on delete restrict on update restrict;
-create index ix_REPO_INFO_repository_1 on REPO_INFO (repository_id);
-alter table REPOSITORY add constraint fk_REPOSITORY_usr_2 foreign key (usr_id) references USER (id) on delete restrict on update restrict;
-create index ix_REPOSITORY_usr_2 on REPOSITORY (usr_id);
-alter table REPOSITORY_VERSION add constraint fk_REPOSITORY_VERSION_repository_3 foreign key (repository_id) references REPOSITORY (id) on delete restrict on update restrict;
-create index ix_REPOSITORY_VERSION_repository_3 on REPOSITORY_VERSION (repository_id);
+alter table ComponentInfo add constraint fk_ComponentInfo_repository_1 foreign key (repository_id) references RepositoryVersion (id) on delete restrict on update restrict;
+create index ix_ComponentInfo_repository_1 on ComponentInfo (repository_id);
+alter table Repository add constraint fk_Repository_usr_2 foreign key (usr_id) references User (id) on delete restrict on update restrict;
+create index ix_Repository_usr_2 on Repository (usr_id);
+alter table RepositoryVersion add constraint fk_RepositoryVersion_repository_3 foreign key (repository_id) references Repository (id) on delete restrict on update restrict;
+create index ix_RepositoryVersion_repository_3 on RepositoryVersion (repository_id);
 
 
 
@@ -51,13 +54,13 @@ create index ix_REPOSITORY_VERSION_repository_3 on REPOSITORY_VERSION (repositor
 
 SET FOREIGN_KEY_CHECKS=0;
 
-drop table REPO_INFO;
+drop table ComponentInfo;
 
-drop table REPOSITORY;
+drop table Repository;
 
-drop table REPOSITORY_VERSION;
+drop table RepositoryVersion;
 
-drop table USER;
+drop table User;
 
 SET FOREIGN_KEY_CHECKS=1;
 

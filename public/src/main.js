@@ -8,7 +8,9 @@ var mock = require("../mock/templateScene.js");
 
 
 class MainScene{
-    constructor(canvans){
+    constructor(){
+        let canvas = document.getElementById('renderCanvas');
+
         this.canvas = canvas;
         this.engine = new BABYLON.Engine(canvas, true);
         this.engine.isPointerLock = false;
@@ -50,13 +52,13 @@ class MainScene{
 
 
         // the canvas/window resize event handler
-        window.addEventListener('resize', (function(){
+        this.canvas.addEventListener('resize', (function(){
             this.resize();
             this.engine.resize();
         }).bind(this));
 
 
-        window.addEventListener("click", (function () {
+        this.canvas.addEventListener("click", (function () {
             // We try to pick an object
             var pickResult = this.scene.pick(this.scene.pointerX, this.scene.pointerY);
 
@@ -65,7 +67,7 @@ class MainScene{
 
         }).bind(this));
 
-        window.addEventListener("keydown", (
+        this.canvas.addEventListener("keydown", (
             function(e){
                 var pickResult = this.scene.pick(this.scene.pointerX, this.scene.pointerY);
                 if(e.shiftKey && pickResult.hit) {
@@ -107,11 +109,11 @@ class MainScene{
         console.log(data,this.scene)
         this.scene.data = {};
 
-      this.width = data.dta.data.width;
-        this.deep = data.dta.data.deep;
+      this.width = data.data.width;
+        this.deep = data.data.deep;
         this.pivot = new BABYLON.Mesh.CreatePlane("plane", 0, this.scene, false, BABYLON.Mesh.DEFAULTSIDE);
 
-        build.recursiveDraw(this.scene,new BABYLON.Vector3(0,0,0),data.dta.data,this.pivot);
+        build.recursiveDraw(this.scene,new BABYLON.Vector3(0,0,0),data.data,this.pivot);
 
        // this.pivot.position = new BABYLON.Vector3(-this.width ,0,-this.deep );
 
@@ -128,7 +130,12 @@ class MainScene{
 
 }
 
-var canvas = document.getElementById('renderCanvas');
-var scn = new MainScene(canvas);
 
-    $.post("/getData",scn.updateScene.bind(scn));
+
+
+window.createScene = function(url) {
+
+
+    var scn = new MainScene();
+    $.get(url, scn.updateScene.bind(scn));
+};

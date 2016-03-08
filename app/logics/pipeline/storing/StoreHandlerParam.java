@@ -13,6 +13,7 @@ public class StoreHandlerParam implements HandlerParam {
     public StoreHandlerParam(RepositoryVersion repositoryVersion) {
         this.repositoryVersion = repositoryVersion;
     }
+    public int nOfFile = 0;
 
     public StoreHandlerParam(CloneHandlerResult repositoryVersion) {
         this.repositoryVersion = repositoryVersion.repositoryVersion;

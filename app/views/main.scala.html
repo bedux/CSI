@@ -17,8 +17,6 @@
 
     </head>
     <body>
-
-
         <nav class="navbar navbar-default">
             <div class="container-fluid">
                     <!-- Brand and toggle get grouped for better mobile display -->
@@ -35,7 +33,7 @@
                     <!-- Collect the nav links, forms, and other content for toggling -->
                 <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
                     <ul class="nav navbar-nav">
-                        <li @if(request().path().toString().equals(routes.Application.index().toString())){ class="active"}><a href="@routes.Application.index()">Link <span class="sr-only">(current)</span></a></li>
+                        <li @if(request().path().toString().equals(routes.Application.index().toString())){ class="active"}><a href="@routes.Application.getRepositories()">Repositories <span class="sr-only">(current)</span></a></li>
                         <li repoRegistrationTemplate @if(request().path().toString().equals(routes.Registration.repoRegistrationTemplate().toString())){ class="active"}
                         ><a href="@routes.Registration.repoRegistrationTemplate()">Add Repository</a></li>
                         <li class="dropdown">

@@ -1,4 +1,4 @@
-package logics.analyzer;
+package logics.analyzer.analysis;
 
 import com.github.javaparser.JavaParser;
 import com.github.javaparser.ParseException;
@@ -8,6 +8,8 @@ import com.github.javaparser.ast.visitor.VoidVisitorAdapter;
 import exception.CustumException;
 import interfaces.Analyser;
 import interfaces.Component;
+import logics.analyzer.*;
+import logics.analyzer.Package;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -27,7 +29,7 @@ public class MethodCountAnalyser implements Analyser<Integer> {
             n=0;
         } else if (c instanceof DataFile) {
             n=analysisCast((DataFile)c);
-        }else if (c instanceof Package){
+        }else if (c instanceof logics.analyzer.Package){
             n=analysisCast((Package) c);
         }
         c.getFeatures().setMethodsNumber(n);

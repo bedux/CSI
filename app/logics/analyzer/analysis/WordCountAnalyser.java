@@ -1,8 +1,10 @@
-package logics.analyzer;
+package logics.analyzer.analysis;
 
 import exception.CustumException;
 import interfaces.Analyser;
 import interfaces.Component;
+import logics.analyzer.*;
+import logics.analyzer.Package;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -21,7 +23,7 @@ public class WordCountAnalyser implements Analyser<Integer> {
             n= 10;
         } else if (c instanceof DataFile) {
             n=analysisCast((DataFile)c);
-        }else if (c instanceof Package){
+        }else if (c instanceof logics.analyzer.Package){
             n=analysisCast((Package) c);
         }
         c.getFeatures().setWordCount(n);

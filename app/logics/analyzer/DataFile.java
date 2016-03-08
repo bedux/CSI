@@ -30,9 +30,6 @@ public class DataFile implements Component {
     }
 
 
-
-
-
     @Override
     public RenderChild getRenderJSON() {
         return new RenderChild(new float[]{features.getRendererLeft(),0,features.getRendererTop()},new RenderComponent(features,null));

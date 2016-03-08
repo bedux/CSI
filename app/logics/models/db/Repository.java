@@ -15,7 +15,7 @@ import java.util.List;
  * Created by bedux on 22/02/16.
  */
 @Entity
-@Table(name="REPOSITORY")
+@Table(name="Repository")
 public class Repository extends Model {
 
     @Id
@@ -31,9 +31,9 @@ public class Repository extends Model {
 
     @ManyToOne
     public User usr;
-
-    @OneToMany(cascade = CascadeType.ALL)
-    public List<RepositoryVersion> repositoryVersions;
+//
+//    @OneToMany(cascade = CascadeType.ALL)
+//    public List<RepositoryVersion> repositoryVersions;
 
     public String type;
 

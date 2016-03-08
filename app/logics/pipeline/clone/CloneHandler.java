@@ -13,14 +13,13 @@ public class CloneHandler implements Handler<CloneHandlerParam,CloneHandlerResul
 
     @Override
     public CloneHandlerResult process(CloneHandlerParam param) {
-        //String user,String uri ,String pwd
 
         Repository repositoryInfo = Repository.CreareRepo(param.repoForm);
         VersionedSystem sys = repositoryInfo.CreateSystem();
         RepositoryVersion repositoryVersion = RepositoryVersion.RepositoryVersion(repositoryInfo);
         sys.clone(repositoryVersion.id.toString());
-        repositoryVersion.hss = (sys.getCurrentVersion());
-        repositoryVersion.update();
+        repositoryVersion.setHss(sys.getCurrentVersion());
+        repositoryVersion.update(repositoryVersion.id);
 
         return new CloneHandlerResult(repositoryVersion);
     }

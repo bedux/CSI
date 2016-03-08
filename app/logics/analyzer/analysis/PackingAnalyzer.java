@@ -1,4 +1,4 @@
-package logics.analyzer;
+package logics.analyzer.analysis;
 
 import interfaces.Analyser;
 import interfaces.Component;

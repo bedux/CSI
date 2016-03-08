@@ -1,7 +1,9 @@
-package logics.analyzer;
+package logics.analyzer.analysis;
 
 import interfaces.Analyser;
 import interfaces.Component;
+import logics.analyzer.*;
+import logics.analyzer.Package;
 import logics.renderTools.Point3d;
 
 /**
@@ -22,7 +24,7 @@ public class ColoringAnalyser implements Analyser<Point3d>{
 
         } else if (c instanceof DataFile) {
             n=analysisCast((DataFile)c);
-        }else if (c instanceof Package){
+        }else if (c instanceof logics.analyzer.Package){
             n=analysisCast((Package) c);
         }
         c.getFeatures().setColor(new float[]{n.getX(), n.getY(),n.getZ()});

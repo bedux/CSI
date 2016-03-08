@@ -1,0 +1,9 @@
+@import logics.models.db.RepositoryVersion
+@(repoInfo:RepositoryVersion)
+    <a href="@routes.Application.renderRepo(repoInfo.json)" class="list-group-item">
+    <span class="label label-default label-pill pull-xs-right">@repoInfo.numOfFile</span>
+    @repoInfo.repository.uri
+    </a>
+
+
+

@@ -18,6 +18,7 @@ public class StoreHandler implements Handler<StoreHandlerParam,StoreHandlerResul
     public StoreHandlerResult process(StoreHandlerParam param) {
         String path = "./repoDownload/";
 
+        int nuberOfFile = 0;
         path+=param.repositoryVersion.id;
         try {
             Files.walk(FileSystems.getDefault().getPath(path)).forEach((x) -> {
@@ -25,11 +26,17 @@ public class StoreHandler implements Handler<StoreHandlerParam,StoreHandlerResul
                 if (Files.isRegularFile(x)) {
                     String s = clearPath(x.normalize().toString(),param.repositoryVersion);
                     ComponentInfo c = ComponentInfo.createComponentInfo(param.repositoryVersion, s);
-                    param.repositoryVersion.componentInfo.add(c);
+                    param.repositoryVersion.addComponentInfo(c);
+                    param.nOfFile++;
                 }
             });
         } catch (IOException e1) {
+
             throw new CustumException(e1);
+
+        }finally {
+            param.repositoryVersion.setnumOfFile(param.nOfFile);
+            param.repositoryVersion.update();
         }
         return new StoreHandlerResult(param.repositoryVersion);
     }

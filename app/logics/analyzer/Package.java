@@ -4,7 +4,6 @@ import interfaces.Component;
 import logics.models.json.RenderChild;
 import logics.models.json.RenderComponent;
 
-import java.io.Serializable;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
@@ -26,16 +25,12 @@ public class Package implements Component {
     }
 
 
-
-
     @Override
     public boolean add(String search,Path f,String remainPath) {
             if(features.getPath().equals(search)){
                 if(remainPath.indexOf('/')!=-1) {
                     String toSearch = features.getPath() +"/"+remainPath.substring(0,remainPath.indexOf('/'));
-//                    System.out.println(toSearch);
                     String remain = remainPath.substring(remainPath.indexOf('/')+1);
-//                    System.out.println(remain);
                     for(Component c:componentList){
                        if( c.add(toSearch,f,remain)){
                            return true;
@@ -49,7 +44,6 @@ public class Package implements Component {
 
                 }else{
                     String name = remainPath;
-
                     //add file
                     if(isTextFile(f)){
                         DataFile file = new DataFile(new Features(name,this.features.getPath()+"/"+remainPath,f));
@@ -65,8 +59,6 @@ public class Package implements Component {
                 return false;
             }
     }
-
-
 
 
     @Override

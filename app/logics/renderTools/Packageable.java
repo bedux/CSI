@@ -7,7 +7,7 @@ import java.util.Arrays;
  * Created by bedux on 27/02/16.
  */
 public abstract class Packageable implements Serializable{
-    public  float gap = 10;
+    public  float gap = 80;
     private float height;
     private float[] color;
     private int segment;

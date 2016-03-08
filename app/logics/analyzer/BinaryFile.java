@@ -4,15 +4,12 @@ import interfaces.Component;
 import logics.models.json.RenderChild;
 import logics.models.json.RenderComponent;
 
-import java.io.Serializable;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Function;
 
-/**
- * Created by bedux on 24/02/16.
- */
+
 public class BinaryFile implements Component {
 
     public List<Component> getComponentList(){
@@ -39,14 +36,6 @@ public class BinaryFile implements Component {
         return function.apply(this);
     }
 
-
-//    @Override
-//    public RenderChild applyRenderer() {
-//        Features f = this.getFeatures();
-//        RenderChild rc =   new RenderChild(new float[3],new RenderComponent((float)f.getBoundingBox().getWidth(),(float)f.getBoundingBox().getHeight(),(float)f.getBoundingBox().getWidth(),f.getColor(), f.getSegment(),this.getFeatures().getPath(),null));
-//        rc.setFeatures(features);
-//        return rc;
-//    }
 
     @Override
     public RenderChild getRenderJSON() {

@@ -43,6 +43,7 @@ public class GitRepo implements VersionedSystem {
 
         final CloneCommand clone = Git.cloneRepository();
         clone.setURI(repository.uri);
+        System.out.println(repository.user + " "+repository.pwd);
 
         //Login require?
         if(repository.user!=null && repository.pwd !=null){
@@ -55,8 +56,8 @@ public class GitRepo implements VersionedSystem {
         try {
             git =clone.call();
         } catch (GitAPIException e) {
-            e.printStackTrace();
-            return Status.State.ERROR;
+            System.out.print(e.getMessage());
+            throw new CustumException(e);
         }
 
         return Status.State.COMPLETE;

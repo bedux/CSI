@@ -2,7 +2,6 @@ package logics.analyzer;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import logics.renderTools.Packageable;
-
 import java.nio.file.Path;
 
 @JsonIgnoreProperties
@@ -58,10 +57,9 @@ public class Features extends Packageable {
     // this function for map the different information over the system
     protected void bindingToPakageble(){
 
-
-        super.setWidth(getMethodsNumber());
-        super.setDeep(getMethodsNumber());
-        super.setHeight(getWordCount());
+        super.setWidth(getWordCount());
+        super.setDeep(getWordCount());
+        super.setHeight(getMethodsNumber());
         super.setColor(new float[]{1,0,1});
         super.setSegment(4);
     }

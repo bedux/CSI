@@ -17,8 +17,8 @@ public class PipelineManager {
     Handler[] loadPipeline;
 
     public void runPipeline(RepoForm repoForm){
-       // new AnaliserHandler().process(new AnalyserHandlerParam(new StoreHandler().process(new StoreHandlerParam(new CloneHandler().process(new CloneHandlerParam(repoForm))))));
-        new AnaliserHandler().process(new AnalyserHandlerParam(RepositoryVersion.find.byId(1L)));
+       new AnaliserHandler().process(new AnalyserHandlerParam(new StoreHandler().process(new StoreHandlerParam(new CloneHandler().process(new CloneHandlerParam(repoForm))))));
+        //new AnaliserHandler().process(new AnalyserHandlerParam(RepositoryVersion.find.byId(1L)));
     }
 
 

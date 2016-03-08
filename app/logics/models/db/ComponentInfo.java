@@ -10,7 +10,7 @@ import java.util.List;
  * Created by bedux on 04/03/16.
  */
 @Entity
-@Table(name="REPO_INFO")
+@Table(name="ComponentInfo")
 public class ComponentInfo extends Model {
 
     @Id
@@ -18,6 +18,26 @@ public class ComponentInfo extends Model {
     public Long id;
 
     public String parent;
+
+    public void setParent(String parent) {
+        this.parent = parent;
+    }
+
+    public void setFileName(String fileName) {
+        this.fileName = fileName;
+    }
+
+    public void setNOM(int NOM) {
+        this.NOM = NOM;
+    }
+
+    public void setSize(int size) {
+        this.size = size;
+    }
+
+    public void setWC(int WC) {
+        this.WC = WC;
+    }
 
     public String fileName;
 

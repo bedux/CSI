@@ -1,13 +1,10 @@
-package logics.analyzer;
+package logics.analyzer.analysis;
 
-import exception.CustumException;
 import interfaces.Analyser;
 import interfaces.Component;
+import logics.analyzer.*;
+import logics.analyzer.Package;
 import logics.models.tools.MaximumMinimumData;
-
-import java.io.IOException;
-import java.nio.file.Files;
-import java.util.stream.Stream;
 
 /**
  * Created by bedux on 03/03/16.
@@ -24,10 +21,10 @@ public class AdjustSizeAnalyser implements Analyser<Integer> {
         c.getComponentList().stream().forEach((x) -> x.applyFunction((new AdjustSizeAnalyser(maximumMinimumData))::analysis));
         int n = 0;
         if (c instanceof BinaryFile) {
-            n= 10;
+            c.getFeatures().setHeight(10);
         } else if (c instanceof DataFile) {
             n=analysisCast((DataFile)c);
-        }else if (c instanceof Package){
+        }else if (c instanceof logics.analyzer.Package){
             n=analysisCast((Package) c);
         }
 

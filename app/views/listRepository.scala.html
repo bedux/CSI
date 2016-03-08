@@ -1,0 +1,9 @@
+@import logics.models.db.RepositoryVersion
+@(repository:List[RepositoryVersion])
+@main("Repositories") {
+    <div class="list-group">
+    @for(p <- repository) {
+        @bootstrapComponent.repositoryCard(p)
+    }
+</div>
+}
