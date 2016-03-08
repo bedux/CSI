@@ -10,7 +10,7 @@ import java.util.Objects;
 
 public interface VersionedSystem {
 
-    public Status.State clone();
+    public Status.State clone(String name);
 
     public List<VersionCommit> getCommit();
 
@@ -18,5 +18,6 @@ public interface VersionedSystem {
 
     public void checkoutRevison(VersionCommit commitInfo);
 
+    String getCurrentVersion();
 
     }

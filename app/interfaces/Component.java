@@ -5,6 +5,7 @@ import logics.models.json.RenderChild;
 import logics.models.json.RenderComponent;
 
 import java.io.File;
+import java.io.Serializable;
 import java.nio.file.Path;
 import java.util.List;
 import java.util.function.Consumer;

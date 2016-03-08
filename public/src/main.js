@@ -9,6 +9,7 @@ var mock = require("../mock/templateScene.js");
 
 class MainScene{
     constructor(canvans){
+        this.canvas = canvas;
         this.engine = new BABYLON.Engine(canvas, true);
         this.engine.isPointerLock = false;
         this.scene  = new BABYLON.Scene(this.engine);
@@ -16,6 +17,8 @@ class MainScene{
         // create a FreeCamera, and set its position to (x:0, y:5, z:-10)
         this.camera = new BABYLON.FreeCamera("FreeCamera", new BABYLON.Vector3(mock.pipoo.data.width, mock.pipoo.data.height, mock.pipoo.data.deep), this.scene);
         this.camera.maxZ = 100000;
+        // Create an ArcRotateCamera aimed at 0,0,0, with no alpha, beta or radius, so be careful. It will look broken.
+
         // target the camera to scene origin
         this.camera.setTarget(BABYLON.Vector3.Zero());
 
@@ -61,6 +64,41 @@ class MainScene{
             document.getElementById("bar").innerHTML="Name:"+ info.id+ " | NOM: "+info.NOM + " | WC: "+info.WC + " | Size: "+info.size  + " | Width: "+info.width;
 
         }).bind(this));
+
+        window.addEventListener("keydown", (
+            function(e){
+                var pickResult = this.scene.pick(this.scene.pointerX, this.scene.pointerY);
+                if(e.shiftKey && pickResult.hit) {
+                    let camera1 = new BABYLON.ArcRotateCamera("ArcRotateCamera", 0, 0,0, pickResult.pickedPoint, this.scene);
+
+
+                    // Quick, let's use the setPosition() method... with a common Vector3 position, to make our camera better aimed.
+                    camera1.setPosition(this.camera.position);
+                    camera1.attachControl(this.canvas, false);
+
+
+                    this.scene.activeCamera = camera1;
+
+
+                }else{
+                    //this.camera.setPosition(this.scene.activeCamera.position);
+
+                    //this.camera.rotation =  this.scene.activeCamera.rotation ;
+
+                    this.scene.activeCamera = this.camera;
+
+                    this.camera.attachControl(this.canvas, false);
+
+
+
+
+                }
+            }
+        ).bind(this), false);
+
+
+
+
 
     }
 

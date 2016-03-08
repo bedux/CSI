@@ -22,7 +22,7 @@ public class User extends Model {
 
 
     @OneToMany(mappedBy = "usr", cascade = CascadeType.ALL)
-    public List<Repo> repos;
+    public List<Repository> repositories;
 
 
     public static Finder<Long,User> find = new Finder<Long, User>(Long.class,User.class);

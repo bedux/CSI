@@ -1,5 +1,6 @@
 package logics.models.db;
 
+import exception.CustumException;
 import interfaces.VersionedSystem;
 import logics.models.form.RepoForm;
 import logics.versionUtils.GitRepo;
@@ -8,13 +9,14 @@ import play.db.ebean.Model;
 
 import javax.persistence.*;
 import java.io.IOException;
+import java.util.List;
 
 /**
  * Created by bedux on 22/02/16.
  */
 @Entity
-@Table(name="REPO")
-public class Repo extends Model {
+@Table(name="REPOSITORY")
+public class Repository extends Model {
 
     @Id
     @GeneratedValue(strategy=GenerationType.AUTO)
@@ -30,10 +32,12 @@ public class Repo extends Model {
     @ManyToOne
     public User usr;
 
+    @OneToMany(cascade = CascadeType.ALL)
+    public List<RepositoryVersion> repositoryVersions;
 
     public String type;
 
-    public static Finder<Long,Repo> find = new Finder<Long, Repo>(Long.class,Repo.class);
+    public static Finder<Long,Repository> find = new Finder<Long, Repository>(Long.class,Repository.class);
 
 
 
@@ -43,8 +47,8 @@ public class Repo extends Model {
      * @param pwd
      * @param usr
      */
-    public static Repo CreareRepo(String user,String uri ,String pwd,User usr){
-        Repo r = new Repo();
+    public static Repository CreareRepo(String user,String uri ,String pwd,User usr){
+        Repository r = new Repository();
         r.user = user;
         r.pwd = pwd;
         r.uri = uri;
@@ -52,8 +56,18 @@ public class Repo extends Model {
         r.save();
         return r;
     }
-    public static Repo CreareRepo(RepoForm repoForm){
-        Repo r = new Repo();
+
+    public static Repository CreareRepo(String user,String uri ,String pwd,String type){
+        Repository r = new Repository();
+        r.user = user;
+        r.pwd = pwd;
+        r.uri = uri;
+        r.type = type;
+        r.save();
+        return r;
+    }
+    public static Repository CreareRepo(RepoForm repoForm){
+        Repository r = new Repository();
         r.user = repoForm.user;
         r.pwd = repoForm.pwd;
         r.uri = repoForm.uri;
@@ -62,10 +76,13 @@ public class Repo extends Model {
         return r;
     }
 
-    public  VersionedSystem CreateSystem() throws IOException {
+    public  VersionedSystem CreateSystem()  {
+
             if(this.type.equalsIgnoreCase("GIT")){
                     return  new GitRepo(this);
+            }else{
+                throw new CustumException();
             }
-        else throw new IOException();
+
     }
 }

@@ -2,8 +2,7 @@ package logics.versionUtils;
 
 import exception.CustumException;
 import interfaces.VersionedSystem;
-import logics.models.db.Repo;
-import play.Logger;
+import logics.models.db.Repository;
 
 import java.util.Queue;
 import java.util.concurrent.ConcurrentLinkedQueue;
@@ -28,13 +27,11 @@ public class RepositoryManager  {
 
 
 
-   public void AddRepo(Repo repoInfo){
+   public void AddRepo(Repository repositoryInfo){
       Runnable runn = () -> {
           try {
-              VersionedSystem sys = repoInfo.CreateSystem();
-              sys.clone();
-
-
+              VersionedSystem sys = repositoryInfo.CreateSystem();
+              //sys.clone();
 
           }catch (Exception inv ){
               throw new CustumException(inv);

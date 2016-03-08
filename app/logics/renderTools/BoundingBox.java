@@ -1,15 +1,14 @@
 package logics.renderTools;
 
-public class BoundingBox {
+import java.io.Serializable;
+
+public class BoundingBox implements Serializable {
 
     public  enum Fitting {SMALL,BIG,PERFECT}
     private float right;
     private float bottom;
     private float top=0;
     private float left=0;
-
-
-
 
 
     public float getTop() {

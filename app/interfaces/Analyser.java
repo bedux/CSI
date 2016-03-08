@@ -1,5 +1,7 @@
 package interfaces;
 
+import logics.analyzer.*;
+
 import java.util.function.Function;
 
 /**
@@ -7,4 +9,5 @@ import java.util.function.Function;
  */
 public interface Analyser <T> {
         T analysis( Component value);
+
 }

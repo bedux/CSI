@@ -9,7 +9,8 @@ public class  CustumException extends RuntimeException {
     public  CustumException(Exception e){
         this.e = e;
     }
-
+    public  CustumException(){
+    }
     public  Exception getException(){
         return e;
     }

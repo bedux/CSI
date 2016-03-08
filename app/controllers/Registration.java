@@ -2,9 +2,12 @@ package controllers;
 
 import exception.CustumException;
 import logics.analyzer.RepoAnalyzer;
+import logics.models.db.Repository;
 import logics.models.form.RepoForm;
+import logics.pipeline.PipelineManager;
+import logics.pipeline.clone.CloneHandler;
+import logics.pipeline.clone.CloneHandlerParam;
 import logics.versionUtils.RepositoryManager;
-import logics.models.db.Repo;
 import play.data.Form;
 import play.libs.F;
 import play.mvc.*;
@@ -25,6 +28,8 @@ public class Registration extends Controller {
 
         Form<RepoForm> repoForm = Form.form(RepoForm.class).bindFromRequest();
 
+
+
         if(repoForm.hasErrors()){
             return F.Promise.promise(()->redirect("/addRepo"));
         }else{
@@ -32,14 +37,9 @@ public class Registration extends Controller {
             F.Promise<Result> trs =   F.Promise.promise(() ->
             {
                 //Add to database the repository
-                try {
-                    Repo r = Repo.CreareRepo(repoForm.get());
-                    RepositoryManager.getInstance().AddRepo(r);
 
-                } catch (Exception e) {
-                    return redirect("/addRepo");
-                }
-                return ok(index.render("Repo Added"));
+                new PipelineManager().runPipeline(repoForm.get());
+                return ok(index.render("Repository Added"));
             });
 
             return trs;
@@ -54,15 +54,15 @@ public class Registration extends Controller {
             {
                 //Add to database the repository
                 try {
-                    RepoAnalyzer repoAnalyzer = new RepoAnalyzer(Repo.find.all().get(0));
+                    RepoAnalyzer repoAnalyzer = new RepoAnalyzer(Repository.find.all().get(0));
                     repoAnalyzer.getTree();
 
-                }catch (CustumException e){
+                } catch (CustumException e) {
                     System.out.println(e.getException().getStackTrace().toString());
                 }
 
 
-                return ok(index.render("Repo Added"));
+                return ok(index.render("Repository Added"));
             });
 
             return trs;

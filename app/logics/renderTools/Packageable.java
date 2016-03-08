@@ -1,12 +1,13 @@
 package logics.renderTools;
 
+import java.io.Serializable;
 import java.util.Arrays;
 
 /**
  * Created by bedux on 27/02/16.
  */
-public abstract class Packageable {
-    public  float gap = 40;
+public abstract class Packageable implements Serializable{
+    public  float gap = 10;
     private float height;
     private float[] color;
     private int segment;

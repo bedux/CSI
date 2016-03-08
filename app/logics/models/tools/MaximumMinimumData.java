@@ -44,11 +44,11 @@ public class MaximumMinimumData {
     public String toString() {
         return "MaximumMinimumData{" +
                 "maxDepyh=" + maxDepth +
-                ", maxNOM=" + maxWidth +
-                ", maxSize=" + maxHeight +
-                ", minWC=" + minDepth +
-                ", minNOM=" + minWidth +
-                ", minSize=" + minHeight +
+                ", maxWidth=" + maxWidth +
+                ", maxHeight" + maxHeight +
+                ", minDepth=" + minDepth +
+                ", minWidth=" + minWidth +
+                ", minHeight" + minHeight +
                 '}';
     }
 }

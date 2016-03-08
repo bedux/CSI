@@ -1,8 +1,9 @@
 package logics.versionUtils;
 
+import exception.CustumException;
 import interfaces.VersionedSystem;
 import logics.Status;
-import logics.models.db.Repo;
+import logics.models.db.Repository;
 import org.eclipse.jgit.api.CheckoutCommand;
 import org.eclipse.jgit.api.CloneCommand;
 import org.eclipse.jgit.api.Git;
@@ -12,6 +13,7 @@ import org.eclipse.jgit.transport.UsernamePasswordCredentialsProvider;
 
 
 import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -20,30 +22,33 @@ import java.util.List;
  */
 public class GitRepo implements VersionedSystem {
 
-    private final File repoFile;
+    private  File repoFile;
     private  Git git;
-    private Repo repo;
+    private Repository repository;
 
     private List<VersionBranch> branches = null;
     private ArrayList<VersionCommit> commits = null;
-    public GitRepo(Repo repo){
-        this.repo = repo;
-        repoFile = new File("./repoDownload/"+repo.id);
+    public GitRepo(Repository repository){
+        this.repository = repository;
 
     }
 
 
 
+
+
     @Override
-    public Status.State clone() {
+    public Status.State clone(String name) {
+        repoFile = new File("./repoDownload/"+ name);
 
         final CloneCommand clone = Git.cloneRepository();
-        clone.setURI(repo.uri);
+        clone.setURI(repository.uri);
 
         //Login require?
-        if(repo.user!=null && repo.pwd !=null){
-            clone.setCredentialsProvider(new UsernamePasswordCredentialsProvider(repo.user,repo.pwd));
+        if(repository.user!=null && repository.pwd !=null){
+            clone.setCredentialsProvider(new UsernamePasswordCredentialsProvider(repository.user, repository.pwd));
         }
+
 
         clone.setDirectory(repoFile);
         clone.setProgressMonitor(new SimpleProgressMonitor());
@@ -58,6 +63,8 @@ public class GitRepo implements VersionedSystem {
 
     }
 
+
+
     @Override
     public List<VersionBranch> getBranch() {
         if(branches!=null) return branches;
@@ -67,7 +74,7 @@ public class GitRepo implements VersionedSystem {
             return  branches;
 
         }catch (Exception e){
-            return  new ArrayList<>();
+            throw new CustumException(e);
         }
     }
 
@@ -83,7 +90,7 @@ public class GitRepo implements VersionedSystem {
             return commits;
 
         }catch (Exception e){
-            return  new ArrayList<>();
+            throw new CustumException(e);
         }
     }
 
@@ -95,8 +102,13 @@ public class GitRepo implements VersionedSystem {
             checkoutCommand.setAllPaths(true).setForce(true).setName(data.getId().getName()).call();
             commits = null;
         } catch (GitAPIException e) {
-            e.printStackTrace();
+            throw new CustumException(e);
         }
 
+    }
+
+    @Override
+    public String getCurrentVersion() {
+            return getCommit().get(0).getName();
     }
 }

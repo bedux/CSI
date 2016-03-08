@@ -12,7 +12,7 @@ import java.util.function.Function;
 /**
  * Created by bedux on 24/02/16.
  */
-public class DataFile implements Component{
+public class DataFile implements Component {
 
     public List<Component> getComponentList(){
         return new ArrayList<>();

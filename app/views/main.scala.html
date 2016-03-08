@@ -37,7 +37,7 @@
                     <ul class="nav navbar-nav">
                         <li @if(request().path().toString().equals(routes.Application.index().toString())){ class="active"}><a href="@routes.Application.index()">Link <span class="sr-only">(current)</span></a></li>
                         <li repoRegistrationTemplate @if(request().path().toString().equals(routes.Registration.repoRegistrationTemplate().toString())){ class="active"}
-                        ><a href="@routes.Registration.repoRegistrationTemplate()">Add Repo</a></li>
+                        ><a href="@routes.Registration.repoRegistrationTemplate()">Add Repository</a></li>
                         <li class="dropdown">
                             <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Dropdown <span class="caret"></span></a>
                             <ul class="dropdown-menu">

@@ -57,7 +57,7 @@ public class AdjustSizeAnalyser implements Analyser<Integer> {
 
         float myHeight = (c.getFeatures().getHeight()-maximumMinimumData.minHeight);
         float deltaHeight = (maximumMinimumData.maxHeight-maximumMinimumData.minHeight)/divison;
-        float depthStepHeight = (int)( myHeight/deltaHeight)+1;
+        float depthStepHeight = ( myHeight/deltaHeight)+1;
 
         c.getFeatures().setHeight(depthStepHeight * 40);
 

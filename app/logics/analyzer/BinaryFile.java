@@ -4,6 +4,7 @@ import interfaces.Component;
 import logics.models.json.RenderChild;
 import logics.models.json.RenderComponent;
 
+import java.io.Serializable;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
