@@ -6,16 +6,19 @@
 
 
 <script type="text/javascript">
+
        $(function() {
             var t1 = "#"+"@id"+"slider-range";
             var t2 = "#"+"@id";
+                        console.log(@min)
 
-            $( t1 ).slider({
+            $(t1).slider({
               range: true,
               min:@min ,
               max:@max,
               values: [ @currentMin, @currentMax ],
               slide: function( event, ui ) {
+
                 $( t2 ).val(ui.values[ 0 ] + " - " + ui.values[ 1 ] );
               }
             });

@@ -1,19 +1,11 @@
 package controllers;
 
-import com.avaje.ebean.RawSql;
-import com.fasterxml.jackson.databind.JsonNode;
-import interfaces.VersionedSystem;
-import logics.analyzer.RepoAnalyzer;
 import logics.models.db.ComponentInfo;
-import logics.models.db.Repository;
 import logics.models.db.RepositoryVersion;
-import logics.models.form.FilterForm;
-import logics.models.form.RepoForm;
 import logics.models.tools.Data;
-import logics.pipeline.QueryBuilder;
+import logics.filters.QueryBuilder;
 import logics.pipeline.analayser.AnaliserHandler;
 import logics.pipeline.analayser.AnalyserHandlerParam;
-import play.data.Form;
 import play.libs.Json;
 import play.mvc.*;
 
@@ -61,21 +53,18 @@ public class Application extends Controller {
     }
 
     public static Result renderRepo(String id,Long version) {
-        return ok(render.render(id,version));
+        return ok(render.render(id,version,(QueryBuilder.getFilters(version))));
     }
 
     public static Result applyFilter() {
-        System.out.println("Inside");
         Http.RequestBody body = request().body();
         String data = body.asText();
-        System.out.println(body.asText());
-
         Data d = QueryBuilder.QueryBuilder(data);
+        return ok(Json.stringify(QueryBuilder.query(d)));
+    }
 
+    public static Result getFilters(Long id) {
 
-        System.out.println(d.toString());
-
-
-        return ok();
+        return ok(Json.stringify(QueryBuilder.getFilters(id)));
     }
 }

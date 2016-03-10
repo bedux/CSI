@@ -1,4 +1,7 @@
-@(args: (Symbol, Any)*)
+@import play.api.libs.json.__
+
+@import com.fasterxml.jackson.databind.JsonNode
+@(id:Long,filters:JsonNode)
 @*
 remembre range value!!
 *@
@@ -17,21 +20,22 @@ remembre range value!!
 
         <form  id = "myForm">
 
-        @components.panelShowHide("PPATH") { by Path}{
-            <input type="text" name="path" id="pathName" placeholder="path">
-        }
 
 
-        @components.panelShowHide("PNOM") { by Number of Method}{
-            @components.rangePicker("NOM", 0, 100, 0, 100)
-        }
-        @components.panelShowHide("PWC") { by Words Count}{
-            @components.rangePicker("WC", 0, 100, 0, 100)
-        }
+              @for( a <- (filters.get("filter")).elements()){
+                  @if(a.get("Type").toString.contains("RANGE")){
 
-        @components.panelShowHide("PNOL") {by Number Of Line}{
-            @components.rangePicker("NOL", 0, 100, 0, 100)
-        }
+                      @components.panelShowHide(a.get("Id").toString.replace("\"","")+"P") { @a.get("Name").toString.replace("\"","")} {
+                          @components.rangePicker(a.get("Id").toString.replace("\"",""), a.get("Min").asInt(), a.get("Max").asInt(), a.get("Min").asInt(), a.get("Max").asInt())
+                      }
+                  }
+                  @if(a.get("Type").toString.contains("INPUT")){
+                      @components.panelShowHide(a.get("Id").toString.replace("\"","")+"P") {  @a.get("Name").toString.replace("\"","")}{
+                          <input type="text" name='@a.get("Id")' id='@a.get("Id")' placeholder="path">
+                          }
+                  }
+              }
+
 
             <input type="button" value="Apply" onclick="send()"/>
 
@@ -56,17 +60,22 @@ remembre range value!!
 
 <script>
 
+console.log("@filters");
 function send(){
 @*$.post("@routes.Application.applyFilter()", $('#myForm').serialize())*@
 $.ajax({
   type: "POST",
   url: "@routes.Application.applyFilter()",
-  data: ($('#myForm').serialize())+"&id=@{args.toMap.get('id)}",
-  success: function(e){},
+  data: ($('#myForm').serialize())+"&id=@{id}",
+  success: function(e){
+  console.log(e)
+  },
   contentType: "text/plain; charset=utf-8",
   dataType: "json"
 });
 }
+
+
         // wait for the DOM to be loaded
 
               @*$.ajax({*@

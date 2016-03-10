@@ -26,3 +26,5 @@ GET /getAllMatch/:id/:str        controllers.Application.getAllComponentMatch(id
 POST /getData              controllers.Application.indexGet
 
 POST /applyFilter           controllers.Application.applyFilter
+
+GET /getFilters/:id             controllers.Application.getFilters(id:Long)

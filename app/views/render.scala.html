@@ -1,11 +1,14 @@
 @import logics.models.db.RepositoryVersion
-@(id:String,repoVersion:Long)
+@import com.fasterxml.jackson.databind.JsonNode
+
+@(id:String,repoVersion:Long,filters:JsonNode)
 @mainNoMenu("Render") {
 
 
     @components.infoTab( "File Name" -> "fileNameField", "NOM" -> "nomField" , "Size" -> "sizeField" , "WC"->"wcField")
 
-    @components.sideBar('id->repoVersion)
+
+    @components.sideBar(repoVersion,filters)
     <span id="searchBar"><input type="text" id="searchBox" ><input type="button" value="filter" onclick="filter(@repoVersion)"></span>
 
 
