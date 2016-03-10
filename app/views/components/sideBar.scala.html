@@ -1,0 +1,84 @@
+@(args: (Symbol, Any)*)
+@*
+remembre range value!!
+*@
+<script src="@routes.Assets.at("javascripts/jquery-ui.min.js")" type="text/javascript"></script>
+<script src="@routes.Assets.at("javascripts/jquery.form.js")" type="text/javascript"></script>
+
+<link rel ="stylesheet" href="@routes.Assets.at("stylesheets/jquery-ui.min.css")">
+
+<div class="panel panel-info positionRightAbsolute" >
+
+    <div class="panel-heading">
+        Filters
+    </div>
+
+    <div class="container-fluid filterContent" >
+
+        <form  id = "myForm">
+
+        @components.panelShowHide("PPATH") { by Path}{
+            <input type="text" name="path" id="pathName" placeholder="path">
+        }
+
+
+        @components.panelShowHide("PNOM") { by Number of Method}{
+            @components.rangePicker("NOM", 0, 100, 0, 100)
+        }
+        @components.panelShowHide("PWC") { by Words Count}{
+            @components.rangePicker("WC", 0, 100, 0, 100)
+        }
+
+        @components.panelShowHide("PNOL") {by Number Of Line}{
+            @components.rangePicker("NOL", 0, 100, 0, 100)
+        }
+
+            <input type="button" value="Apply" onclick="send()"/>
+
+
+        </form>
+
+
+    </div>
+    <hr>
+
+    <div class="container-fluid withMargin">
+        <div class="panel panel-default">
+            <div class="panel-heading">
+                Apply Filters
+            </div>
+        </div>
+    </div>
+
+
+</div>
+
+
+<script>
+
+function send(){
+@*$.post("@routes.Application.applyFilter()", $('#myForm').serialize())*@
+$.ajax({
+  type: "POST",
+  url: "@routes.Application.applyFilter()",
+  data: ($('#myForm').serialize())+"&id=@{args.toMap.get('id)}",
+  success: function(e){},
+  contentType: "text/plain; charset=utf-8",
+  dataType: "json"
+});
+}
+        // wait for the DOM to be loaded
+
+              @*$.ajax({*@
+    @*type: "POST",*@
+    @*url: "@routes.Application.applyFilter()",*@
+    @*// The key needs to match your method's input parameter (case-sensitive).*@
+    @*data: JSON.stringify({id:5}),*@
+    @*contentType: "application/json; charset=utf-8",*@
+    @*dataType: "json",*@
+    @*success: function(data){alert(data);},*@
+    @*failure: function(errMsg) {*@
+        @*alert(errMsg);*@
+    @*}*@
+</script>
+

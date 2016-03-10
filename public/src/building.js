@@ -26,7 +26,7 @@ function createBuilding(scene, position, data,parent) {
 
 
     cylinder.material = material;
-
+    scene.models[data.id+ "_model"] = cylinder
 
 }
 

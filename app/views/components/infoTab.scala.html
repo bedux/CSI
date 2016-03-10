@@ -1,0 +1,32 @@
+@(args:(String,String)*)
+
+
+<div id="bar">
+    <div class="panel panel-default tableInfoColor">
+            <!-- Default panel contents -->
+        <div class="panel-heading" >Information <span id="showHideInfo" class="glyphicon glyphicon-chevron-up" aria-hidden="true" onclick="disappear()"></span>
+
+        </div>
+            <!-- Table -->
+        <table class="table tableInfoColor" id="tabInfo" >
+            @for((key, value) <- args) {
+                <tr><td> @key </td> <td id="@value"></td></tr>
+            }
+
+        </table>
+    </div>
+
+</div>
+
+<script type="text/javascript">
+    $("#tabInfo").hide();
+    function disappear(){
+            if($("#tabInfo").is(":visible") ){
+                 $("#tabInfo").hide();
+                   $("#showHideInfo").removeClass('glyphicon glyphicon-chevron-up').addClass('glyphicon glyphicon-chevron-down');
+               }else{
+                 $("#tabInfo").show();
+                        $("#showHideInfo").removeClass('glyphicon glyphicon-chevron-down').addClass('glyphicon glyphicon-chevron-up');
+               }
+              }
+</script>

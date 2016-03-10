@@ -31,12 +31,15 @@ class MainScene{
         this.light = new BABYLON.HemisphericLight('light1', new BABYLON.Vector3(10,10,0), this.scene);
 
         this.scene.data = {};
+        this.scene.models ={};
+
         this.pivot =  BABYLON.Mesh.CreateBox("sphere",0, this.scene);
         this.pivot1 =  BABYLON.Mesh.CreateBox("sphere1",1, this.scene);
         this.pivot1.scaling =   new BABYLON.Vector3(1, 1000,1);
 
         this.width = 0;
         this.deep = 0;
+
 
 
         this.angle = 0.001;
@@ -63,7 +66,14 @@ class MainScene{
             var pickResult = this.scene.pick(this.scene.pointerX, this.scene.pointerY);
 
             var info = this.scene.data[pickResult.pickedMesh.id];
-            document.getElementById("bar").innerHTML="Name:"+ info.id+ " | NOM: "+info.NOM + " | WC: "+info.WC + " | Size: "+info.size  + " | Width: "+info.width;
+            document.getElementById("fileNameField").innerHTML=info.id;
+            document.getElementById("wcField").innerHTML=info.WC;
+            document.getElementById("sizeField").innerHTML=info.size;
+            document.getElementById("nomField").innerHTML=info.NOM;
+                $("#tabInfo").show();
+                $("#showHideInfo").removeClass('glyphicon glyphicon-chevron-down').addClass('glyphicon glyphicon-chevron-up');
+
+
 
         }).bind(this));
 
@@ -120,6 +130,16 @@ class MainScene{
     }
 
 
+    color(data){
+        data = JSON.parse(data);
+        for(var c in data){
+            var material =  new BABYLON.StandardMaterial(data[c].fileName+"_texture", this.scene);
+            material.diffuseColor = new BABYLON.Color3(1,0,0);
+            this.scene.models[data[c].fileName+"_model"].material = material;
+
+        }
+    }
+
     render(){
 
     }
@@ -132,10 +152,15 @@ class MainScene{
 
 
 
-
+var scn;
 window.createScene = function(url) {
 
 
-    var scn = new MainScene();
+    scn = new MainScene();
     $.get(url, scn.updateScene.bind(scn));
 };
+
+
+window.filter = function(id){
+    $.get("/getAllMatch/"+id+"/"+$("#searchBox").val(), scn.color.bind(scn));
+}

@@ -1,0 +1,25 @@
+@(id:String,min:Int,max:Int,currentMin:Int,currentMax:Int)
+
+
+<input type="text" class = "rangeValue" id="@id" name ="@id" readonly style="border:0; color:#f6931f; font-weight:bold;">
+<div id= "@{id}slider-range" ></div>
+
+
+<script type="text/javascript">
+       $(function() {
+            var t1 = "#"+"@id"+"slider-range";
+            var t2 = "#"+"@id";
+
+            $( t1 ).slider({
+              range: true,
+              min:@min ,
+              max:@max,
+              values: [ @currentMin, @currentMax ],
+              slide: function( event, ui ) {
+                $( t2 ).val(ui.values[ 0 ] + " - " + ui.values[ 1 ] );
+              }
+            });
+            $( t2 ).val( "" + $( t1 ).slider( "values", 0 ) +
+              " - " + $( t1 ).slider( "values", 1 ) );
+  });
+   </script>

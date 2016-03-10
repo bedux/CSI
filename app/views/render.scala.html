@@ -1,12 +1,21 @@
-@(id:String)
+@import logics.models.db.RepositoryVersion
+@(id:String,repoVersion:Long)
 @mainNoMenu("Render") {
 
-    <div id="bar"></div>
+
+    @components.infoTab( "File Name" -> "fileNameField", "NOM" -> "nomField" , "Size" -> "sizeField" , "WC"->"wcField")
+
+    @components.sideBar('id->repoVersion)
+    <span id="searchBar"><input type="text" id="searchBox" ><input type="button" value="filter" onclick="filter(@repoVersion)"></span>
+
+
     <canvas id="renderCanvas" tabindex="0"></canvas>
     <script src="@routes.Assets.at("javascripts/hand.minified.js")" type="text/javascript"></script>
     <script src="@routes.Assets.at("javascripts/main.bundle.js")" type="text/javascript"></script>
     <script type="text/javascript">
         createScene("@id")
     </script>
+
+
 
 }

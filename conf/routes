@@ -16,11 +16,13 @@ GET     /getAllRepository                           controllers.Application.getR
 
 GET     /testing                           controllers.Registration.getFiles
 
-GET     /renderRepo/:id                   controllers.Application.renderRepo(id:String)
+GET     /renderRepo/:id/:version                  controllers.Application.renderRepo(id:String,version:Long)
 
 # Map static resources from the /public folder to the /assets URL path
 GET     /assets/*file               controllers.Assets.at(path="/public", file)
 
-
+GET /getAllMatch/:id/:str        controllers.Application.getAllComponentMatch(id:Long,str:String)
 
 POST /getData              controllers.Application.indexGet
+
+POST /applyFilter           controllers.Application.applyFilter
