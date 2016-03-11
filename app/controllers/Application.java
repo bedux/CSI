@@ -1,5 +1,6 @@
 package controllers;
 
+import com.fasterxml.jackson.databind.JsonNode;
 import logics.models.db.ComponentInfo;
 import logics.models.db.RepositoryVersion;
 import logics.models.tools.Data;
@@ -60,7 +61,8 @@ public class Application extends Controller {
         Http.RequestBody body = request().body();
         String data = body.asText();
         Data d = QueryBuilder.QueryBuilder(data);
-        return ok(Json.stringify(QueryBuilder.query(d)));
+        JsonNode result =(QueryBuilder.query(d));
+        return ok(Json.stringify(result));
     }
 
     public static Result getFilters(Long id) {

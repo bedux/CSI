@@ -130,14 +130,52 @@ class MainScene{
     }
 
 
-    color(data){
-        data = JSON.parse(data);
-        for(var c in data){
-            var material =  new BABYLON.StandardMaterial(data[c].fileName+"_texture", this.scene);
-            material.diffuseColor = new BABYLON.Color3(1,0,0);
-            this.scene.models[data[c].fileName+"_model"].material = material;
+    color(id,data){
+
+        let obj = data.data;
+        var material =  new BABYLON.StandardMaterial("_texture_"+id, this.scene);
+        material.diffuseColor = new BABYLON.Color3(1,0,0);
+
+
+        for(var c in obj){
+            let current =  this.scene.models[obj[c].fileName+"_model"];
+            current["filterMaterial"+id] =  current.material;
+
+            if(!current.hasOwnProperty("listFilter")){
+                current["listFilter"]=[];
+                current["baseMaterial"] = current.material;
+            }
+            current["listFilter"].push("filterMaterial"+id)
+            current.material = material;
+
 
         }
+    }
+    deleteFilter(id){
+
+        let modelsList = this.scene.models;
+        for(let c in  modelsList) {
+            if(modelsList[c].hasOwnProperty("filterMaterial"+id)){
+                let index = modelsList[c]["listFilter"].indexOf("filterMaterial"+id);
+                if(index!=-1){
+                    let deleted = modelsList[c]["listFilter"].splice(index, 1);
+                    let lastMaterial;
+                    if( modelsList[c]["listFilter"].length == 0){
+                        modelsList[c].material = modelsList[c]["baseMaterial"];
+
+                    }else {
+                        lastMaterial = modelsList[c]["listFilter"][modelsList[c]["listFilter"].length - 1];
+                        modelsList[c].material = modelsList[c][lastMaterial];
+
+                    }
+
+                }
+
+
+            }
+
+        }
+
     }
 
     render(){
@@ -161,6 +199,11 @@ window.createScene = function(url) {
 };
 
 
-window.filter = function(id){
-    $.get("/getAllMatch/"+id+"/"+$("#searchBox").val(), scn.color.bind(scn));
+window.addFilter = function(id,obj){
+    scn.color(id,obj);
+
+}
+
+window.deleteFilter = function(id){
+    scn.deleteFilter(id);
 }

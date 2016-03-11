@@ -28,6 +28,7 @@ public class QueryBuilder {
 
 
     public static Data QueryBuilder(String s){
+        System.out.println(s);
         Data d = new Data();
         String[] str = s.split("&");
         for(String el:str){
@@ -53,6 +54,17 @@ public class QueryBuilder {
                 String[] el2 =  parseRabge(element[1]);
                 d.minNOL = Integer.parseInt(el2[0]);
                 d.maxNOL = Integer.parseInt(el2[1]);
+            }else if(element[0].contains("action")){
+
+                if (element[1].equals("Show")){
+                    d.actionList= Data.ActionList.SHOW;
+                }else  if (element[1].equals("Hide")){
+                    d.actionList= Data.ActionList.HIDE;
+                }else  if (element[1].equals("HideOther")){
+                    d.actionList= Data.ActionList.HIDEOTHER;
+                }else  if (element[1].equals("ShowOther")){
+                    d.actionList= Data.ActionList.SHOWOTHER;
+                }
             }
         }
         return d;
@@ -63,7 +75,11 @@ public class QueryBuilder {
         for(Filter<ComponentInfo> l1: filters){
             l.addAll(l1.getExpressionFromData(d));
         }
-        return Json.toJson(l.findList());
+
+        ObjectNode result = Json.newObject();
+        result.put("data",Json.toJson(l.findList()));
+        result.put("action",d.actionList.getValue());
+        return result;
 
     }
 
