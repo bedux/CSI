@@ -1,5 +1,6 @@
 package logics.filters;
 
+import com.avaje.ebean.Expr;
 import com.avaje.ebean.ExpressionList;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
@@ -8,6 +9,7 @@ import logics.models.db.ComponentInfo;
 import logics.models.tools.Data;
 import play.libs.Json;
 
+import java.beans.Expression;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -65,6 +67,9 @@ public class QueryBuilder {
                 }else  if (element[1].equals("ShowOther")){
                     d.actionList= Data.ActionList.SHOWOTHER;
                 }
+            }else if(element[0].contains("Color")){
+                element[1]=element[1].replace("%23","#");
+                d.color= element[1];
             }
         }
         return d;
@@ -72,13 +77,23 @@ public class QueryBuilder {
 
     public static JsonNode query(Data d){
         ExpressionList l = ComponentInfo.find.where().eq("repository.id", d.id);
+        com.avaje.ebean.Expression expression = Expr.eq("repository.id", d.id);
         for(Filter<ComponentInfo> l1: filters){
-            l.addAll(l1.getExpressionFromData(d));
+            //Expr.a.add(l1.getExpressionFromData(d));
+            expression = Expr.and(expression,l1.getExpressionFromData(d));
         }
+
+
+        if(d.actionList== Data.ActionList.HIDEOTHER || d.actionList== Data.ActionList.SHOWOTHER){
+            expression = Expr.not(expression);
+        }
+        l.add(expression);
 
         ObjectNode result = Json.newObject();
         result.put("data",Json.toJson(l.findList()));
         result.put("action",d.actionList.getValue());
+        result.put("color",d.color);
+
         return result;
 
     }

@@ -1,5 +1,7 @@
 package logics.filters;
 
+import com.avaje.ebean.Expr;
+import com.avaje.ebean.Expression;
 import com.avaje.ebean.ExpressionList;
 import com.avaje.ebeaninternal.util.DefaultExpressionList;
 import com.fasterxml.jackson.databind.JsonNode;
@@ -9,7 +11,8 @@ import logics.models.db.ComponentInfo;
 import logics.models.tools.Data;
 import play.libs.Json;
 
-import javax.management.Query;
+import com.avaje.ebean.ExpressionList;
+
 import java.util.List;
 
 /**
@@ -20,8 +23,8 @@ public class NumberOfMethods implements Filter<ComponentInfo> {
 
 
     @Override
-    public ExpressionList<ComponentInfo> getExpressionFromData(Data d) {
-        return ComponentInfo.find.where().between("NOM", d.minNOM, d.maxNOM);
+    public Expression getExpressionFromData(Data d) {
+        return Expr.between("NOM", d.minNOM, d.maxNOM);
     }
 
     @Override

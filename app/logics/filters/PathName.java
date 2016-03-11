@@ -1,5 +1,7 @@
 package logics.filters;
 
+import com.avaje.ebean.Expr;
+import com.avaje.ebean.Expression;
 import com.avaje.ebean.ExpressionList;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import interfaces.Filter;
@@ -17,16 +19,14 @@ public class PathName implements Filter<ComponentInfo> {
 
 
     @Override
-    public ExpressionList<ComponentInfo> getExpressionFromData(Data d) {
+    public Expression getExpressionFromData(Data d) {
         if(d.path.length()>0) {
             d.path=d.path.replaceAll("%2F","/");
             System.out.println(d.path);
-
-            return ComponentInfo.find.where().contains("fileName", d.path);
-
+            return Expr.contains("fileName", d.path);
         }
         else
-            return ComponentInfo.find.where();
+            return Expr.isNotNull("fileName");
     }
 
     @Override

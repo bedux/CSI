@@ -9,7 +9,9 @@ remembre range value!!
 <script src="@routes.Assets.at("javascripts/jquery.form.js")" type="text/javascript"></script>
 <script src="@routes.Assets.at("javascripts/jquery-scrollto.js")" type="text/javascript"></script>
 
+
 <link rel ="stylesheet" href="@routes.Assets.at("stylesheets/jquery-ui.min.css")">
+
 
 <div class="panel panel-info positionRightAbsolute panelFilterColor" >
 
@@ -49,6 +51,14 @@ remembre range value!!
                     </select>
                 </div>
             }
+
+            @components.panelShowHide("colorPiker") { Color}{
+
+                <input type="color" class="form-control" name="Color"/>
+            }
+
+
+
 
 
         </form>
@@ -110,6 +120,8 @@ function removeFilter(id){
     deleteFilter(id);
     $("#"+'filter'+id).remove();
 }
+
+
 
 </script>
 

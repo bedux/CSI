@@ -1,5 +1,7 @@
 package logics.filters;
 
+import com.avaje.ebean.Expr;
+import com.avaje.ebean.Expression;
 import com.avaje.ebean.ExpressionList;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import interfaces.Filter;
@@ -16,8 +18,8 @@ public class NumberOfWords implements Filter<ComponentInfo> {
 
 
     @Override
-    public ExpressionList<ComponentInfo> getExpressionFromData(Data d) {
-        return ComponentInfo.find.where().between("WC", d.minWC, d.maxWC);
+    public Expression getExpressionFromData(Data d) {
+        return Expr.between("WC", d.minWC, d.maxWC);
     }
 
     @Override

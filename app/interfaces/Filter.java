@@ -5,6 +5,8 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 import logics.models.tools.Data;
 import play.libs.Json;
 
+import com.avaje.ebean.Expression;
+
 /**
  * Created by bedux on 10/03/16.
  */
@@ -26,7 +28,7 @@ public interface Filter<T> {
          }
      }
 
-    ExpressionList<T> getExpressionFromData(Data d);
+    Expression getExpressionFromData(Data d);
 
      ObjectNode getDescription(Long id);
 

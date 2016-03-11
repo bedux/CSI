@@ -31,6 +31,7 @@ public class Data{
     public int minNOL = 0;
     public int maxNOL= 0;
 
+    public String color="#ff0000";
     public Long id = 0L;
 
     public ActionList actionList=ActionList.SHOW;

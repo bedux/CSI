@@ -131,10 +131,21 @@ class MainScene{
 
 
     color(id,data){
+        function hexToR(h) {return parseInt((cutHex(h)).substring(0,2),16)}
+        function hexToG(h) {return parseInt((cutHex(h)).substring(2,4),16)}
+        function hexToB(h) {return parseInt((cutHex(h)).substring(4,6),16)}
+        function cutHex(h) {return (h.charAt(0)=="#") ? h.substring(1,7):h}
 
         let obj = data.data;
-        var material =  new BABYLON.StandardMaterial("_texture_"+id, this.scene);
-        material.diffuseColor = new BABYLON.Color3(1,0,0);
+
+
+        var material;
+        material=new BABYLON.StandardMaterial("_texture_"+id, this.scene);
+        material.diffuseColor = new BABYLON.Color3(hexToR(data.color)/255,hexToG(data.color)/255,hexToB(data.color)/255);
+        if(data.action.indexOf("Hide")!=-1){
+            material.alpha = 0.1;
+        }
+
 
 
         for(var c in obj){
@@ -145,6 +156,7 @@ class MainScene{
                 current["listFilter"]=[];
                 current["baseMaterial"] = current.material;
             }
+
             current["listFilter"].push("filterMaterial"+id)
             current.material = material;
 
