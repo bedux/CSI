@@ -28,3 +28,5 @@ POST /getData              controllers.Application.indexGet
 POST /applyFilter           controllers.Application.applyFilter
 
 GET /getFilters/:id             controllers.Application.getFilters(id:Long)
+
+GET /fileContent/:path          controllers.Application.fileContent(path:String)

@@ -60,18 +60,27 @@ class MainScene{
             this.engine.resize();
         }).bind(this));
 
-
-        this.canvas.addEventListener("click", (function () {
+        this.canvas.addEventListener("mousemove", (function () {
             // We try to pick an object
-            var pickResult = this.scene.pick(this.scene.pointerX, this.scene.pointerY);
 
+            var pickResult = this.scene.pick(this.scene.pointerX, this.scene.pointerY);
+            if(!pickResult.hit) return;
+            if(this.old){
+                this.old.material = this.old.oldMaterial;
+            }
+
+            this.old =  pickResult.pickedMesh;
+            this.old.oldMaterial = pickResult.pickedMesh.material;
+
+            let material=new BABYLON.StandardMaterial("hightlight", this.scene);
+            material.diffuseColor = new BABYLON.Color3(1,1,0);
+            pickResult.pickedMesh.material =material;
             var info = this.scene.data[pickResult.pickedMesh.id];
             document.getElementById("fileNameField").innerHTML=info.id;
             document.getElementById("wcField").innerHTML=info.WC;
             document.getElementById("sizeField").innerHTML=info.size;
             document.getElementById("nomField").innerHTML=info.NOM;
-                $("#tabInfo").show();
-                $("#showHideInfo").removeClass('glyphicon glyphicon-chevron-down').addClass('glyphicon glyphicon-chevron-up');
+
 
 
 
@@ -108,27 +117,20 @@ class MainScene{
             }
         ).bind(this), false);
 
-
-
-
+        this.canvas.addEventListener("dblclick",this.getBlockOfCode.bind(this));
 
     }
 
-
     updateScene(data){
-        console.log(data,this.scene)
-        this.scene.data = {};
 
-      this.width = data.data.width;
+        this.scene.data = {};
+        this.width = data.data.width;
         this.deep = data.data.deep;
         this.pivot = new BABYLON.Mesh.CreatePlane("plane", 0, this.scene, false, BABYLON.Mesh.DEFAULTSIDE);
 
         build.recursiveDraw(this.scene,new BABYLON.Vector3(0,0,0),data.data,this.pivot);
 
-       // this.pivot.position = new BABYLON.Vector3(-this.width ,0,-this.deep );
-
     }
-
 
     color(id,data){
         function hexToR(h) {return parseInt((cutHex(h)).substring(0,2),16)}
@@ -152,10 +154,18 @@ class MainScene{
             let current =  this.scene.models[obj[c].fileName+"_model"];
             current["filterMaterial"+id] =  current.material;
 
+
             if(!current.hasOwnProperty("listFilter")){
                 current["listFilter"]=[];
                 current["baseMaterial"] = current.material;
             }
+            if(this.old && this.old.id == current.id){
+
+                current["baseMaterial"] = current.oldMaterial;
+                this.old = undefined;
+
+            }
+
 
             current["listFilter"].push("filterMaterial"+id)
             current.material = material;
@@ -163,6 +173,7 @@ class MainScene{
 
         }
     }
+
     deleteFilter(id){
 
         let modelsList = this.scene.models;
@@ -191,18 +202,42 @@ class MainScene{
     }
 
     render(){
-
     }
 
     resize(){
+    }
+
+    getBlockOfCode(){
+        console.log("Getting code")
+        let pickResult = this.scene.pick(this.scene.pointerX, this.scene.pointerY);
+        let info = this.scene.data[pickResult.pickedMesh.id];
+        console.log((info.id).split("/").join("%2F"))
+        $.get("/fileContent/"+encodeURI(info.id).split("/").join("%2F"),function(data){
+                console.log(data);
+                if(data.length>1){
+                    $("#javaCode").empty();
+                    $("#javaCode").append(data);
+                        $('pre code').each(function(i, block) {
+                            hljs.highlightBlock(block);
+                        });
+
+                    $("#codeModal").modal('show');
+
+                }
+        });
 
     }
+
+
 
 }
 
 
 
 var scn;
+
+
+
 window.createScene = function(url) {
 
 

@@ -27,9 +27,7 @@ html, body {
 
 #dropdownMenu1{
 
-    -moz-border-radius: 100%;
-    border-radius: 100%;
-    padding: 10px;
+    background-color: white;
 }
 
 #bar{
