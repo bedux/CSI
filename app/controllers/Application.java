@@ -16,7 +16,7 @@ import views.html.*;
 public class Application extends Controller {
 
     public static Result index() {
-        return ok(listRepository.render(RepositoryVersion.find.all()));
+        return getRepositories();
     }
 
 
