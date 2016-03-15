@@ -31,12 +31,15 @@ class MainScene{
         this.light = new BABYLON.HemisphericLight('light1', new BABYLON.Vector3(10,10,0), this.scene);
 
         this.scene.data = {};
+        this.scene.models ={};
+
         this.pivot =  BABYLON.Mesh.CreateBox("sphere",0, this.scene);
         this.pivot1 =  BABYLON.Mesh.CreateBox("sphere1",1, this.scene);
         this.pivot1.scaling =   new BABYLON.Vector3(1, 1000,1);
 
         this.width = 0;
         this.deep = 0;
+
 
 
         this.angle = 0.001;
@@ -63,7 +66,14 @@ class MainScene{
             var pickResult = this.scene.pick(this.scene.pointerX, this.scene.pointerY);
 
             var info = this.scene.data[pickResult.pickedMesh.id];
-            document.getElementById("bar").innerHTML="Name:"+ info.id+ " | NOM: "+info.NOM + " | WC: "+info.WC + " | Size: "+info.size  + " | Width: "+info.width;
+            document.getElementById("fileNameField").innerHTML=info.id;
+            document.getElementById("wcField").innerHTML=info.WC;
+            document.getElementById("sizeField").innerHTML=info.size;
+            document.getElementById("nomField").innerHTML=info.NOM;
+                $("#tabInfo").show();
+                $("#showHideInfo").removeClass('glyphicon glyphicon-chevron-down').addClass('glyphicon glyphicon-chevron-up');
+
+
 
         }).bind(this));
 
@@ -120,6 +130,66 @@ class MainScene{
     }
 
 
+    color(id,data){
+        function hexToR(h) {return parseInt((cutHex(h)).substring(0,2),16)}
+        function hexToG(h) {return parseInt((cutHex(h)).substring(2,4),16)}
+        function hexToB(h) {return parseInt((cutHex(h)).substring(4,6),16)}
+        function cutHex(h) {return (h.charAt(0)=="#") ? h.substring(1,7):h}
+
+        let obj = data.data;
+
+
+        var material;
+        material=new BABYLON.StandardMaterial("_texture_"+id, this.scene);
+        material.diffuseColor = new BABYLON.Color3(hexToR(data.color)/255,hexToG(data.color)/255,hexToB(data.color)/255);
+        if(data.action.indexOf("Hide")!=-1){
+            material.alpha = 0.1;
+        }
+
+
+
+        for(var c in obj){
+            let current =  this.scene.models[obj[c].fileName+"_model"];
+            current["filterMaterial"+id] =  current.material;
+
+            if(!current.hasOwnProperty("listFilter")){
+                current["listFilter"]=[];
+                current["baseMaterial"] = current.material;
+            }
+
+            current["listFilter"].push("filterMaterial"+id)
+            current.material = material;
+
+
+        }
+    }
+    deleteFilter(id){
+
+        let modelsList = this.scene.models;
+        for(let c in  modelsList) {
+            if(modelsList[c].hasOwnProperty("filterMaterial"+id)){
+                let index = modelsList[c]["listFilter"].indexOf("filterMaterial"+id);
+                if(index!=-1){
+                    let deleted = modelsList[c]["listFilter"].splice(index, 1);
+                    let lastMaterial;
+                    if( modelsList[c]["listFilter"].length == 0){
+                        modelsList[c].material = modelsList[c]["baseMaterial"];
+
+                    }else {
+                        lastMaterial = modelsList[c]["listFilter"][modelsList[c]["listFilter"].length - 1];
+                        modelsList[c].material = modelsList[c][lastMaterial];
+
+                    }
+
+                }
+
+
+            }
+
+        }
+
+    }
+
     render(){
 
     }
@@ -132,10 +202,20 @@ class MainScene{
 
 
 
-
+var scn;
 window.createScene = function(url) {
 
 
-    var scn = new MainScene();
+    scn = new MainScene();
     $.get(url, scn.updateScene.bind(scn));
 };
+
+
+window.addFilter = function(id,obj){
+    scn.color(id,obj);
+
+}
+
+window.deleteFilter = function(id){
+    scn.deleteFilter(id);
+}

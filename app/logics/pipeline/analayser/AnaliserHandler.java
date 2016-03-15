@@ -1,7 +1,7 @@
 package logics.pipeline.analayser;
 
 import com.fasterxml.jackson.databind.JsonNode;
-import exception.CustumException;
+import exception.CustomException;
 import interfaces.Handler;
 import logics.analyzer.*;
 import logics.analyzer.Package;
@@ -9,7 +9,6 @@ import logics.analyzer.analysis.*;
 import logics.models.db.ComponentInfo;
 import logics.models.db.RepositoryVersion;
 import logics.models.tools.MaximumMinimumData;
-import org.eclipse.jgit.util.FileUtils;
 import play.libs.Json;
 
 import java.io.*;
@@ -51,7 +50,7 @@ public class AnaliserHandler implements Handler<AnalyserHandlerParam,AnalyserHan
             try {
                 Files.delete(new File("./public/data/"+param.repositoryVersion.id+".json").toPath());
             } catch (IOException e) {
-                new CustumException(e);
+                new CustomException(e);
             }
         }
         try (Writer writer = new BufferedWriter(new OutputStreamWriter(
@@ -61,7 +60,7 @@ public class AnaliserHandler implements Handler<AnalyserHandlerParam,AnalyserHan
             param.repositoryVersion.update();
 
         }catch (Exception e){
-            new CustumException(e);
+            new CustomException(e);
         }
 
         return new AnalyserHandlerResult(json);

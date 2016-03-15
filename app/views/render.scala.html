@@ -1,12 +1,24 @@
-@(id:String)
+@import logics.models.db.RepositoryVersion
+@import com.fasterxml.jackson.databind.JsonNode
+
+@(id:String,repoVersion:Long,filters:JsonNode)
 @mainNoMenu("Render") {
 
-    <div id="bar"></div>
+
+    @components.infoTab( "File Name" -> "fileNameField", "NOM" -> "nomField" , "Size" -> "sizeField" , "WC"->"wcField")
+
+
+
+    @components.sideBar(repoVersion,filters)
+
+
     <canvas id="renderCanvas" tabindex="0"></canvas>
     <script src="@routes.Assets.at("javascripts/hand.minified.js")" type="text/javascript"></script>
     <script src="@routes.Assets.at("javascripts/main.bundle.js")" type="text/javascript"></script>
     <script type="text/javascript">
         createScene("@id")
     </script>
+
+
 
 }

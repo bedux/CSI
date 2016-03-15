@@ -5,7 +5,7 @@ import com.github.javaparser.ParseException;
 import com.github.javaparser.ast.CompilationUnit;
 import com.github.javaparser.ast.body.MethodDeclaration;
 import com.github.javaparser.ast.visitor.VoidVisitorAdapter;
-import exception.CustumException;
+import exception.CustomException;
 import interfaces.Analyser;
 import interfaces.Component;
 import logics.analyzer.*;
@@ -63,9 +63,9 @@ public class MethodCountAnalyser implements Analyser<Integer> {
                 return i.i;
 
             } catch (IOException e) {
-                throw new CustumException(e);
+                throw new CustomException(e);
             } catch (ParseException e) {
-                throw new CustumException(e);
+                throw new CustomException(e);
             }
         }else{
             return 0;

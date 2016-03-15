@@ -1,6 +1,6 @@
 package logics.models.db;
 
-import exception.CustumException;
+import exception.CustomException;
 import interfaces.VersionedSystem;
 import logics.models.form.RepoForm;
 import logics.versionUtils.GitRepo;
@@ -8,8 +8,6 @@ import play.data.validation.Constraints;
 import play.db.ebean.Model;
 
 import javax.persistence.*;
-import java.io.IOException;
-import java.util.List;
 
 /**
  * Created by bedux on 22/02/16.
@@ -81,7 +79,7 @@ public class Repository extends Model {
             if(this.type.equalsIgnoreCase("GIT")){
                     return  new GitRepo(this);
             }else{
-                throw new CustumException();
+                throw new CustomException();
             }
 
     }

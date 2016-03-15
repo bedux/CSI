@@ -1,6 +1,6 @@
 package logics.analyzer.analysis;
 
-import exception.CustumException;
+import exception.CustomException;
 import interfaces.Analyser;
 import interfaces.Component;
 import logics.analyzer.*;
@@ -46,7 +46,7 @@ public class WordCountAnalyser implements Analyser<Integer> {
             }).sum());
             return wc;
         } catch (IOException e) {
-            throw new CustumException(e);
+            throw new CustomException(e);
         }
     }
 }

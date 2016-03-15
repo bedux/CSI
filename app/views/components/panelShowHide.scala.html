@@ -1,0 +1,28 @@
+@(id:String)(htmlHead: Html)(htmlBody: Html)
+
+<div class="panel panel-default withMargin">
+    <div class="panel-heading" onclick="hide@{id}()">
+        @htmlHead
+        <span id="@{id}showHideInfo" class="toRight glyphicon glyphicon-chevron-up" aria-hidden="true" ></span>
+    </div>
+    <div class="panel-body" id="@id">
+        @htmlBody
+    </div>
+</div>
+
+
+<script type="text/javascript">
+        $("#"+"@id").hide();
+
+    function hide@{id}(){
+            var t1 = "#"+"@id";
+            var t2 = "#"+"@id"+"showHideInfo";
+            if($(t1).is(":visible") ){
+                 $(t1).hide();
+                   $(t2).removeClass('glyphicon glyphicon-chevron-up').addClass('glyphicon glyphicon-chevron-down');
+               }else{
+                 $(t1).show();
+                        $(t2).removeClass('glyphicon glyphicon-chevron-down').addClass('glyphicon glyphicon-chevron-up');
+               }
+              }
+</script>

@@ -1,6 +1,6 @@
 package logics.versionUtils;
 
-import exception.CustumException;
+import exception.CustomException;
 import interfaces.VersionedSystem;
 import logics.models.db.Repository;
 
@@ -34,7 +34,7 @@ public class RepositoryManager  {
               //sys.clone();
 
           }catch (Exception inv ){
-              throw new CustumException(inv);
+              throw new CustomException(inv);
           }
       };
       Thread t = new Thread(runn);

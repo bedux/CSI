@@ -1,6 +1,6 @@
 package logics.pipeline.storing;
 
-import exception.CustumException;
+import exception.CustomException;
 import interfaces.Handler;
 import logics.models.db.ComponentInfo;
 import logics.models.db.RepositoryVersion;
@@ -32,7 +32,7 @@ public class StoreHandler implements Handler<StoreHandlerParam,StoreHandlerResul
             });
         } catch (IOException e1) {
 
-            throw new CustumException(e1);
+            throw new CustomException(e1);
 
         }finally {
             param.repositoryVersion.setnumOfFile(param.nOfFile);

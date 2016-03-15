@@ -13,11 +13,9 @@ html, body {
 
 #droppy{
     position:absolute;
-    right:130px;
-    display: flex;
-    flex-direction:column;
-    justify-content: center;
-    align-items:center;
+    right:10px;
+    top:10px;
+
 
 }
 
@@ -28,12 +26,104 @@ html, body {
 }
 
 #dropdownMenu1{
-    padding: 10px;
 
+    -moz-border-radius: 100%;
+    border-radius: 100%;
+    padding: 10px;
 }
 
 #bar{
     position:absolute;
-    background: darkgreen;
+}
+.tableInfoColor{
+    background-color: hsla(0, 0%, 60%, 0.38);
+    color:white;
 
 }
+
+#searchBar{
+    position: absolute;
+    bottom: 0px;
+}
+
+.rangeValue{
+
+    width:100%;
+    text-align: center;
+}
+.positionRightAbsolute{
+    position: absolute;
+    right: 0px;
+    top:50px;
+    height:100%;
+}
+
+.withMargin{
+    margin-top:20px;
+}
+
+.filterContent{
+    background-color: hsla(0, 0%, 45%, 0.38);
+    overflow-y: scroll;
+    height:70%;
+}
+
+.panelFilterColor{
+    background-color: hsla(0, 0%, 60%, 0.38);
+    width: 250px;
+    height: 90%;
+
+}
+
+.toRight{
+    float:right;
+}
+
+.applyContainer{
+    width:100%;
+    height: 10% ;
+    display: inline;
+
+
+}
+
+.centered{
+    margin:auto;
+    margin-top: 10px;
+
+}
+
+.filtersApp{
+    -moz-border-radius: 60%;
+    border-radius: 60%;
+    padding: 10px;
+    background-color: #F6A828;
+
+}
+
+.filterContainer{
+
+    display:flex;
+    flex-wrap:wrap;
+    width: 250px;
+    justify-content:space-around;
+    overflow-y: scroll;
+    max-height: 10%;
+}
+
+.sideBarOpen{
+    position: absolute;
+    right: 250px;
+    top:50%;
+    
+}
+
+.sideBarClose{
+    position: absolute;
+    right: 0px;
+    top:50%;
+
+}
+
+
+
