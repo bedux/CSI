@@ -10,6 +10,7 @@ create table ComponentInfo (
   nom                       integer,
   size                      integer,
   wc                        integer,
+  nol                       integer,
   repository_id             bigint,
   constraint pk_ComponentInfo primary key (id))
 ;

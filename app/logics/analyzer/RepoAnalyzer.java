@@ -1,7 +1,7 @@
 package logics.analyzer;
 
 import com.fasterxml.jackson.databind.JsonNode;
-import exception.CustumException;
+import exception.CustomException;
 import logics.analyzer.analysis.*;
 import logics.models.db.Repository;
 import logics.models.tools.MaximumMinimumData;
@@ -36,7 +36,7 @@ public class RepoAnalyzer {
                 }
             });
         } catch (IOException e1) {
-            throw new CustumException(e1);
+            throw new CustomException(e1);
         }
 
 

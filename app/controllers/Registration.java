@@ -1,13 +1,10 @@
 package controllers;
 
-import exception.CustumException;
+import exception.CustomException;
 import logics.analyzer.RepoAnalyzer;
 import logics.models.db.Repository;
 import logics.models.form.RepoForm;
 import logics.pipeline.PipelineManager;
-import logics.pipeline.clone.CloneHandler;
-import logics.pipeline.clone.CloneHandlerParam;
-import logics.versionUtils.RepositoryManager;
 import play.data.Form;
 import play.libs.F;
 import play.mvc.*;
@@ -57,7 +54,7 @@ public class Registration extends Controller {
                     RepoAnalyzer repoAnalyzer = new RepoAnalyzer(Repository.find.all().get(0));
                     repoAnalyzer.getTree();
 
-                } catch (CustumException e) {
+                } catch (CustomException e) {
                     System.out.println(e.getException().getStackTrace().toString());
                 }
 

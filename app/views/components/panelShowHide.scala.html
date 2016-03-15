@@ -1,9 +1,9 @@
 @(id:String)(htmlHead: Html)(htmlBody: Html)
 
 <div class="panel panel-default withMargin">
-    <div class="panel-heading">
+    <div class="panel-heading" onclick="hide@{id}()">
         @htmlHead
-        <span id="@{id}showHideInfo" class="toRight glyphicon glyphicon-chevron-up" aria-hidden="true" onclick="hide@{id}()"></span>
+        <span id="@{id}showHideInfo" class="toRight glyphicon glyphicon-chevron-up" aria-hidden="true" ></span>
     </div>
     <div class="panel-body" id="@id">
         @htmlBody

@@ -10,8 +10,8 @@ import com.avaje.ebean.Expression;
 /**
  * Created by bedux on 10/03/16.
  */
-public interface Filter<T> {
-     enum  FilterType {RANGE("RANGE"),STRING("INPUT");
+public abstract class Filter<T> {
+    public enum  FilterType {RANGE("RANGE"),STRING("INPUT");
          private String value;
 
          FilterType(final String value) {
@@ -28,13 +28,15 @@ public interface Filter<T> {
          }
      }
 
-    Expression getExpressionFromData(Data d);
+    public  abstract Expression getExpressionFromData(Data d);
 
-     ObjectNode getDescription(Long id);
+    public abstract ObjectNode getDescription(Long id);
 
-     static String[] parseRabge(String r){
-        r=r.replace("+","");
-        return  r.split("-");
-    }
+    public abstract  boolean handleRequest(String[] request,Data d);
+
+            protected static String[] parseRabge(String r){
+                r=r.replace("+","");
+                return  r.split("-");
+            }
 
     }

@@ -19,6 +19,16 @@ public class ComponentInfo extends Model {
 
     public String parent;
 
+    public String fileName;
+
+    public int NOM;
+
+    public int size;
+
+    public int WC;
+
+    public int NOL;
+
     public void setParent(String parent) {
         this.parent = parent;
     }
@@ -39,13 +49,8 @@ public class ComponentInfo extends Model {
         this.WC = WC;
     }
 
-    public String fileName;
+    public void setNOL(int NOL){this.NOL=NOL;}
 
-    public int NOM;
-
-    public int size;
-
-    public int WC;
 
     @ManyToOne
     public RepositoryVersion repository;

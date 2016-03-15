@@ -14,7 +14,7 @@ import java.util.List;
 /**
  * Created by bedux on 10/03/16.
  */
-public class NumberOfWords implements Filter<ComponentInfo> {
+public class NumberOfWords extends Filter<ComponentInfo> {
 
 
     @Override
@@ -35,6 +35,17 @@ public class NumberOfWords implements Filter<ComponentInfo> {
         result.put("Min",t.get(0).WC);
         result.put("Max",t.get(t.size()-1).WC);
         return result;
+    }
+
+    @Override
+    public boolean handleRequest(String[] request, Data d) {
+        if(request[0].contains("WC")){
+            String[] el2 =  Filter.parseRabge(request[1]);
+            d.minWC = Integer.parseInt(el2[0]);
+            d.maxWC = Integer.parseInt(el2[1]);
+            return true;
+        }
+        return false;
     }
 
 }

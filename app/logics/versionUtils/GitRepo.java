@@ -1,6 +1,6 @@
 package logics.versionUtils;
 
-import exception.CustumException;
+import exception.CustomException;
 import interfaces.VersionedSystem;
 import logics.Status;
 import logics.models.db.Repository;
@@ -14,6 +14,7 @@ import org.eclipse.jgit.transport.UsernamePasswordCredentialsProvider;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -40,6 +41,9 @@ public class GitRepo implements VersionedSystem {
     @Override
     public Status.State clone(String name) {
         repoFile = new File("./repoDownload/"+ name);
+        if(Files.exists(repoFile.toPath())){
+                throw new CustomException("Id already exist. Please clear the directory of GIT projects");
+        }
 
         final CloneCommand clone = Git.cloneRepository();
         clone.setURI(repository.uri);
@@ -57,7 +61,7 @@ public class GitRepo implements VersionedSystem {
             git =clone.call();
         } catch (GitAPIException e) {
             System.out.print(e.getMessage());
-            throw new CustumException(e);
+            throw new CustomException(e);
         }
 
         return Status.State.COMPLETE;
@@ -75,7 +79,7 @@ public class GitRepo implements VersionedSystem {
             return  branches;
 
         }catch (Exception e){
-            throw new CustumException(e);
+            throw new CustomException(e);
         }
     }
 
@@ -91,7 +95,7 @@ public class GitRepo implements VersionedSystem {
             return commits;
 
         }catch (Exception e){
-            throw new CustumException(e);
+            throw new CustomException(e);
         }
     }
 
@@ -103,7 +107,7 @@ public class GitRepo implements VersionedSystem {
             checkoutCommand.setAllPaths(true).setForce(true).setName(data.getId().getName()).call();
             commits = null;
         } catch (GitAPIException e) {
-            throw new CustumException(e);
+            throw new CustomException(e);
         }
 
     }

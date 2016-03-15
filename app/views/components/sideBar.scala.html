@@ -10,10 +10,13 @@ remembre range value!!
 <script src="@routes.Assets.at("javascripts/jquery-scrollto.js")" type="text/javascript"></script>
 
 
+
 <link rel ="stylesheet" href="@routes.Assets.at("stylesheets/jquery-ui.min.css")">
 
-
-<div class="panel panel-info positionRightAbsolute panelFilterColor" >
+<button type="button" class="btn btn-default sideBarClose " aria-label="Left Align" onclick="hideShow()" id="slideHideShow">
+    <span class="glyphicon glyphicon-filter" aria-hidden="true"></span>
+</button>
+<div id="sideBar" class="panel panel-info positionRightAbsolute panelFilterColor" >
 
     <div class="panel-heading">
         Filters
@@ -58,9 +61,6 @@ remembre range value!!
             }
 
 
-
-
-
         </form>
 
 
@@ -85,10 +85,9 @@ remembre range value!!
 </div>
 
 
+
 <script>
 var numberOfApplyFilter = 0;
-
-console.log("@filters");
 function send(){
 $.ajax({
   type: "POST",
@@ -120,6 +119,23 @@ function removeFilter(id){
     deleteFilter(id);
     $("#"+'filter'+id).remove();
 }
+
+ $("#sideBar").hide();
+ $("#slideHideShow").addClass('glyphicon glyphicon-chevron-left');
+
+    function hideShow(){
+            if($("#sideBar").is(":visible") ){
+                 $("#sideBar").hide();
+                   $("#slideHideShow").removeClass('glyphicon glyphicon-chevron-right').addClass('glyphicon glyphicon-chevron-left');
+                   $("#slideHideShow").removeClass('sideBarOpen').addClass('sideBarClose');
+
+               }else{
+                 $("#sideBar").show();
+                        $("#slideHideShow").removeClass('glyphicon glyphicon-chevron-left').addClass('glyphicon glyphicon-chevron-right');
+                        $("#slideHideShow").removeClass('sideBarClose').addClass('sideBarOpen');
+
+               }
+              }
 
 
 

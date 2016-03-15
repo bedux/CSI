@@ -18,7 +18,7 @@ import java.util.List;
 /**
  * Created by bedux on 10/03/16.
  */
-public class NumberOfMethods implements Filter<ComponentInfo> {
+public class NumberOfMethods extends Filter<ComponentInfo> {
 
 
 
@@ -38,6 +38,17 @@ public class NumberOfMethods implements Filter<ComponentInfo> {
         result.put("Min",t.get(0).NOM);
         result.put("Max",t.get(t.size()-1).NOM);
         return result;
+    }
+
+    @Override
+    public boolean handleRequest(String request[], Data d) {
+        if(request[0].contains("NOM")){
+            String[] el2 =  Filter.parseRabge(request[1]);
+            d.minNOM = Integer.parseInt(el2[0]);
+            d.maxNOM = Integer.parseInt(el2[1]);
+            return true;
+        }
+        return false;
     }
 
 }

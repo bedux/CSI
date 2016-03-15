@@ -14,7 +14,7 @@ import java.util.List;
 /**
  * Created by bedux on 10/03/16.
  */
-public class PathName implements Filter<ComponentInfo> {
+public class PathName extends Filter<ComponentInfo> {
 
 
 
@@ -37,6 +37,17 @@ public class PathName implements Filter<ComponentInfo> {
         result.put("Id","path");
 
         return result;
+    }
+
+    @Override
+    public boolean handleRequest(String request[], Data d) {
+        if(request[0].contains("path")){
+            if(request.length>1) {
+                d.path = request[1];
+                return true;
+            }
+        }
+        return false;
     }
 
 }

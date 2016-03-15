@@ -56,7 +56,6 @@ html, body {
     right: 0px;
     top:50px;
     height:100%;
-    min-width: 20%;
 }
 
 .withMargin{
@@ -106,12 +105,25 @@ html, body {
 
     display:flex;
     flex-wrap:wrap;
-    max-width: 250px;
+    width: 250px;
     justify-content:space-around;
     overflow-y: scroll;
     max-height: 10%;
+}
 
+.sideBarOpen{
+    position: absolute;
+    right: 250px;
+    top:50%;
+    
+}
+
+.sideBarClose{
+    position: absolute;
+    right: 0px;
+    top:50%;
 
 }
+
 
 
