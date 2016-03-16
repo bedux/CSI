@@ -3,24 +3,29 @@
  */
 "use strict"
 var BABYLON = require("babylonjs");
+
+function updateMaximumPos(x,y,z){
+    module.exports.maxX = Math.max(module.exports.maxX,x);
+    module.exports.maxY = Math.max(module.exports.maxY,y);
+    module.exports.maxZ = Math.max(module.exports.maxZ,z);
+
+}
+
 function createBuilding(scene, position, data,parent) {
 
-    var cylinder;
+    let cylinder;
 
     scene.data[data.id+ "_model"] = data;
-    //if (data.children == null){
-    //    cylinder = BABYLON.Mesh.CreateCylinder(data.id + "_model", 1, 1, 1, data.segment, scene, false);
-    //} else{
-        cylinder = BABYLON.Mesh.CreateBox(data.id + "_model", 1, scene, false);
-    //}
+    cylinder = BABYLON.Mesh.CreateBox(data.id + "_model", 1, scene, false);
+
 
     cylinder.scaling = new BABYLON.Vector3(data.width, data.height, data.deep);
     cylinder.position = new BABYLON.Vector3(position.x+data.width/2,position.y+data.height/2,position.z+data.deep/2);
-
     cylinder.parent = parent;
-    console.log("Drawing: ",data,  cylinder.position);
+    updateMaximumPos(position.x+data.width,position.y+data.height,position.z+data.deep);
 
-    var material =  new BABYLON.StandardMaterial(data.id+"_texture", scene);
+
+    let material =  new BABYLON.StandardMaterial(data.id+"_texture", scene);
     material.diffuseColor = new BABYLON.Color3(data.color[0],data.color[1],data.color[2]);
     material.specularColor = BABYLON.Color3.Black();
 
@@ -34,20 +39,19 @@ function recursiveDraw(scene,position,data,parent){
         createBuilding(scene,position,data,parent);
         if(data.children==null) return;
 
-        console.log(data);
         if(data.children.length>0){
             for(var i of  data.children){
                 recursiveDraw(scene,position.add(new BABYLON.Vector3(i.position[0],i.position[1]+data.height,i.position[2])),i.data,parent);
             }
         }
-
-
 }
 
 module.exports = {
      createBuilding:createBuilding,
-
-    recursiveDraw:recursiveDraw
+    recursiveDraw:recursiveDraw,
+    maxX:-1000,
+    maxY:-1000,
+    maxZ:-1000
 
 
 };

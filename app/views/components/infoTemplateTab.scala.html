@@ -11,13 +11,23 @@
 <div class="modal fade bs-example-modal-lg" tabindex="-1" role="dialog" aria-labelledby="myLargeModalLabel" id="codeModal">
     <div class="modal-dialog modal-lg">
         <div class="modal-content">
-            <pre><code class="java" id="javaCode">
+            <div>
 
+                <ul class="nav nav-tabs" role="tablist">
+                    <li role="presentation" class="active"><a href="#home" aria-controls="home" role="tab" data-toggle="tab">Code</a></li>
+                    <li role="presentation"><a href="#profile" aria-controls="profile" role="tab" data-toggle="tab">Other</a></li>
+                    <li role="presentation"><a href="#messages" aria-controls="messages" role="tab" data-toggle="tab">Other</a></li>
+                    <li role="presentation"><a href="#settings" aria-controls="settings" role="tab" data-toggle="tab">Other</a></li>
+                </ul>
 
+                <div class="tab-content">
+                    <div role="tabpanel" class="tab-pane active" id="home"> <pre><code class="java" id="javaCode"></code></pre></div>
+                    <div role="tabpanel" class="tab-pane" id="profile">...</div>
+                    <div role="tabpanel" class="tab-pane" id="messages">...</div>
+                    <div role="tabpanel" class="tab-pane" id="settings">...</div>
+                </div>
 
-
-
-            </code></pre>
+            </div>
         </div>
     </div>
 </div>

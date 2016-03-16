@@ -17,7 +17,7 @@ class MainScene{
         this.scene  = new BABYLON.Scene(this.engine);
 
         // create a FreeCamera, and set its position to (x:0, y:5, z:-10)
-        this.camera = new BABYLON.FreeCamera("FreeCamera", new BABYLON.Vector3(mock.pipoo.data.width, mock.pipoo.data.height, mock.pipoo.data.deep), this.scene);
+       this.camera = new BABYLON.FreeCamera("FreeCamera", new BABYLON.Vector3(mock.pipoo.data.width, mock.pipoo.data.height, mock.pipoo.data.deep), this.scene);
         this.camera.maxZ = 100000;
         // Create an ArcRotateCamera aimed at 0,0,0, with no alpha, beta or radius, so be careful. It will look broken.
 
@@ -27,12 +27,16 @@ class MainScene{
         // attach the camera to the canvas
         this.camera.attachControl(canvas, false);
         this.camera.speed=40;
+
         // create a basic light, aiming 0,1,0 - meaning, to the sky
         this.light = new BABYLON.HemisphericLight('light1', new BABYLON.Vector3(10,10,0), this.scene);
 
+        //init data content
         this.scene.data = {};
         this.scene.models ={};
 
+
+        //helper
         this.pivot =  BABYLON.Mesh.CreateBox("sphere",0, this.scene);
         this.pivot1 =  BABYLON.Mesh.CreateBox("sphere1",1, this.scene);
         this.pivot1.scaling =   new BABYLON.Vector3(1, 1000,1);
@@ -129,6 +133,10 @@ class MainScene{
         this.pivot = new BABYLON.Mesh.CreatePlane("plane", 0, this.scene, false, BABYLON.Mesh.DEFAULTSIDE);
 
         build.recursiveDraw(this.scene,new BABYLON.Vector3(0,0,0),data.data,this.pivot);
+
+        console.log(this.camera)
+        this.camera.position = new BABYLON.Vector3(build.maxX, build.maxY, build.maxZ);
+        console.log(build.maxX, build.maxY, build.maxZ)
 
     }
 
