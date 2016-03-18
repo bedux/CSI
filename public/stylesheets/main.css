@@ -123,5 +123,15 @@ html, body {
 
 }
 
+#chartContainer{
+    display: flex;
+    flex-wrap:wrap;
+    justify-content:space-around;
 
 
+    width: 100%;
+}
+
+#statistics{
+    padding: 10px;
+}

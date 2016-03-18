@@ -7,7 +7,7 @@ public class MaximumMinimumData {
     public  float maxDepth;
     public  float maxWidth;
     public  float maxHeight;
-    
+
     public  float minDepth;
     public  float minWidth;
     public  float minHeight;

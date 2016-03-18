@@ -2,11 +2,9 @@
 
 <link rel="stylesheet" href="@routes.Assets.at("stylesheets/default.min.css")">
 <script src="@routes.Assets.at("javascripts/highlight.min.js")"></script>
-<script>
+<script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
 
 
-
-</script>
 
 <div class="modal fade bs-example-modal-lg" tabindex="-1" role="dialog" aria-labelledby="myLargeModalLabel" id="codeModal">
     <div class="modal-dialog modal-lg">
@@ -16,14 +14,21 @@
                 <ul class="nav nav-tabs" role="tablist">
                     <li role="presentation" class="active"><a href="#home" aria-controls="home" role="tab" data-toggle="tab">Code</a></li>
                     <li role="presentation"><a href="#profile" aria-controls="profile" role="tab" data-toggle="tab">Statistics</a></li>
-                    <li role="presentation"><a href="#messages" aria-controls="messages" role="tab" data-toggle="tab">Other</a></li>
+                    <li role="presentation"><a href="#messages" aria-controls="messages" role="tab" data-toggle="tab" id="chart">Other</a></li>
                     <li role="presentation"><a href="#settings" aria-controls="settings" role="tab" data-toggle="tab">Other</a></li>
                 </ul>
 
                 <div class="tab-content">
                     <div role="tabpanel" class="tab-pane active" id="home"> <pre><code class="java" id="javaCode"></code></pre></div>
                     <div role="tabpanel" class="tab-pane" id="profile" ><div id="statistics"  class="table-responsive" ></div></div>
-                    <div role="tabpanel" class="tab-pane" id="messages">...</div>
+                    <div role="tabpanel" class="tab-pane" id="messages"><div id="chartContainer">
+
+                        <div id="chart_div" ></div>
+                        <div id="chart_div1"></div>
+                        <div id="chart_div2"></div>
+
+
+                    </div></div>
                     <div role="tabpanel" class="tab-pane" id="settings">...</div>
                 </div>
 
@@ -33,3 +38,95 @@
 </div>
 
 
+<script>
+google.charts.load('current', {'packages':['corechart']});
+
+var datas = [];
+function testChart(){
+      // Load the Visualization API and the corechart package.
+
+      // Set a callback to run when the Google Visualization API is loaded.
+      google.charts.setOnLoadCallback(drawChart.bind(this))
+
+
+        function drawChart(){
+            drawChartMethods();
+            drawChartLoop();
+            drawFieldMethods();
+        }
+
+      function drawChartMethods() {
+        // Create the data table.
+        var data = new google.visualization.DataTable();
+        data.addColumn('string', 'Topping');
+        data.addColumn('number', 'Slices');
+        data.addRows([
+          ['Private', this.datas.noPrivateMethod],
+          ['Protected', this.datas.noProtectedMethod],
+          ['Public', this.datas.noPublicMethod],
+
+        ]);
+        // Set chart options
+        var options = {'title':'Methods Modifiers',
+                       'width':400,
+                       'height':300};
+
+        // Instantiate and draw our chart, passing in some options.
+        var chart = new google.visualization.PieChart(document.getElementById('chart_div'));
+        chart.draw(data, options);
+      }
+
+      function drawChartLoop() {
+        // Create the data table.
+        var data = new google.visualization.DataTable();
+        data.addColumn('string', 'Topping');
+        data.addColumn('number', 'Slices');
+        data.addRows([
+          ['For', this.datas.noForSTM],
+          ['Foreach', this.datas.noForeachSTM	],
+          ['While', this.datas.noWhile]
+        ]);
+        // Set chart options
+        var options = {'title':'Loops',
+                       'width':400,
+                       'height':300};
+
+
+        if(this.datas.noForSTM==0 && this.datas.noForeachSTM==0 && this.datas.noWhile==0) return;
+        // Instantiate and draw our chart, passing in some options.
+        var chart = new google.visualization.PieChart(document.getElementById('chart_div1'));
+        chart.draw(data, options);
+      }
+
+      function drawFieldMethods() {
+        // Create the data table.
+        var data = new google.visualization.DataTable();
+        data.addColumn('string', 'Topping');
+        data.addColumn('number', 'Slices');
+        data.addRows([
+          ['Fileds', this.datas.noF],
+          ['Methods', this.datas.noMethod],
+        ]);
+        // Set chart options
+        var options = {'title':'Fields/Methods',
+                       'width':400,
+                       'height':300};
+
+        // Instantiate and draw our chart, passing in some options.
+        var chart = new google.visualization.PieChart(document.getElementById('chart_div2'));
+        chart.draw(data, options);
+      }
+
+}
+
+
+
+function renderData(dta){
+    datas = dta;
+    testChart();
+}
+
+
+
+
+</script>

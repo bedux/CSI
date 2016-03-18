@@ -86,14 +86,15 @@ class MainScene{
 
 
             for(var i in arr){
-
                 if(arr[i].id && arr[i].id!="") {
                     console.log(info.features[arr[i].id]);
                     arr[i].innerHTML = info.features[arr[i].id];
                 }
             }
-            console.log($("#pathIdTab"));
             $("#pathIdTab").text(info.id)
+
+
+
 
 
 
@@ -231,7 +232,6 @@ class MainScene{
         let info = this.scene.data[pickResult.pickedMesh.id];
 
 
-
         $.get("/fileContent/"+encodeURI(info.id).split("/").join("%2F"),function(data){
                 if(data.length>1){
                     $("#javaCode").empty();
@@ -242,8 +242,6 @@ class MainScene{
 
 
                     $("#codeModal").modal('show');
-
-
                 }
         });
 
@@ -265,6 +263,9 @@ class MainScene{
             }
             table.append(tbody)
             $("#statistics").append(table);
+            renderData(data);
+
+
 
 
 
