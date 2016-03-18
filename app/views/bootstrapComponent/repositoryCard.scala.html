@@ -1,9 +1,11 @@
 @import logics.models.db.RepositoryVersion
 @(repoInfo:RepositoryVersion)
-    <a href="@routes.Application.renderRepo(repoInfo.json,repoInfo.id)" class="list-group-item">
+    @if(repoInfo.json) {
+    <a href="@routes.Application.renderRepo(repoInfo.json, repoInfo.id)" class="list-group-item">
         <span class="badge">@repoInfo.numOfFile</span>
-    @repoInfo.repository.uri
+        @repoInfo.repository.uri
     </a>
+}
 
 
 

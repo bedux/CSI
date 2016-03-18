@@ -3,7 +3,9 @@
 @main("Repositories") {
     <div class="list-group">
     @for(p <- repository) {
-        @bootstrapComponent.repositoryCard(p)
+        @if(p!=null) {
+            @bootstrapComponent.repositoryCard(p)
+        }
     }
 </div>
 }

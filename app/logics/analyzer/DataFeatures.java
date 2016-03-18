@@ -1,38 +1,15 @@
-package logics.models.db;
+package logics.analyzer;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import interfaces.DataAttributes;
-import play.db.ebean.Model;
 
-import javax.persistence.*;
+import java.nio.file.Path;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
- * Created by bedux on 04/03/16.
+ * Created by bedux on 17/03/16.
  */
-@Entity
-@Table(name="ComponentInfo")
-public class ComponentInfo extends Model implements DataAttributes {
-
-    @Id
-    @GeneratedValue(strategy=GenerationType.AUTO)
-    @JsonIgnore
-    public Long id;
-
-    @JsonIgnore
-    public String parent;
-
-    public String fileName;
-
-
-    public void setParent(String parent) {
-        this.parent = parent;
-    }
-
-    public void setFileName(String fileName) {
-        this.fileName = fileName;
-    }
-
-
+public class DataFeatures extends Features implements DataAttributes {
 
     public int noMethod = 0;
     public int noPrivateMethod = 0;
@@ -146,20 +123,37 @@ public class ComponentInfo extends Model implements DataAttributes {
         this.noLine = noLine;
     }
 
-    @ManyToOne
-    @JsonIgnore
-    public RepositoryVersion repository;
 
+    public static Map<String, String> getMapMethod = new HashMap() {
+        {
+            put("noMethod", DataName.NoMethod.getValue());
+            put("Number of Fields", DataName.NOF.getValue());
+            put("Number of Line of Code", DataName.NoLine.getValue());
 
-    public static ComponentInfo createComponentInfo(RepositoryVersion repo,String fileName){
-        ComponentInfo componentInfo = new ComponentInfo();
-        componentInfo.repository = repo;
-        componentInfo.fileName = fileName;
-        componentInfo.save();
-        return componentInfo;
+        }
+    };
+
+    public DataFeatures(String name, String path, Path filePath, int wordCount) {
+        super(name, path, filePath, wordCount);
+
     }
 
-    public static Finder<Long,ComponentInfo> find = new Finder<Long, ComponentInfo>(Long.class,ComponentInfo.class);
+    public DataFeatures(String name, String path, Path filePath) {
+        super(name, path, filePath);
 
 
+    }
+
+    @Override
+    public void bindingToPakageble() {
+        super.setDeep(getNoMethod());
+        super.setWidth(getNoF());
+        super.setHeight(getNoLine());
+
+
+        super.setColor(new float[]{1, 0, 1});
+        super.setSegment(4);
+
+    }
 }
+

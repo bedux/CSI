@@ -25,13 +25,12 @@ public class AnaliserHandler implements Handler<AnalyserHandlerParam,AnalyserHan
        List<ComponentInfo> components =  ComponentInfo.find.where("repository = " + param.repositoryVersion.id).findList();
 
         File fileRoot = new File("./repoDownload/" + param.repositoryVersion.id);
-        Package root = new Package(new Features("root", param.repositoryVersion.id.toString(), fileRoot.toPath()));
+        Package root = new Package(new DataFeatures("root", param.repositoryVersion.id.toString(), fileRoot.toPath()));
         for(ComponentInfo component: components){
             File helper = new File("./repoDownload/" + component.fileName);
             String s = clearPath(helper.toPath().normalize().toString(),param.repositoryVersion);
             String dir = s.substring(0, s.indexOf('/'));
             String remainName = s.substring(s.indexOf('/') + 1);
-//            String requiredName = helper.getAbsolutePath().substring(helper.getAbsolutePath().indexOf(dir));
             root.add(dir, helper.toPath(), remainName);
         }
 

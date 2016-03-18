@@ -1,14 +1,23 @@
 package controllers;
 
 import com.fasterxml.jackson.databind.JsonNode;
+import interfaces.DataAttributes;
+import logics.analyzer.DataFeatures;
+import interfaces.DataAttributes.DataName;
+
 import logics.models.db.ComponentInfo;
 import logics.models.db.RepositoryVersion;
 import logics.models.tools.Data;
 import logics.filters.QueryBuilder;
 import logics.pipeline.analayser.AnaliserHandler;
 import logics.pipeline.analayser.AnalyserHandlerParam;
+import logics.pipeline.clone.CloneHandler;
+import logics.pipeline.clone.CloneHandlerParam;
+import logics.pipeline.storing.StoreHandler;
+import logics.pipeline.storing.StoreHandlerParam;
 import play.libs.Json;
 import play.mvc.*;
+
 
 import com.fasterxml.jackson.databind.node.*;
 import views.html.*;
@@ -26,7 +35,7 @@ public class Application extends Controller {
 
     public static Result indexGet(){
         ObjectNode result = Json.newObject();
-        result.put("dta", new AnaliserHandler().process(new AnalyserHandlerParam(RepositoryVersion.find.byId(1L))).json);
+        new AnaliserHandler().process(new AnalyserHandlerParam(RepositoryVersion.find.byId(2L)));
         return ok(result);
 
     }
@@ -54,7 +63,7 @@ public class Application extends Controller {
     }
 
     public static Result renderRepo(String id,Long version) {
-        return ok(render.render(id,version,(QueryBuilder.getFilters(version))));
+        return ok(render.render(id,version,(QueryBuilder.getFilters(version)), DataFeatures.getMapMethod));
     }
 
     public static Result applyFilter() {
@@ -90,4 +99,14 @@ public class Application extends Controller {
         }
     }
 
+
+    public static Result getStatistics(String id){
+        id = id.replaceAll("%2F","/");
+
+        return ok(Json.stringify(Json.toJson(ComponentInfo.find.where().eq("fileName", id).findList())));
+    }
+
+    static String generateStringSelect(String old,String add){
+        return old + ", "+ add;
+    }
 }

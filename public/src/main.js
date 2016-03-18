@@ -80,10 +80,21 @@ class MainScene{
             material.diffuseColor = new BABYLON.Color3(1,1,0);
             pickResult.pickedMesh.material =material;
             var info = this.scene.data[pickResult.pickedMesh.id];
-            document.getElementById("fileNameField").innerHTML=info.id;
-            document.getElementById("wcField").innerHTML=info.WC;
-            document.getElementById("sizeField").innerHTML=info.size;
-            document.getElementById("nomField").innerHTML=info.NOM;
+            console.log(info)
+
+            var arr = $("#tabInfo").find("td");
+
+
+            for(var i in arr){
+
+                if(arr[i].id && arr[i].id!="") {
+                    console.log(info.features[arr[i].id]);
+                    arr[i].innerHTML = info.features[arr[i].id];
+                }
+            }
+            console.log($("#pathIdTab"));
+            $("#pathIdTab").text(info.id)
+
 
 
 
@@ -216,12 +227,12 @@ class MainScene{
     }
 
     getBlockOfCode(){
-        console.log("Getting code")
         let pickResult = this.scene.pick(this.scene.pointerX, this.scene.pointerY);
         let info = this.scene.data[pickResult.pickedMesh.id];
-        console.log((info.id).split("/").join("%2F"))
+
+
+
         $.get("/fileContent/"+encodeURI(info.id).split("/").join("%2F"),function(data){
-                console.log(data);
                 if(data.length>1){
                     $("#javaCode").empty();
                     $("#javaCode").append(data);
@@ -229,10 +240,37 @@ class MainScene{
                             hljs.highlightBlock(block);
                         });
 
+
                     $("#codeModal").modal('show');
+
 
                 }
         });
+
+        $.get("/getStatistics/"+encodeURI(info.id).split("/").join("%2F"),function(data){
+            $("#statistics").empty();
+
+            var table = $('<table class="table table-inverse"></table>');
+            table.append($('  <thead> <tr> <th>Metrics</th> <th>Value</th></tr> </thead>'));
+            var tbody = $(' <tbody></tbody>');
+            data = JSON.parse(data)[0];
+            console.log(data);
+            for(var i in data){
+                var row = $('<tr></tr>');
+                var column = $('<td></td>').text(i);
+                var column1 = $('<td></td>').text(data[i]);
+                row.append(column);
+                row.append(column1);
+                tbody.append(row);
+            }
+            table.append(tbody)
+            $("#statistics").append(table);
+
+
+
+        });
+
+
 
     }
 

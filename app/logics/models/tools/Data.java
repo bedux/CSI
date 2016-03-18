@@ -22,6 +22,7 @@ public class Data{
         }
     }
     public String path = "";
+
     public int minNOM = 0;
     public int maxNOM = 0;
 

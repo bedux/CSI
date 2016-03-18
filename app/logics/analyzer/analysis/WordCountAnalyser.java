@@ -26,7 +26,7 @@ public class WordCountAnalyser implements Analyser<Integer> {
         }else if (c instanceof logics.analyzer.Package){
             n=analysisCast((Package) c);
         }
-        c.getFeatures().setWordCount(n);
+        c.getFeatures().setNoWord(c.getFeatures().getNoWord()+n);
         return n;
 
     }

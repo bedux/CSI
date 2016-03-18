@@ -7,6 +7,7 @@ public class MaximumMinimumData {
     public  float maxDepth;
     public  float maxWidth;
     public  float maxHeight;
+    
     public  float minDepth;
     public  float minWidth;
     public  float minHeight;
@@ -20,9 +21,6 @@ public class MaximumMinimumData {
         this.minWidth = width;
         this.minDepth = depth;
     }
-    public MaximumMinimumData(){}
-
-
     public void setOnlyIfMaxMinDepth(float wc){
         if(this.maxDepth <wc)this.maxDepth =wc;
         if(this.minDepth>wc)this.minDepth=wc;

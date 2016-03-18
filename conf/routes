@@ -14,7 +14,6 @@ POST     /addRepoId/:id                           controllers.Application.getPre
 GET     /getAllRepository                           controllers.Application.getRepositories
 
 
-GET     /testing                           controllers.Registration.getFiles
 
 GET     /renderRepo/:id/:version                  controllers.Application.renderRepo(id:String,version:Long)
 
@@ -23,10 +22,12 @@ GET     /assets/*file               controllers.Assets.at(path="/public", file)
 
 GET /getAllMatch/:id/:str        controllers.Application.getAllComponentMatch(id:Long,str:String)
 
-POST /getData              controllers.Application.indexGet
+GET /getData              controllers.Application.indexGet
 
 POST /applyFilter           controllers.Application.applyFilter
 
 GET /getFilters/:id             controllers.Application.getFilters(id:Long)
 
 GET /fileContent/:path          controllers.Application.fileContent(path:String)
+
+GET /getStatistics/:id          controllers.Application.getStatistics(id:String)

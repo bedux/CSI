@@ -1,5 +1,6 @@
 package logics.pipeline.clone;
 
+import exception.CustomException;
 import interfaces.Handler;
 import interfaces.HandlerResult;
 import interfaces.VersionedSystem;
@@ -17,7 +18,12 @@ public class CloneHandler implements Handler<CloneHandlerParam,CloneHandlerResul
         Repository repositoryInfo = Repository.CreareRepo(param.repoForm);
         VersionedSystem sys = repositoryInfo.CreateSystem();
         RepositoryVersion repositoryVersion = RepositoryVersion.RepositoryVersion(repositoryInfo);
-        sys.clone(repositoryVersion.id.toString());
+        try {
+            sys.clone(repositoryVersion.id.toString());
+        } catch (Exception e){
+            repositoryInfo.delete();
+            throw new CustomException();
+         }
         repositoryVersion.setHss(sys.getCurrentVersion());
         repositoryVersion.update(repositoryVersion.id);
 

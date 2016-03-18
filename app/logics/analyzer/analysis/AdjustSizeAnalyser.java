@@ -11,7 +11,7 @@ import logics.models.tools.MaximumMinimumData;
  */
 public class AdjustSizeAnalyser implements Analyser<Integer> {
 
-    private static float divison = 5f;
+    private static float divison = 30f;
     MaximumMinimumData maximumMinimumData;
     public AdjustSizeAnalyser(MaximumMinimumData maximumMinimumData){
         this.maximumMinimumData=maximumMinimumData;

@@ -1,5 +1,6 @@
 package logics.models.json;
 
+import logics.analyzer.DataFeatures;
 import logics.analyzer.Features;
 
 import java.util.Arrays;
@@ -7,15 +8,14 @@ import java.util.Arrays;
 /**
  * Created by bedux on 26/02/16.
  */
-public class RenderComponent {
+public class RenderComponent  {
 
     public float width;
     public float height;
     public float deep;
 
-    public float NOM=0;
-    public float WC = 0;
-    public float NOA = 0;
+    public DataFeatures features;
+
     public long size = 0;
 
 
@@ -27,11 +27,10 @@ public class RenderComponent {
     public RenderComponent(float width, float height,float deep, float[] color, int segment, String id, RenderChild[] children) {
       inizialize(width,height,deep,color,segment,id,children);
     }
-    public RenderComponent(Features f, RenderChild[] children) {
+    public RenderComponent(DataFeatures f, RenderChild[] children) {
         inizialize(f.getRendererWidth(), f.getHeight(), f.getRendererDeep(), f.getColor(), f.getSegment(), f.getPath(), children);
-        NOM = f.getMethodsNumber();
-        WC = f.getWordCount();
-        size = f.getSize();
+
+        features = f;
     }
 
     private void inizialize(float width, float height,float deep, float[] color, int segment, String id, RenderChild[] children){

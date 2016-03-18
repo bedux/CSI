@@ -1,17 +1,21 @@
 package logics.renderTools;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+
 import java.io.Serializable;
 import java.util.Arrays;
 
 /**
  * Created by bedux on 27/02/16.
  */
+@JsonIgnoreProperties
 public abstract class Packageable implements Serializable{
-    public  float gap = 80;
-    private float height;
-    private float[] color;
-    private int segment;
-    private BoundingBox bb = new BoundingBox(0,0);
+    @JsonIgnore public  float gap = 80;
+    @JsonIgnore private float height;
+    @JsonIgnore private float[] color;
+    @JsonIgnoreProperties private int segment;
+    @JsonIgnoreProperties private BoundingBox bb = new BoundingBox(0,0);
 
 
     public float getRendererWidth(){

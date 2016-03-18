@@ -30,7 +30,7 @@ remembre range value!!
 
               @for( a <- (filters.get("filter")).elements()){
                   @if(a.get("Type").toString.contains("RANGE")){
-
+                      
                       @components.panelShowHide(a.get("Id").toString.replace("\"","")+"P") { @a.get("Name").toString.replace("\"","")} {
                           @components.rangePicker(a.get("Id").toString.replace("\"",""), a.get("Min").asInt(), a.get("Max").asInt(), a.get("Min").asInt(), a.get("Max").asInt())
                       }

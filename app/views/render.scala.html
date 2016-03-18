@@ -1,11 +1,10 @@
-@import logics.models.db.RepositoryVersion
 @import com.fasterxml.jackson.databind.JsonNode
 
-@(id:String,repoVersion:Long,filters:JsonNode)
+@(id:String,repoVersion:Long,filters:JsonNode,infoParams: Map[String, String])
 @mainNoMenu("Render") {
 
 
-    @components.infoTab( "File Name" -> "fileNameField", "NOM" -> "nomField" , "Size" -> "sizeField" , "WC"->"wcField")
+    @components.infoTab(infoParams)
 
 
 
