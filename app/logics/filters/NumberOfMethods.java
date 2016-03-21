@@ -35,7 +35,6 @@ public class NumberOfMethods extends Filter<ComponentInfo> {
         List<ComponentInfo> t = ComponentInfo.find.where().eq("repository.id", id).orderBy(DataName.NoMethod.toString()).findList();
         result.put("Min",t.get(0).getNoMethod());
         result.put("Max",t.get(t.size()-1).getNoMethod());
-        System.out.println(Json.stringify(result));
         return result;
     }
 

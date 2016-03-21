@@ -10,20 +10,21 @@ import java.util.Arrays;
  * Created by bedux on 27/02/16.
  */
 @JsonIgnoreProperties
-public abstract class Packageable implements Serializable{
-    @JsonIgnore public  float gap = 80;
+public abstract class Packageable{
+    @JsonIgnore public  float gap = 40;
     @JsonIgnore private float height;
-    @JsonIgnore private float[] color;
-    @JsonIgnoreProperties private int segment;
+    @JsonIgnore private float color;
+    @JsonIgnoreProperties private int buildingType;
     @JsonIgnoreProperties private BoundingBox bb = new BoundingBox(0,0);
 
 
     public float getRendererWidth(){
-        return bb.getWidth()-gap/2;
+
+        return bb.getWidth()-gap;
     }
 
     public float getRendererDeep(){
-        return bb.getDeep()-gap/2;
+        return bb.getDeep()-gap;
 
     }
 
@@ -72,26 +73,25 @@ public abstract class Packageable implements Serializable{
         return  bb;
     }
 
-    public float[] getColor() {
+    public float getColor() {
         return color;
     }
 
-    public void setColor(float[] color) {
+    public void setColor(float color) {
         this.color = color;
     }
 
-    public int getSegment() {
-        return segment;
+    public int getBuildingType() {
+        return buildingType;
     }
 
-    public void setSegment(int segment) {
-        this.segment = segment;
+    public void setBuildingType(int buildingType) {
+        this.buildingType = buildingType;
     }
 
-    public Packageable(float width, float height, float deep, float[] color, int segment) {
+    public Packageable(float width, float height, float deep, float color, int buildingType) {
         this.height = height;
-        this.color = color;
-        this.segment = segment;
+        this.buildingType = buildingType;
         bb = new BoundingBox(width,deep);
 
 
@@ -102,8 +102,8 @@ public abstract class Packageable implements Serializable{
     public String toString() {
         return "Packageable{" +
                 ", height=" + height +
-                ", color=" + Arrays.toString(color) +
-                ", segment=" + segment +
+                ", color=" +(color) +
+                ", buildingType=" + buildingType +
                 ", bb=" + bb +
                 '}';
     }

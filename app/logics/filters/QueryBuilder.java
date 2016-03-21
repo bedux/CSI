@@ -31,7 +31,6 @@ public class QueryBuilder {
 
 
     public static Data QueryBuilder(String s){
-        System.out.println(s);
         Data d = new Data();
         String[] str = s.split("&");
         for(String el:str){

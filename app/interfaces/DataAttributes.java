@@ -1,9 +1,6 @@
 package interfaces;
 
 
-/**
- * Created by bedux on 17/03/16.
- */
 public interface DataAttributes {
 
 

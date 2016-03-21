@@ -7,19 +7,26 @@ public class MaximumMinimumData {
     public  float maxDepth;
     public  float maxWidth;
     public  float maxHeight;
+    public  float maxColor;
+
 
     public  float minDepth;
     public  float minWidth;
     public  float minHeight;
+    public  float minColor;
 
-    public MaximumMinimumData(float width, float height, float depth) {
+
+    public MaximumMinimumData(float width, float height, float depth,float color) {
         this.maxDepth = depth;
         this.maxWidth = width;
         this.maxHeight = height;
+        this.maxColor = color;
 
         this.minHeight = height;
         this.minWidth = width;
         this.minDepth = depth;
+        this.minColor = color;
+
     }
     public void setOnlyIfMaxMinDepth(float wc){
         if(this.maxDepth <wc)this.maxDepth =wc;
@@ -37,6 +44,12 @@ public class MaximumMinimumData {
         if(this.minHeight>size)this.minHeight=size;
 
     }
+    public void setOnlyIfMaxMinColor(float color){
+        if(this.maxColor<color)this.maxColor=color;
+        if(this.minColor>color)this.minColor=color;
+
+    }
+
 
     @Override
     public String toString() {

@@ -2,6 +2,7 @@ package logics.pipeline.storing;
 
 import exception.CustomException;
 import interfaces.Handler;
+import logics.Definitions;
 import logics.models.db.ComponentInfo;
 import logics.models.db.RepositoryVersion;
 
@@ -16,9 +17,8 @@ public class StoreHandler implements Handler<StoreHandlerParam,StoreHandlerResul
 
     @Override
     public StoreHandlerResult process(StoreHandlerParam param) {
-        String path = "./repoDownload/";
+        String path = Definitions.repositoryPath;
 
-        int nuberOfFile = 0;
         path+=param.repositoryVersion.id;
         try {
             Files.walk(FileSystems.getDefault().getPath(path)).forEach((x) -> {
@@ -40,6 +40,8 @@ public class StoreHandler implements Handler<StoreHandlerParam,StoreHandlerResul
         }
         return new StoreHandlerResult(param.repositoryVersion);
     }
+
+
     private String clearPath(String s,RepositoryVersion repository) {
         return s.substring(s.indexOf("repoDownload/" + repository.id) + ("repoDownload/").length());
 

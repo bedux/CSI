@@ -51,6 +51,12 @@ public class MethodCountAnalyser implements Analyser<DataAttributes> {
     private DataAttributes analysisCast(DataFile c){
         String fn = c.getFeatures().getPath().substring(c.getFeatures().getPath().lastIndexOf(".") + 1);
 
+        try {
+            c.getFeatures().setSize((int)Files.size(c.getFeatures().getFilePath()));
+        }catch(Exception e){
+            throw new CustomException(e);
+        }
+
         if(fn.indexOf("java")==0) {
             try (InputStream is = Files.newInputStream(c.getFeatures().getFilePath())) {
                 CompilationUnit p = JavaParser.parse(is);
@@ -118,6 +124,7 @@ public class MethodCountAnalyser implements Analyser<DataAttributes> {
                 throw new CustomException(e);
             }
         }else{
+
             return c.getFeatures();
         }
 

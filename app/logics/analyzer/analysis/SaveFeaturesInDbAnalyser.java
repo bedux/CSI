@@ -39,6 +39,7 @@ public class SaveFeaturesInDbAnalyser implements Analyser<Boolean> {
             target.setNoProtectedMethod(source.getNoProtectedMethod());
             target.setNoWhile(source.getNoWhile());
             target.setNoWord(source.getNoWord());
+            target.setSize(source.getSize());
 
 
             componentInfoList.get(0).update(componentInfoList.get(0).id);

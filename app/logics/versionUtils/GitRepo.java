@@ -2,7 +2,7 @@ package logics.versionUtils;
 
 import exception.CustomException;
 import interfaces.VersionedSystem;
-import logics.Status;
+import logics.Definitions;
 import logics.models.db.Repository;
 import org.eclipse.jgit.api.CheckoutCommand;
 import org.eclipse.jgit.api.CloneCommand;
@@ -13,7 +13,6 @@ import org.eclipse.jgit.transport.UsernamePasswordCredentialsProvider;
 
 
 import java.io.File;
-import java.io.IOException;
 import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.List;
@@ -39,8 +38,8 @@ public class GitRepo implements VersionedSystem {
 
 
     @Override
-    public Status.State clone(String name) {
-        repoFile = new File("./repoDownload/"+ name);
+    public Definitions.State clone(String name) {
+        repoFile = new File(Definitions.repositoryPath + name);
         if(Files.exists(repoFile.toPath())){
                 throw new CustomException("Id already exist. Please clear the directory of GIT projects");
         }
@@ -64,7 +63,7 @@ public class GitRepo implements VersionedSystem {
             throw new CustomException(e);
         }
 
-        return Status.State.COMPLETE;
+        return Definitions.State.COMPLETE;
 
     }
 

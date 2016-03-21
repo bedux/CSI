@@ -22,7 +22,6 @@ public class PathName extends Filter<ComponentInfo> {
     public Expression getExpressionFromData(Data d) {
         if(d.path.length()>0) {
             d.path=d.path.replaceAll("%2F","/");
-            System.out.println(d.path);
             return Expr.contains("fileName", d.path);
         }
         else

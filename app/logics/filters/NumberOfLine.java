@@ -31,7 +31,6 @@ public class NumberOfLine extends Filter<ComponentInfo> {
             List<ComponentInfo> t = ComponentInfo.find.where().eq("repository.id", id).orderBy(DataName.NoLine.getValue()).findList();
           result.put("Min",t.get(0).getNoLine());
             result.put("Max",t.get(t.size()-1).getNoLine());
-        System.out.println(Json.stringify(result));
 
         return result;
     }

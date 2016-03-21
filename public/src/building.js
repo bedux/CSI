@@ -3,13 +3,29 @@
  */
 "use strict"
 var BABYLON = require("babylonjs");
+var materials = {
+    //Binary File
+    0:{
+        diffuseColor:new BABYLON.Color3(0.8,0.8,0.8)
+    },
+    //Non Java File
+    1:{
+        diffuseColor:new BABYLON.Color3(0.5,0.5,0.5)
+    },
+    2:{
+        diffuseColor:new BABYLON.Color3(1,0,0),
+        texture : "textures/misc.jpg"
+    },
+    3:{
+        diffuseColor:new BABYLON.Color3(0,1,0)
+    },
+    4:{
+        diffuseColor:new BABYLON.Color3(0,0,1)
+    }
+};
 
-function updateMaximumPos(x,y,z){
-    module.exports.maxX = Math.max(module.exports.maxX,x);
-    module.exports.maxY = Math.max(module.exports.maxY,y);
-    module.exports.maxZ = Math.max(module.exports.maxZ,z);
 
-}
+
 
 function createBuilding(scene, position, data,parent) {
 
@@ -24,10 +40,18 @@ function createBuilding(scene, position, data,parent) {
     cylinder.parent = parent;
     updateMaximumPos(position.x+data.width,position.y+data.height,position.z+data.deep);
 
-
     let material =  new BABYLON.StandardMaterial(data.id+"_texture", scene);
-    material.diffuseColor = new BABYLON.Color3(data.color[0],data.color[1],data.color[2]);
-    material.specularColor = BABYLON.Color3.Black();
+    console.log(data,"data");
+    if(data.color==-1){
+        material.diffuseColor = materials[data.buildingType].diffuseColor;
+        material.specularColor = BABYLON.Color3.Black();
+        if(materials[data.buildingType].hasOwnProperty("texture")){
+        }
+    }else{
+        material.diffuseColor = new BABYLON.Color3(0,data.color,data.color);
+        material.specularColor = BABYLON.Color3.Black();
+    }
+
 
 
     cylinder.material = material;
@@ -35,23 +59,32 @@ function createBuilding(scene, position, data,parent) {
 
 }
 
+
 function recursiveDraw(scene,position,data,parent){
+
         createBuilding(scene,position,data,parent);
+
         if(data.children==null) return;
 
         if(data.children.length>0){
-            for(var i of  data.children){
+            for(let i of  data.children){
                 recursiveDraw(scene,position.add(new BABYLON.Vector3(i.position[0],i.position[1]+data.height,i.position[2])),i.data,parent);
             }
         }
 }
 
+function updateMaximumPos(x,y,z){
+    module.exports.maxX = Math.max(module.exports.maxX,x);
+    module.exports.maxY = Math.max(module.exports.maxY,y);
+    module.exports.maxZ = Math.max(module.exports.maxZ,z);
+
+}
+
+
 module.exports = {
-     createBuilding:createBuilding,
-    recursiveDraw:recursiveDraw,
-    maxX:-1000,
-    maxY:-1000,
-    maxZ:-1000
-
-
+        createBuilding:createBuilding,
+        recursiveDraw:recursiveDraw,
+        maxX:-1000,
+        maxY:-1000,
+        maxZ:-1000
 };

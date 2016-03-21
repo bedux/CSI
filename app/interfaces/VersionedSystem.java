@@ -1,16 +1,15 @@
 package interfaces;
 
-import logics.Status;
+import logics.Definitions;
 import logics.versionUtils.VersionBranch;
 import logics.versionUtils.VersionCommit;
 
 import java.util.List;
-import java.util.Objects;
 
 
 public interface VersionedSystem {
 
-    public Status.State clone(String name);
+    public Definitions.State clone(String name);
 
     public List<VersionCommit> getCommit();
 

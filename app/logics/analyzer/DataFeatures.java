@@ -126,17 +126,14 @@ public class DataFeatures extends Features implements DataAttributes {
 
     public static Map<String, String> getMapMethod = new HashMap() {
         {
-            put("noMethod", DataName.NoMethod.getValue());
-            put("Number of Fields", DataName.NOF.getValue());
-            put("Number of Line of Code", DataName.NoLine.getValue());
+            put("Number of Fileds (Width)  ", DataName.NOF.getValue());
+            put("Number of Methods (Height)", DataName.NoMethod.getValue());
+            put("Number of Lines (Color)", DataName.NoLine.getValue());
+
 
         }
     };
 
-    public DataFeatures(String name, String path, Path filePath, int wordCount) {
-        super(name, path, filePath, wordCount);
-
-    }
 
     public DataFeatures(String name, String path, Path filePath) {
         super(name, path, filePath);
@@ -146,13 +143,12 @@ public class DataFeatures extends Features implements DataAttributes {
 
     @Override
     public void bindingToPakageble() {
-        super.setDeep(getNoMethod());
+
+        super.setDeep(getNoF());
         super.setWidth(getNoF());
-        super.setHeight(getNoLine());
-
-
-        super.setColor(new float[]{1, 0, 1});
-        super.setSegment(4);
+        super.setHeight(getNoMethod());
+        super.setColor(getNoLine());
+        super.setBuildingType(1);
 
     }
 }

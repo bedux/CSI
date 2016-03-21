@@ -1,9 +1,8 @@
 package controllers;
 
 import com.fasterxml.jackson.databind.JsonNode;
-import interfaces.DataAttributes;
+import logics.Definitions;
 import logics.analyzer.DataFeatures;
-import interfaces.DataAttributes.DataName;
 
 import logics.models.db.ComponentInfo;
 import logics.models.db.RepositoryVersion;
@@ -11,10 +10,6 @@ import logics.models.tools.Data;
 import logics.filters.QueryBuilder;
 import logics.pipeline.analayser.AnaliserHandler;
 import logics.pipeline.analayser.AnalyserHandlerParam;
-import logics.pipeline.clone.CloneHandler;
-import logics.pipeline.clone.CloneHandlerParam;
-import logics.pipeline.storing.StoreHandler;
-import logics.pipeline.storing.StoreHandlerParam;
 import play.libs.Json;
 import play.mvc.*;
 
@@ -57,12 +52,10 @@ public class Application extends Controller {
     }
 
 
-    public static Result getAllComponentMatch(Long id,String match){
 
-        return ok(Json.stringify(Json.toJson(ComponentInfo.find.where().eq("repository.id",id).contains("fileName",match).findList())));
-    }
 
     public static Result renderRepo(String id,Long version) {
+        System.out.println(id);
         return ok(render.render(id,version,(QueryBuilder.getFilters(version)), DataFeatures.getMapMethod));
     }
 
@@ -80,8 +73,7 @@ public class Application extends Controller {
     }
 
     public static Result fileContent(String path) {
-        path ="./repoDownload/"+ path.replaceAll("%2F","/");
-        System.out.println(path);
+        path = Definitions.repositoryPath+ path.replaceAll("%2F","/");
         byte[] encoded = new byte[0];
         try {
             if(path.indexOf(".java")==path.length()-5) {
@@ -102,7 +94,6 @@ public class Application extends Controller {
 
     public static Result getStatistics(String id){
         id = id.replaceAll("%2F","/");
-
         return ok(Json.stringify(Json.toJson(ComponentInfo.find.where().eq("fileName", id).findList())));
     }
 

@@ -37,7 +37,6 @@ public class NumberOfWords extends Filter<ComponentInfo> {
         List<ComponentInfo> t = ComponentInfo.find.where().eq("repository.id", id).orderBy(DataName.NoWord.getValue()).findList();
         result.put("Min",t.get(0).getNoWord());
         result.put("Max",t.get(t.size()-1).getNoWord());
-        System.out.println(Json.stringify(result));
 
         return result;
     }

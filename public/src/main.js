@@ -3,7 +3,7 @@
 var BABYLON = require("babylonjs");
 var build = require("./building.js");
 var mock = require("../mock/templateScene.js");
-
+var Request = require("./request.js");
 
 
 
@@ -17,9 +17,8 @@ class MainScene{
         this.scene  = new BABYLON.Scene(this.engine);
 
         // create a FreeCamera, and set its position to (x:0, y:5, z:-10)
-       this.camera = new BABYLON.FreeCamera("FreeCamera", new BABYLON.Vector3(mock.pipoo.data.width, mock.pipoo.data.height, mock.pipoo.data.deep), this.scene);
+        this.camera = new BABYLON.FreeCamera("FreeCamera", new BABYLON.Vector3(mock.pipoo.data.width, mock.pipoo.data.height, mock.pipoo.data.deep), this.scene);
         this.camera.maxZ = 100000;
-        // Create an ArcRotateCamera aimed at 0,0,0, with no alpha, beta or radius, so be careful. It will look broken.
 
         // target the camera to scene origin
         this.camera.setTarget(BABYLON.Vector3.Zero());
@@ -36,17 +35,13 @@ class MainScene{
         this.scene.models ={};
 
 
-        //helper
-        this.pivot =  BABYLON.Mesh.CreateBox("sphere",0, this.scene);
-        this.pivot1 =  BABYLON.Mesh.CreateBox("sphere1",1, this.scene);
-        this.pivot1.scaling =   new BABYLON.Vector3(1, 1000,1);
+
 
         this.width = 0;
         this.deep = 0;
 
 
 
-        this.angle = 0.001;
         this.engine.runRenderLoop((function(){
 
         //    this.pivot.rotate(BABYLON.Axis.Y,  this.angle, BABYLON.Space.WORLD);
@@ -64,43 +59,6 @@ class MainScene{
             this.engine.resize();
         }).bind(this));
 
-        this.canvas.addEventListener("mousemove", (function () {
-            // We try to pick an object
-
-            var pickResult = this.scene.pick(this.scene.pointerX, this.scene.pointerY);
-            if(!pickResult.hit) return;
-            if(this.old){
-                this.old.material = this.old.oldMaterial;
-            }
-
-            this.old =  pickResult.pickedMesh;
-            this.old.oldMaterial = pickResult.pickedMesh.material;
-
-            let material=new BABYLON.StandardMaterial("hightlight", this.scene);
-            material.diffuseColor = new BABYLON.Color3(1,1,0);
-            pickResult.pickedMesh.material =material;
-            var info = this.scene.data[pickResult.pickedMesh.id];
-            console.log(info)
-
-            var arr = $("#tabInfo").find("td");
-
-
-            for(var i in arr){
-                if(arr[i].id && arr[i].id!="") {
-                    console.log(info.features[arr[i].id]);
-                    arr[i].innerHTML = info.features[arr[i].id];
-                }
-            }
-            $("#pathIdTab").text(info.id)
-
-
-
-
-
-
-
-
-        }).bind(this));
 
         this.canvas.addEventListener("keydown", (
             function(e){
@@ -134,6 +92,8 @@ class MainScene{
         ).bind(this), false);
 
         this.canvas.addEventListener("dblclick",this.getBlockOfCode.bind(this));
+        this.canvas.addEventListener("mousemove",this.sceneInformation.bind(this));
+
 
     }
 
@@ -142,13 +102,8 @@ class MainScene{
         this.scene.data = {};
         this.width = data.data.width;
         this.deep = data.data.deep;
-        this.pivot = new BABYLON.Mesh.CreatePlane("plane", 0, this.scene, false, BABYLON.Mesh.DEFAULTSIDE);
-
         build.recursiveDraw(this.scene,new BABYLON.Vector3(0,0,0),data.data,this.pivot);
-
-        console.log(this.camera)
         this.camera.position = new BABYLON.Vector3(build.maxX, build.maxY, build.maxZ);
-        console.log(build.maxX, build.maxY, build.maxZ)
 
     }
 
@@ -161,14 +116,12 @@ class MainScene{
         let obj = data.data;
 
 
-        var material;
+        let material;
         material=new BABYLON.StandardMaterial("_texture_"+id, this.scene);
         material.diffuseColor = new BABYLON.Color3(hexToR(data.color)/255,hexToG(data.color)/255,hexToB(data.color)/255);
         if(data.action.indexOf("Hide")!=-1){
             material.alpha = 0.1;
         }
-
-
 
         for(var c in obj){
             let current =  this.scene.models[obj[c].fileName+"_model"];
@@ -180,17 +133,12 @@ class MainScene{
                 current["baseMaterial"] = current.material;
             }
             if(this.old && this.old.id == current.id){
-
                 current["baseMaterial"] = current.oldMaterial;
                 this.old = undefined;
-
             }
-
 
             current["listFilter"].push("filterMaterial"+id)
             current.material = material;
-
-
         }
     }
 
@@ -205,20 +153,13 @@ class MainScene{
                     let lastMaterial;
                     if( modelsList[c]["listFilter"].length == 0){
                         modelsList[c].material = modelsList[c]["baseMaterial"];
-
                     }else {
                         lastMaterial = modelsList[c]["listFilter"][modelsList[c]["listFilter"].length - 1];
                         modelsList[c].material = modelsList[c][lastMaterial];
-
                     }
-
                 }
-
-
             }
-
         }
-
     }
 
     render(){
@@ -228,53 +169,44 @@ class MainScene{
     }
 
     getBlockOfCode(){
+
         let pickResult = this.scene.pick(this.scene.pointerX, this.scene.pointerY);
         let info = this.scene.data[pickResult.pickedMesh.id];
 
-
-        $.get("/fileContent/"+encodeURI(info.id).split("/").join("%2F"),function(data){
-                if(data.length>1){
-                    $("#javaCode").empty();
-                    $("#javaCode").append(data);
-                        $('pre code').each(function(i, block) {
-                            hljs.highlightBlock(block);
-                        });
-
-
-                    $("#codeModal").modal('show');
-                }
-        });
-
-        $.get("/getStatistics/"+encodeURI(info.id).split("/").join("%2F"),function(data){
-            $("#statistics").empty();
-
-            var table = $('<table class="table table-inverse"></table>');
-            table.append($('  <thead> <tr> <th>Metrics</th> <th>Value</th></tr> </thead>'));
-            var tbody = $(' <tbody></tbody>');
-            data = JSON.parse(data)[0];
-            console.log(data);
-            for(var i in data){
-                var row = $('<tr></tr>');
-                var column = $('<td></td>').text(i);
-                var column1 = $('<td></td>').text(data[i]);
-                row.append(column);
-                row.append(column1);
-                tbody.append(row);
-            }
-            table.append(tbody)
-            $("#statistics").append(table);
-            renderData(data);
-
-
-
-
-
-        });
-
-
-
+        Request.getFileContent(info);
+        Request.getFileStatistics(info);
     }
 
+
+    sceneInformation(){
+        // We try to pick an object
+
+        var pickResult = this.scene.pick(this.scene.pointerX, this.scene.pointerY);
+        if(!pickResult.hit) return;
+        if(this.old){
+            this.old.material = this.old.oldMaterial;
+        }
+
+        this.old =  pickResult.pickedMesh;
+        this.old.oldMaterial = pickResult.pickedMesh.material;
+
+        let material=new BABYLON.StandardMaterial("hightlight", this.scene);
+        material.diffuseColor = new BABYLON.Color3(1,1,0);
+        pickResult.pickedMesh.material =material;
+        var info = this.scene.data[pickResult.pickedMesh.id];
+        console.log(info)
+
+        var arr = $("#tabInfo").find("td");
+
+
+        for(var i in arr){
+            if(arr[i].id && arr[i].id!="") {
+                console.log(info.features[arr[i].id]);
+                arr[i].innerHTML = info.features[arr[i].id];
+            }
+        }
+        $("#pathIdTab").text(info.id)
+    }
 
 
 }
@@ -283,15 +215,11 @@ class MainScene{
 
 var scn;
 
-
-
 window.createScene = function(url) {
-
-
+    console.log(url)
     scn = new MainScene();
     $.get(url, scn.updateScene.bind(scn));
 };
-
 
 window.addFilter = function(id,obj){
     scn.color(id,obj);

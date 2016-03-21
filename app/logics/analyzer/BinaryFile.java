@@ -1,6 +1,7 @@
 package logics.analyzer;
 
 import interfaces.Component;
+import interfaces.FileComponent;
 import logics.models.json.RenderChild;
 import logics.models.json.RenderComponent;
 
@@ -17,6 +18,7 @@ public class BinaryFile implements Component {
     }
 
     private DataFeatures features;
+
     public BinaryFile(DataFeatures current){
         features = current;
     }
@@ -28,14 +30,13 @@ public class BinaryFile implements Component {
 
     @Override
     public DataFeatures getFeatures() {
-        return this.features;
+        return features;
     }
 
     @Override
     public <T> T applyFunction(Function< Component, T> function) {
         return function.apply(this);
     }
-
 
     @Override
     public RenderChild getRenderJSON() {

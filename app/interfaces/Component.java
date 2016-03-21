@@ -25,7 +25,7 @@ public interface Component {
 
      RenderChild getRenderJSON() ;
 
-     List<Component> getComponentList();
+     List <Component> getComponentList();
 
 
 

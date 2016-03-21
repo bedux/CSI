@@ -51,6 +51,7 @@ public class Package implements Component {
                     }else{
                         BinaryFile file = new BinaryFile(new DataFeatures(name,this.features.getPath()+"/"+remainPath,f));
                         componentList.add(file);
+
                     }
                 }
 

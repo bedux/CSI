@@ -1,6 +1,7 @@
 package logics.analyzer;
 
 import interfaces.Component;
+import interfaces.FileComponent;
 import logics.models.json.RenderChild;
 import logics.models.json.RenderComponent;
 
@@ -19,16 +20,14 @@ public class DataFile implements Component {
     }
 
     private DataFeatures features;
+
     public DataFile(DataFeatures current){
         features = current;
     }
 
-
-
     public boolean add(String s,Path f,String allPath) {
         return false;
     }
-
 
     @Override
     public RenderChild getRenderJSON() {

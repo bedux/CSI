@@ -20,7 +20,7 @@ public class WordCountAnalyser implements Analyser<Integer> {
         c.getComponentList().stream().forEach((x) -> x.applyFunction((new WordCountAnalyser())::analysis));
         int n = 0;
         if (c instanceof BinaryFile) {
-            n= 10;
+            n= 0;
         } else if (c instanceof DataFile) {
             n=analysisCast((DataFile)c);
         }else if (c instanceof logics.analyzer.Package){
@@ -33,7 +33,7 @@ public class WordCountAnalyser implements Analyser<Integer> {
 
 
     private Integer analysisCast(Package p){
-        return 10;
+        return 0;
     }
 
     private Integer analysisCast(DataFile c){
