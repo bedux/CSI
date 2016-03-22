@@ -12,18 +12,27 @@ var materials = {
     1:{
         diffuseColor:new BABYLON.Color3(0.5,0.5,0.5)
     },
+
     2:{
-        diffuseColor:new BABYLON.Color3(1,0,0),
-        texture : "textures/misc.jpg"
+        diffuseColor:new BABYLON.Color3(1,0.388235,0.278431),
     },
     3:{
-        diffuseColor:new BABYLON.Color3(0,1,0)
+        diffuseColor:new BABYLON.Color3(0.823529,0.705882,0.54902)
     },
     4:{
-        diffuseColor:new BABYLON.Color3(0,0,1)
+        diffuseColor:new BABYLON.Color3(0.443137,0.776471,0.443137)
+    },
+    5:{
+        diffuseColor:new BABYLON.Color3(0.0980392,0.0980392,0.439216)
+    },
+    6:{
+        diffuseColor:new BABYLON.Color3( 0.529412,0.807843,0.980392)
+    },
+    7:{
+        diffuseColor:new BABYLON.Color3(1,0.411765,0.705882)
     }
-};
 
+};
 
 
 

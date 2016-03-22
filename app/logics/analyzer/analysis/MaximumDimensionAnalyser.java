@@ -10,6 +10,8 @@ public class MaximumDimensionAnalyser implements Analyser<MaximumMinimumData> {
     public MaximumMinimumData analysis(Component c) {
 
         if(c.getComponentList().size()==0){
+
+
             return new MaximumMinimumData(c.getFeatures().getWidth(),c.getFeatures().getHeight(),c.getFeatures().getDeep(),c.getFeatures().getColor());
         }
         MaximumMinimumData[] streamResult = c.getComponentList().stream().map((x) ->
@@ -17,7 +19,9 @@ public class MaximumDimensionAnalyser implements Analyser<MaximumMinimumData> {
         ).toArray(x -> new MaximumMinimumData[x]);
 
         MaximumMinimumData myMax = streamResult[0];
-        for(  MaximumMinimumData mh:streamResult){
+        for( int i = 1 ; i< streamResult.length;i++){
+            MaximumMinimumData mh = streamResult[i];
+                myMax.merge(mh.getDepths(), mh.getHeights(), mh.getWidths(), mh.getColors());
 
             myMax.setOnlyIfMaxMinDepth(mh.maxDepth);
             myMax.setOnlyIfMaxMinHeight(mh.maxHeight);

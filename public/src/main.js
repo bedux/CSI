@@ -93,6 +93,8 @@ class MainScene{
 
         this.canvas.addEventListener("dblclick",this.getBlockOfCode.bind(this));
         this.canvas.addEventListener("mousemove",this.sceneInformation.bind(this));
+        this.canvas.addEventListener("mouseout",this.mouseOut.bind(this));
+
 
 
     }
@@ -182,7 +184,13 @@ class MainScene{
         // We try to pick an object
 
         var pickResult = this.scene.pick(this.scene.pointerX, this.scene.pointerY);
-        if(!pickResult.hit) return;
+        if(!pickResult.hit){
+            if(this.old){
+                this.old.material = this.old.oldMaterial;
+                this.old = undefined;
+            }
+            return;
+        }
         if(this.old){
             this.old.material = this.old.oldMaterial;
         }
@@ -209,6 +217,12 @@ class MainScene{
     }
 
 
+    mouseOut(){
+        if(this.old){
+            this.old.material = this.old.oldMaterial;
+            this.old = undefined;
+        }
+    }
 }
 
 

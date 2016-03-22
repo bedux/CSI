@@ -10,51 +10,73 @@ import logics.renderTools.Point3d;
 /**
  * Created by bedux on 03/03/16.
  */
-public class ColoringAnalyser implements Analyser<Integer>{
+public class ColoringAnalyser implements Analyser<Integer> {
 
     private int max = 0;
     private MaximumMinimumData maximumMinimumData;
 
-    public ColoringAnalyser(int max, MaximumMinimumData maximumMinimumData){
+    public ColoringAnalyser(int max, MaximumMinimumData maximumMinimumData) {
         this.max = max;
-        this.maximumMinimumData=maximumMinimumData;
+        this.maximumMinimumData = maximumMinimumData;
     }
+
     @Override
     public Integer analysis(Component c) {
 
-        c.getComponentList().stream().forEach((x) -> x.applyFunction((new ColoringAnalyser(max,maximumMinimumData))::analysis));
+        c.getComponentList().stream().forEach((x) -> x.applyFunction((new ColoringAnalyser(max, maximumMinimumData))::analysis));
         if (c instanceof BinaryFile) {
             c.getFeatures().setBuildingType(0);
             c.getFeatures().setColor(-1);
         } else if (c instanceof DataFile) {
             analysisCast((DataFile) c);
-        }else if (c instanceof logics.analyzer.Package){
+        } else if (c instanceof logics.analyzer.Package) {
             analysisCast((Package) c);
         }
 
         return 0;
     }
 
-    private void analysisCast(Package p){
+    private void analysisCast(Package p) {
 
-        float color = p.getFeatures().getRemoteness()/((float)max);
-        p.getFeatures().setColor(color+0.01f);
+        float color = p.getFeatures().getRemoteness() / ((float) max);
+        p.getFeatures().setColor(color + 0.01f);
     }
 
-    private void analysisCast(DataFile p){
+    private void analysisCast(DataFile p) {
         //some computation about the color!
 
-        if(p.getFeatures().getPath().indexOf(".java")!=p.getFeatures().getPath().length()-5) {
+        if (p.getFeatures().getPath().indexOf(".java") != p.getFeatures().getPath().length() - 5) {
 
             p.getFeatures().setColor(-1);
             p.getFeatures().setBuildingType(1);
 
-        }else {
-            float f1 = p.getFeatures().getColor() - this.maximumMinimumData.minColor;
-            float f2 = this.maximumMinimumData.maxColor - this.maximumMinimumData.minColor;
-            float f3 = f2 / 2;
-            p.getFeatures().setColor(-1);
-            p.getFeatures().setBuildingType((int)(f1/f3)+2);
+        } else {
+//            float f1 = p.getFeatures().getColor() - this.maximumMinimumData.minColor;
+//            float f2 = this.maximumMinimumData.maxColor - this.maximumMinimumData.minColor;
+//            float f3 = f2 / 2;
+//            p.getFeatures().setColor(-1);
+//            p.getFeatures().setBuildingType((int)(f1/f3)+2);
+
+            float[] res = maximumMinimumData.getDepthDivision(5);
+            if (p.getFeatures().getColor() <= res[0]) {
+                p.getFeatures().setColor(-1);
+                p.getFeatures().setBuildingType(2);
+            } else if (p.getFeatures().getColor() <= res[1]) {
+                p.getFeatures().setColor(-1);
+                p.getFeatures().setBuildingType(3);
+            } else if (p.getFeatures().getColor() <= res[2]) {
+                p.getFeatures().setColor(-1);
+                p.getFeatures().setBuildingType(4);
+            } else if (p.getFeatures().getColor() <= res[3]) {
+                p.getFeatures().setColor(-1);
+                p.getFeatures().setBuildingType(5);
+            } else if (p.getFeatures().getColor() <= res[4]) {
+                p.getFeatures().setColor(-1);
+                p.getFeatures().setBuildingType(6);
+            } else {
+                p.getFeatures().setColor(-1);
+                p.getFeatures().setBuildingType(7);
+            }
         }
         //end computation
         //p.getFeatures().setColor(0);

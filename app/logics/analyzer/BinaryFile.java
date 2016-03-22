@@ -23,7 +23,6 @@ public class BinaryFile implements Component {
         features = current;
     }
 
-
     public boolean add(String s,Path f,String allPath) {
         return false;
     }

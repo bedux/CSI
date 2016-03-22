@@ -14,6 +14,7 @@ import play.libs.Json;
 
 import java.io.*;
 import java.nio.file.Files;
+import java.util.Arrays;
 import java.util.List;
 
 /**
@@ -38,6 +39,8 @@ public class AnaliserHandler implements Handler<AnalyserHandlerParam,AnalyserHan
         root.applyFunction(new WordCountAnalyser()::analysis);
         root.applyFunction(new MethodCountAnalyser()::analysis);
         MaximumMinimumData mmd = root.applyFunction(new MaximumDimensionAnalyser()::analysis);
+        System.out.println(Arrays.toString(mmd.getWidthDivision(5)));
+
         root.applyFunction(new AdjustSizeAnalyser(mmd)::analysis);
         root.applyFunction(new PackingAnalyzer()::analysis);
 

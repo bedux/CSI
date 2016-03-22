@@ -28,10 +28,10 @@ public class Application extends Controller {
     }
 
 
-    public static Result indexGet(){
+    public static Result indexGet(Long id){
         ObjectNode result = Json.newObject();
-        new AnaliserHandler().process(new AnalyserHandlerParam(RepositoryVersion.find.byId(2L)));
-        return ok(result);
+        new AnaliserHandler().process(new AnalyserHandlerParam(RepositoryVersion.find.byId(id)));
+        return ok("Done!");
 
     }
 

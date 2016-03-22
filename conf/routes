@@ -21,7 +21,7 @@ GET     /renderRepo/:id/:version                  controllers.Application.render
 GET     /assets/*file               controllers.Assets.at(path="/public", file)
 
 
-GET /getData              controllers.Application.indexGet
+GET /getData/:id              controllers.Application.indexGet(id:Long)
 
 POST /applyFilter           controllers.Application.applyFilter
 

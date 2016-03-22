@@ -6,20 +6,20 @@ import logics.analyzer.*;
 import logics.analyzer.Package;
 import logics.models.tools.MaximumMinimumData;
 
+import java.util.Arrays;
+
 
 public class AdjustSizeAnalyser implements Analyser<Integer> {
 
-    private static float division = 4f;
+    private static float division = 2f;
     private static  final float heightPackage = 20;
     private static  final float heightBinaryFile = 5;
-    private static  final float maxWidth = 50;
-    private static  final float maxDeep = 50;
-    private static  final float maxHeight = 50;
+    private static  final float maxWidth = 100;
 
 
 
 
-    MaximumMinimumData maximumMinimumData;
+    private MaximumMinimumData maximumMinimumData;
     public AdjustSizeAnalyser(MaximumMinimumData maximumMinimumData){
         this.maximumMinimumData=maximumMinimumData;
     }
@@ -27,6 +27,7 @@ public class AdjustSizeAnalyser implements Analyser<Integer> {
     @Override
     public Integer analysis(Component c) {
         c.getComponentList().stream().forEach((x) -> x.applyFunction((new AdjustSizeAnalyser(maximumMinimumData))::analysis));
+
         if (c instanceof BinaryFile) {
             c.getFeatures().gap = 0.4f;
             c.getFeatures().setHeight(heightBinaryFile);
@@ -65,25 +66,113 @@ public class AdjustSizeAnalyser implements Analyser<Integer> {
             return 0;
         }
 
-        float myDepth = (c.getFeatures().getDeep()-maximumMinimumData.minDepth);
-        float deltaDepth = (maximumMinimumData.maxDepth-maximumMinimumData.minDepth)/ division;
-        float depthStepNumber = (int)( myDepth/deltaDepth)+1;
-        c.getFeatures().setDeep(depthStepNumber * maxDeep);
+//        float myDepth = (c.getFeatures().getDeep()-maximumMinimumData.minDepth);
+//        float deltaDepth = (maximumMinimumData.maxDepth-maximumMinimumData.minDepth)/ division;
+//        int depthStepNumber = (int)( myDepth/deltaDepth)+1;
+//        switch(depthStepNumber){
+//            case 1:
+//                c.getFeatures().gap = 60;
+//                c.getFeatures().setDeep(50);
+//                break;
+//            case 2:
+//                c.getFeatures().gap = 110;
+//                c.getFeatures().setDeep(75);
+//                break;
+//            case 3:
+//                c.getFeatures().gap = 200;
+//                c.getFeatures().setDeep(100);
+//                break;
+//        }
+
+        float [] res = maximumMinimumData.getDepthDivision(5);
+        if(c.getFeatures().getDeep() <= res[0]){
+            c.getFeatures().gap = 20;
+            c.getFeatures().setDeep(20);
+        }else  if(c.getFeatures().getDeep() <= res[1]){
+            c.getFeatures().gap = 40;
+            c.getFeatures().setDeep(40);
+        }else  if(c.getFeatures().getDeep() <= res[2]){
+            c.getFeatures().gap = 50;
+            c.getFeatures().setDeep(100);
+        }else  if(c.getFeatures().getDeep() <= res[3]){
+            c.getFeatures().gap = 100;
+            c.getFeatures().setDeep(200);
+        }else  if(c.getFeatures().getDeep() <= res[4]){
+            c.getFeatures().gap = 120;
+            c.getFeatures().setDeep(400);
+        }else {
+            c.getFeatures().gap = 160;
+            c.getFeatures().setDeep(800);
+        }
+
+//        float myWidth = (c.getFeatures().getWidth()-maximumMinimumData.minWidth);
+//        float deltaWidth = (maximumMinimumData.maxWidth-maximumMinimumData.minWidth)/ division;
+//        int widthStepNumber =(int) ( myWidth/deltaWidth)+1;
+//        c.getFeatures().setWidth(widthStepNumber * maxWidth);
+//        switch(widthStepNumber){
+//            case 1:
+//                c.getFeatures().setWidth(50);
+//                break;
+//            case 2:
+//                c.getFeatures().setWidth(75);
+//                break;
+//            case 3:
+//                c.getFeatures().setWidth(100);
+//                break;
+//
+//
+//
+//        }
+         res = maximumMinimumData.getWidthDivision(5);
+        if(c.getFeatures().getWidth() <= res[0]){
+            c.getFeatures().setWidth(20);
+        }else  if(c.getFeatures().getWidth() <= res[1]){
+            c.getFeatures().setWidth(40);
+        }else  if(c.getFeatures().getWidth() <= res[2]){
+            c.getFeatures().setWidth(100);
+        }else  if(c.getFeatures().getWidth() <= res[3]){
+            c.getFeatures().setWidth(200);
+        }else  if(c.getFeatures().getWidth() <= res[4]){
+            c.getFeatures().setWidth(400);
+        }else{
+            c.getFeatures().setWidth(800);
+        }
 
 
+//        float myHeight = (c.getFeatures().getHeight()-maximumMinimumData.minHeight);
+//        float deltaHeight = (maximumMinimumData.maxHeight-maximumMinimumData.minHeight)/ division;
+//        int depthStepHeight = (int) ( myHeight/deltaHeight)+1;
+//
+//
+//        switch(depthStepHeight){
+//            case 1:
+//                c.getFeatures().setHeight(50);
+//                break;
+//            case 2:
+//                c.getFeatures().setHeight(150);
+//                break;
+//
+//            case 3:
+//                c.getFeatures().setHeight(350);
+//                break;
+//
+//
+//        }
 
-        float myWidth = (c.getFeatures().getWidth()-maximumMinimumData.minWidth);
-        float deltaWidth = (maximumMinimumData.maxWidth-maximumMinimumData.minWidth)/ division;
-        float widthStepNumber =(int) ( myWidth/deltaWidth)+1;
-        c.getFeatures().setWidth(widthStepNumber * maxWidth);
-
-        float myHeight = (c.getFeatures().getHeight()-maximumMinimumData.minHeight);
-        float deltaHeight = (maximumMinimumData.maxHeight-maximumMinimumData.minHeight)/ division;
-        float depthStepHeight = ( myHeight/deltaHeight)+1;
-
-        c.getFeatures().setHeight(depthStepHeight * maxHeight);
-
-
+       res = maximumMinimumData.getHeightDivision(5);
+        if(c.getFeatures().getHeight() <= res[0]){
+            c.getFeatures().setHeight(20);
+        }else  if(c.getFeatures().getHeight() <= res[1]){
+            c.getFeatures().setHeight(40);
+        }else  if(c.getFeatures().getHeight() <= res[2]){
+            c.getFeatures().setHeight(100);
+        }else  if(c.getFeatures().getHeight() <= res[3]){
+            c.getFeatures().setHeight(200);
+        }else  if(c.getFeatures().getHeight() <= res[4]){
+            c.getFeatures().setHeight(400);
+        }else{
+            c.getFeatures().setHeight(800);
+        }
 
         return 1;
 

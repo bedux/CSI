@@ -143,3 +143,12 @@ html, body {
     width:400px;
     height:400px;
 }
+
+
+#legenda{
+    color:white;
+    padding:10px;
+    position:absolute;
+    bottom: 0px;
+    background: rgba(172, 172, 172, 0.14);
+}

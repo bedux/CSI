@@ -46,6 +46,7 @@ public class WordCountAnalyser implements Analyser<Integer> {
             }).sum());
             return wc;
         } catch (IOException e) {
+
             throw new CustomException(e);
         }
     }

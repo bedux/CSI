@@ -23,13 +23,14 @@ public class NumberOfLine extends Filter<ComponentInfo> {
 
     @Override
     public ObjectNode getDescription(Long id) {
+
             ObjectNode result = Json.newObject();
             result.put("Type",FilterType.RANGE.toString());
             result.put("Name","by Number of Line");
             result.put("Id",DataName.NoLine.getValue());
 
             List<ComponentInfo> t = ComponentInfo.find.where().eq("repository.id", id).orderBy(DataName.NoLine.getValue()).findList();
-          result.put("Min",t.get(0).getNoLine());
+            result.put("Min",t.get(0).getNoLine());
             result.put("Max",t.get(t.size()-1).getNoLine());
 
         return result;
