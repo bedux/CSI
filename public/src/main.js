@@ -17,7 +17,7 @@ class MainScene{
         this.scene  = new BABYLON.Scene(this.engine);
 
         // create a FreeCamera, and set its position to (x:0, y:5, z:-10)
-        this.camera = new BABYLON.FreeCamera("FreeCamera", new BABYLON.Vector3(mock.pipoo.data.width, mock.pipoo.data.height, mock.pipoo.data.deep), this.scene);
+        this.camera = new BABYLON.FreeCamera("FreeCamera", new BABYLON.Vector3(1,0,0), this.scene);
         this.camera.maxZ = 100000;
 
         // target the camera to scene origin
@@ -39,6 +39,7 @@ class MainScene{
 
         this.width = 0;
         this.deep = 0;
+        // Shadows
 
 
 
@@ -104,8 +105,21 @@ class MainScene{
         this.scene.data = {};
         this.width = data.data.width;
         this.deep = data.data.deep;
+
+        //this.light = new BABYLON.PointLight("Omnu1", new BABYLON.Vector3(0, 10000,0),this.scene);
+        //this.light.setEnabled(1);
+
+        var box = BABYLON.Mesh.CreateBox("box", 6.0, this.scene, false, BABYLON.Mesh.DEFAULTSIDE);
+
+        //this.shadowGenerator = new BABYLON.ShadowGenerator(1024, this.light);
+        //
+        //this.shadowGenerator.useVarianceShadowMap = true;
+
         build.recursiveDraw(this.scene,new BABYLON.Vector3(0,0,0),data.data,this.pivot);
+
         this.camera.position = new BABYLON.Vector3(build.maxX, build.maxY, build.maxZ);
+
+
 
     }
 
@@ -165,6 +179,19 @@ class MainScene{
     }
 
     render(){
+
+        //var m = BABYLON.Matrix.RotationX(this.camera.rotation.x)
+        //m = m.multiply(BABYLON.Matrix.RotationY(this.camera.rotation.y));
+        //m = m.multiply(BABYLON.Matrix.RotationZ(this.camera.rotation.z)) ;
+
+
+        for(var i in this.scene.models){
+            if( this.scene.models[i].material.setVector3) {
+
+                this.scene.models[i].material.setVector3("LightPosition",this.camera.position);
+            }
+
+        }
     }
 
     resize(){

@@ -20,7 +20,7 @@ import java.util.List;
 /**
  * Created by bedux on 08/03/16.
  */
-public class AnaliserHandler implements Handler<AnalyserHandlerParam,AnalyserHandlerResult>{
+public class AnalyserHandler implements Handler<AnalyserHandlerParam,AnalyserHandlerResult>{
 
     @Override
     public AnalyserHandlerResult process(AnalyserHandlerParam param) {
@@ -36,11 +36,10 @@ public class AnaliserHandler implements Handler<AnalyserHandlerParam,AnalyserHan
             root.add(dir, helper.toPath(), remainName);
         }
 
+
         root.applyFunction(new WordCountAnalyser()::analysis);
         root.applyFunction(new MethodCountAnalyser()::analysis);
         MaximumMinimumData mmd = root.applyFunction(new MaximumDimensionAnalyser()::analysis);
-        System.out.println(Arrays.toString(mmd.getWidthDivision(5)));
-
         root.applyFunction(new AdjustSizeAnalyser(mmd)::analysis);
         root.applyFunction(new PackingAnalyzer()::analysis);
 
@@ -56,7 +55,7 @@ public class AnaliserHandler implements Handler<AnalyserHandlerParam,AnalyserHan
             try {
                 Files.delete(new File(Definitions.jsonPath+param.repositoryVersion.id+".json").toPath());
             } catch (IOException e) {
-                new CustomException(e);
+                throw new CustomException(e);
             }
         }
         try (Writer writer = new BufferedWriter(new OutputStreamWriter(
@@ -66,7 +65,7 @@ public class AnaliserHandler implements Handler<AnalyserHandlerParam,AnalyserHan
             param.repositoryVersion.update();
 
         }catch (Exception e){
-            new CustomException(e);
+            throw new CustomException(e);
         }
 
         return new AnalyserHandlerResult(json);

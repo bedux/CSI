@@ -36,7 +36,7 @@ var materials = {
 
 
 
-function createBuilding(scene, position, data,parent) {
+function createBuilding(scene, position, data,parent,lp) {
 
     let cylinder;
 
@@ -49,29 +49,34 @@ function createBuilding(scene, position, data,parent) {
     cylinder.parent = parent;
     updateMaximumPos(position.x+data.width,position.y+data.height,position.z+data.deep);
 
-    let material =  new BABYLON.StandardMaterial(data.id+"_texture", scene);
-    console.log(data,"data");
+    let material = new BABYLON.ShaderMaterial(data.id+"_texture", scene,"/assets/javascripts/base",
+        {
+            attributes: ["position","uv","normal"],
+            uniforms: ["worldViewProjection","world","color","LightPosition"]
+        });
     if(data.color==-1){
-        material.diffuseColor = materials[data.buildingType].diffuseColor;
-        material.specularColor = BABYLON.Color3.Black();
-        if(materials[data.buildingType].hasOwnProperty("texture")){
-        }
+        console.log(materials[data.buildingType].diffuseColor,"asdasd")
+        material.setColor3("color",materials[data.buildingType].diffuseColor);
+
+
     }else{
-        material.diffuseColor = new BABYLON.Color3(0,data.color,data.color);
-        material.specularColor = BABYLON.Color3.Black();
+        material.setColor3("color",   new BABYLON.Color3(0,data.color,data.color));
+
+
     }
 
 
+    material.setVector3("LightPosition",lp);
 
     cylinder.material = material;
-    scene.models[data.id+ "_model"] = cylinder
 
+    scene.models[data.id+ "_model"] = cylinder
+    return cylinder;
 }
 
 
-function recursiveDraw(scene,position,data,parent){
-
-        createBuilding(scene,position,data,parent);
+function recursiveDraw(scene,position,data,parent,lp){
+   createBuilding(scene,position,data,parent,lp);
 
         if(data.children==null) return;
 

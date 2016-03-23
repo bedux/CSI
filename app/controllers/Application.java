@@ -8,13 +8,10 @@ import logics.models.db.ComponentInfo;
 import logics.models.db.RepositoryVersion;
 import logics.models.tools.Data;
 import logics.filters.QueryBuilder;
-import logics.pipeline.analayser.AnaliserHandler;
+import logics.pipeline.analayser.AnalyserHandler;
 import logics.pipeline.analayser.AnalyserHandlerParam;
 import play.libs.Json;
 import play.mvc.*;
-
-
-import com.fasterxml.jackson.databind.node.*;
 import views.html.*;
 
 import java.io.IOException;
@@ -29,8 +26,11 @@ public class Application extends Controller {
 
 
     public static Result indexGet(Long id){
-        ObjectNode result = Json.newObject();
-        new AnaliserHandler().process(new AnalyserHandlerParam(RepositoryVersion.find.byId(id)));
+        try {
+            new AnalyserHandler().process(new AnalyserHandlerParam(RepositoryVersion.find.byId(id)));
+        }catch (Exception e){
+            System.err.println(e.getMessage());
+        }
         return ok("Done!");
 
     }
