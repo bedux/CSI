@@ -11,7 +11,6 @@ import java.util.Arrays;
 
 public class AdjustSizeAnalyser implements Analyser<Integer> {
 
-    private static float division = 2f;
     private static  final float heightPackage = 20;
     private static  final float heightBinaryFile = 5;
     private static  final float maxWidth = 100;
@@ -29,10 +28,10 @@ public class AdjustSizeAnalyser implements Analyser<Integer> {
         c.getComponentList().stream().forEach((x) -> x.applyFunction((new AdjustSizeAnalyser(maximumMinimumData))::analysis));
 
         if (c instanceof BinaryFile) {
-            c.getFeatures().gap = 0.4f;
+            c.getFeatures().gap = 1f;
             c.getFeatures().setHeight(heightBinaryFile);
-            c.getFeatures().setWidth(5);
-            c.getFeatures().setDeep(5);
+            c.getFeatures().setWidth(10);
+            c.getFeatures().setDeep(10);
 
 
         } else if (c instanceof DataFile) {

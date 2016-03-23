@@ -52,10 +52,9 @@ function createBuilding(scene, position, data,parent,lp) {
     let material = new BABYLON.ShaderMaterial(data.id+"_texture", scene,"/assets/javascripts/base",
         {
             attributes: ["position","uv","normal"],
-            uniforms: ["worldViewProjection","world","color","LightPosition"]
+            uniforms: ["worldViewProjection","world","color","LightPosition","maxSize"]
         });
     if(data.color==-1){
-        console.log(materials[data.buildingType].diffuseColor,"asdasd")
         material.setColor3("color",materials[data.buildingType].diffuseColor);
 
 
@@ -65,6 +64,8 @@ function createBuilding(scene, position, data,parent,lp) {
 
     }
 
+
+    material.setVector3("maxSize",new BABYLON.Vector3(data.width,data.height,data.deep));
 
     material.setVector3("LightPosition",lp);
 

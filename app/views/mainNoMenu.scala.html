@@ -1,4 +1,4 @@
-@(title: String)(content: Html)
+@(title: String,infoProject:Map[String,String])(content: Html)
 <!DOCTYPE html>
 
 <html xmlns="http://www.w3.org/1999/html">
@@ -66,6 +66,20 @@
 
             </div>
 
+            <div id = "pName" class="table-responsive">
+                <table id="tableName">
+                    <tbody>
+
+                    <tr><td>Name: </td><td><a href="@infoProject.get("name")">@infoProject.get("name")</a></td></tr>
+                    <tr><td>Number of line of code: </td><td>@infoProject.get("nol")</td></tr>
+
+                    <tr><td>Number of files: </td><td>@infoProject.get("nod")</td></tr>
+                    <tr><td>Size: </td><td>@infoProject.get("size")</td></tr>
+                    </tbody>
+
+
+                </table>
+           </div>
 
         <script type="text/javascript">
             $("#droppy").on('hide.bs.dropdown',function(){

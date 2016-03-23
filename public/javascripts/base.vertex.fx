@@ -12,6 +12,7 @@ uniform mat4 world;
 uniform mat4 worldViewProjection;
 uniform vec3 color;
 uniform vec3 LightPosition;
+uniform vec3 maxSize;
 
 
 // Varying
@@ -20,6 +21,9 @@ varying vec3 vPositionW;
 varying vec3 vNormalW;
 varying vec2 vUV;
 varying vec3 vLightPosition;
+varying vec3 vMaxSize;
+varying vec3 vPos;
+
 
 
 
@@ -35,5 +39,8 @@ void main(void) {
     vUV = uv;
     vColor = color;
     vLightPosition = LightPosition;
+    vMaxSize = maxSize;
+    vPos = position;
+
 
 }

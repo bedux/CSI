@@ -1,6 +1,7 @@
 package controllers;
 
 import com.fasterxml.jackson.databind.JsonNode;
+import interfaces.DataAttributes;
 import logics.Definitions;
 import logics.analyzer.DataFeatures;
 
@@ -17,6 +18,8 @@ import views.html.*;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.util.HashMap;
+import java.util.Map;
 
 public class Application extends Controller {
 
@@ -56,7 +59,21 @@ public class Application extends Controller {
 
     public static Result renderRepo(String id,Long version) {
         System.out.println(id);
-        return ok(render.render(id,version,(QueryBuilder.getFilters(version)), DataFeatures.getMapMethod));
+        Map<String,String> info = new HashMap<>();
+        String name = RepositoryVersion.find.byId(version).repository.uri;
+        info.put("name", name);
+        info.put("nol", ((Integer) (ComponentInfo.find.where().eq("repository.id", version).findList().stream().mapToInt(x -> x.getNoLine()).sum())).toString());
+        info.put("nod", ((Integer) (ComponentInfo.find.where().eq("repository.id", version).findList().size())).toString());
+        try {
+           Long size = Files.walk(Paths.get(Definitions.repositoryPath+version)).filter(p -> p.toFile().isFile()).mapToLong(p -> p.toFile().length()).sum();
+
+            info.put("size", Long.toString(size/1024L)+" Kb");
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+
+        return ok(render.render(id,version,(QueryBuilder.getFilters(version)), DataFeatures.getMapMethod,info));
     }
 
     public static Result applyFilter() {

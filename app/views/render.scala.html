@@ -1,7 +1,7 @@
 @import com.fasterxml.jackson.databind.JsonNode
 
-@(id:String,repoVersion:Long,filters:JsonNode,infoParams: Map[String, String])
-@mainNoMenu("Render") {
+@(id:String,repoVersion:Long,filters:JsonNode,infoParams: Map[String, String],infoProject:Map[String,String])
+@mainNoMenu("Render",infoProject) {
 
 
     @components.infoTab(infoParams)
