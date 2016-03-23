@@ -38,8 +38,15 @@ public class ColoringAnalyser implements Analyser<Integer> {
 
     private void analysisCast(Package p) {
 
-        float color = p.getFeatures().getRemoteness() / ((float) max);
-        p.getFeatures().setColor(color + 0.01f);
+        if(p.getFeatures().getRemoteness()==0){
+
+            p.getFeatures().setColor(-1);
+            p.getFeatures().setBuildingType(4);
+        }else {
+            float color = p.getFeatures().getRemoteness() / ((float) max);
+            p.getFeatures().setColor(color + 0.01f);
+
+        }
     }
 
     private void analysisCast(DataFile p) {
@@ -57,26 +64,11 @@ public class ColoringAnalyser implements Analyser<Integer> {
 //            p.getFeatures().setColor(-1);
 //            p.getFeatures().setBuildingType((int)(f1/f3)+2);
 
-            float[] res = maximumMinimumData.getDepthDivision(5);
-            if (p.getFeatures().getColor() <= res[0]) {
-                p.getFeatures().setColor(-1);
+
+                p.getFeatures().setColor(p.getFeatures().getColor()/maximumMinimumData.maxColor);
                 p.getFeatures().setBuildingType(2);
-            } else if (p.getFeatures().getColor() <= res[1]) {
-                p.getFeatures().setColor(-1);
-                p.getFeatures().setBuildingType(3);
-            } else if (p.getFeatures().getColor() <= res[2]) {
-                p.getFeatures().setColor(-1);
-                p.getFeatures().setBuildingType(4);
-            } else if (p.getFeatures().getColor() <= res[3]) {
-                p.getFeatures().setColor(-1);
-                p.getFeatures().setBuildingType(5);
-            } else if (p.getFeatures().getColor() <= res[4]) {
-                p.getFeatures().setColor(-1);
-                p.getFeatures().setBuildingType(6);
-            } else {
-                p.getFeatures().setColor(-1);
-                p.getFeatures().setBuildingType(7);
-            }
+
+
         }
         //end computation
         //p.getFeatures().setColor(0);

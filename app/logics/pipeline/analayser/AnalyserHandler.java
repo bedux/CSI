@@ -24,7 +24,8 @@ public class AnalyserHandler implements Handler<AnalyserHandlerParam,AnalyserHan
 
     @Override
     public AnalyserHandlerResult process(AnalyserHandlerParam param) {
-       List<ComponentInfo> components =  ComponentInfo.find.where("repository = " + param.repositoryVersion.id).findList();
+       List<ComponentInfo> components =  ComponentInfo.find.where().eq("repository.id", param.repositoryVersion.id).findList();
+
 
         File fileRoot = new File(Definitions.repositoryPath + param.repositoryVersion.id);
         Package root = new Package(new DataFeatures("root", param.repositoryVersion.id.toString(), fileRoot.toPath()));
@@ -45,7 +46,7 @@ public class AnalyserHandler implements Handler<AnalyserHandlerParam,AnalyserHan
 
 
         int max = root.applyFunction(new DepthAnalyser()::analysis);
-        mmd = root.applyFunction(new MaximumDimensionAnalyser()::analysis);
+           mmd = root.applyFunction(new MaximumDimensionAnalyser()::analysis);
         root.applyFunction(new ColoringAnalyser(max,mmd)::analysis);
         root.applyFunction(new SaveFeaturesInDbAnalyser(param.repositoryVersion)::analysis);
 
@@ -65,6 +66,7 @@ public class AnalyserHandler implements Handler<AnalyserHandlerParam,AnalyserHan
             param.repositoryVersion.update();
 
         }catch (Exception e){
+
             throw new CustomException(e);
         }
 

@@ -126,7 +126,7 @@ public class DataFeatures extends Features implements DataAttributes {
 
     public static Map<String, String> getMapMethod = new HashMap() {
         {
-            put("Number of Fileds (Width)  ", DataName.NOF.getValue());
+            put("Number of Fields (Width)", DataName.NOF.getValue());
             put("Number of Methods (Height)", DataName.NoMethod.getValue());
             put("Number of Lines (Color)", DataName.NoLine.getValue());
 

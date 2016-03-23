@@ -61,36 +61,7 @@ class MainScene{
         }).bind(this));
 
 
-        this.canvas.addEventListener("keydown", (
-            function(e){
-                var pickResult = this.scene.pick(this.scene.pointerX, this.scene.pointerY);
-                if(e.shiftKey && pickResult.hit) {
-                    let camera1 = new BABYLON.ArcRotateCamera("ArcRotateCamera", 0, 0,0, pickResult.pickedPoint, this.scene);
 
-
-                    // Quick, let's use the setPosition() method... with a common Vector3 position, to make our camera better aimed.
-                    camera1.setPosition(this.camera.position);
-                    camera1.attachControl(this.canvas, false);
-
-
-                    this.scene.activeCamera = camera1;
-
-
-                }else{
-                    //this.camera.setPosition(this.scene.activeCamera.position);
-
-                    //this.camera.rotation =  this.scene.activeCamera.rotation ;
-
-                    this.scene.activeCamera = this.camera;
-
-                    this.camera.attachControl(this.canvas, false);
-
-
-
-
-                }
-            }
-        ).bind(this), false);
 
         this.canvas.addEventListener("dblclick",this.getBlockOfCode.bind(this));
         this.canvas.addEventListener("mousemove",this.sceneInformation.bind(this));
@@ -118,7 +89,7 @@ class MainScene{
         build.recursiveDraw(this.scene,new BABYLON.Vector3(0,0,0),data.data,this.pivot);
 
         this.camera.position = new BABYLON.Vector3(build.maxX, build.maxY, build.maxZ);
-
+        this.camera.setTarget(new BABYLON.Vector3(build.maxX/2, 0, build.maxZ/2));
 
 
     }
@@ -197,6 +168,16 @@ class MainScene{
     resize(){
     }
 
+    keyPress(e){
+        console.log(e.keyCode);
+        if(e.keyCode == 116){
+                var h = Math.cos(this.camera.fov)*(build.maxX>build.maxZ?build.maxX:build.maxZ)
+
+            this.camera.position = new BABYLON.Vector3(build.maxX/2, h+h/2, build.maxZ/2);
+            this.camera.setTarget(new BABYLON.Vector3(build.maxX/2, 0, build.maxZ/2));
+        }
+    }
+
     getBlockOfCode(){
 
         let pickResult = this.scene.pick(this.scene.pointerX, this.scene.pointerY);
@@ -255,6 +236,12 @@ class MainScene{
 
 
 var scn;
+
+window.addEventListener("keypress", (
+    function(e){
+            scn.keyPress(e);
+    }
+).bind(scn));
 
 window.createScene = function(url) {
     console.log(url)

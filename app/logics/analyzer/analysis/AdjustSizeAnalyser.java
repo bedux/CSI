@@ -11,9 +11,9 @@ import java.util.Arrays;
 
 public class AdjustSizeAnalyser implements Analyser<Integer> {
 
-    private static  final float heightPackage = 20;
-    private static  final float heightBinaryFile = 5;
-    private static  final float maxWidth = 100;
+
+    private static final float unit = 20;
+
 
 
 
@@ -28,10 +28,9 @@ public class AdjustSizeAnalyser implements Analyser<Integer> {
         c.getComponentList().stream().forEach((x) -> x.applyFunction((new AdjustSizeAnalyser(maximumMinimumData))::analysis));
 
         if (c instanceof BinaryFile) {
-            c.getFeatures().gap = 1f;
-            c.getFeatures().setHeight(heightBinaryFile);
-            c.getFeatures().setWidth(10);
-            c.getFeatures().setDeep(10);
+            c.getFeatures().setHeight(unit);
+            c.getFeatures().setWidth(unit);
+            c.getFeatures().setDeep(unit);
 
 
         } else if (c instanceof DataFile) {
@@ -45,11 +44,9 @@ public class AdjustSizeAnalyser implements Analyser<Integer> {
     }
 
 
-
-
-
     private Integer analysisCast(Package p){
-        p.getFeatures().setHeight(heightPackage);
+        p.getFeatures().setHeight(unit);
+
         return 1;
     }
 
@@ -57,13 +54,17 @@ public class AdjustSizeAnalyser implements Analyser<Integer> {
 
         String fn = c.getFeatures().getPath().substring(c.getFeatures().getPath().lastIndexOf(".") + 1);
         if(fn.indexOf("java")==-1){
-            c.getFeatures().gap = 1f;
-            c.getFeatures().setHeight(heightBinaryFile);
-            c.getFeatures().setWidth(10);
-            c.getFeatures().setDeep(10);
+            c.getFeatures().setHeight(unit);
+            c.getFeatures().setWidth(unit);
+            c.getFeatures().setDeep(unit);
 
             return 0;
         }
+
+
+        c.getFeatures().setDeep(c.getFeatures().getRendererDeep()*unit+unit);
+        c.getFeatures().setWidth(c.getFeatures().getRendererWidth()*unit+unit);
+        c.getFeatures().setHeight(c.getFeatures().getHeight()*unit+unit);
 
 //        float myDepth = (c.getFeatures().getDeep()-maximumMinimumData.minDepth);
 //        float deltaDepth = (maximumMinimumData.maxDepth-maximumMinimumData.minDepth)/ division;
@@ -83,26 +84,26 @@ public class AdjustSizeAnalyser implements Analyser<Integer> {
 //                break;
 //        }
 
-        float [] res = maximumMinimumData.getDepthDivision(5);
-        if(c.getFeatures().getDeep() <= res[0]){
-            c.getFeatures().gap = 20;
-            c.getFeatures().setDeep(20);
-        }else  if(c.getFeatures().getDeep() <= res[1]){
-            c.getFeatures().gap = 40;
-            c.getFeatures().setDeep(40);
-        }else  if(c.getFeatures().getDeep() <= res[2]){
-            c.getFeatures().gap = 50;
-            c.getFeatures().setDeep(100);
-        }else  if(c.getFeatures().getDeep() <= res[3]){
-            c.getFeatures().gap = 100;
-            c.getFeatures().setDeep(200);
-        }else  if(c.getFeatures().getDeep() <= res[4]){
-            c.getFeatures().gap = 120;
-            c.getFeatures().setDeep(400);
-        }else {
-            c.getFeatures().gap = 160;
-            c.getFeatures().setDeep(800);
-        }
+//        float [] res = maximumMinimumData.getDepthDivision(5);
+//        if(c.getFeatures().getDeep() <= res[0]){
+//            c.getFeatures().gap = 20;
+//            c.getFeatures().setDeep(20);
+//        }else  if(c.getFeatures().getDeep() <= res[1]){
+//            c.getFeatures().gap = 40;
+//            c.getFeatures().setDeep(40);
+//        }else  if(c.getFeatures().getDeep() <= res[2]){
+//            c.getFeatures().gap = 50;
+//            c.getFeatures().setDeep(100);
+//        }else  if(c.getFeatures().getDeep() <= res[3]){
+//            c.getFeatures().gap = 100;
+//            c.getFeatures().setDeep(200);
+//        }else  if(c.getFeatures().getDeep() <= res[4]){
+//            c.getFeatures().gap = 120;
+//            c.getFeatures().setDeep(400);
+//        }else {
+//            c.getFeatures().gap = 160;
+//            c.getFeatures().setDeep(800);
+//        }
 
 //        float myWidth = (c.getFeatures().getWidth()-maximumMinimumData.minWidth);
 //        float deltaWidth = (maximumMinimumData.maxWidth-maximumMinimumData.minWidth)/ division;
@@ -122,21 +123,21 @@ public class AdjustSizeAnalyser implements Analyser<Integer> {
 //
 //
 //        }
-         res = maximumMinimumData.getWidthDivision(5);
-        if(c.getFeatures().getWidth() <= res[0]){
-            c.getFeatures().setWidth(20);
-        }else  if(c.getFeatures().getWidth() <= res[1]){
-            c.getFeatures().setWidth(40);
-        }else  if(c.getFeatures().getWidth() <= res[2]){
-            c.getFeatures().setWidth(100);
-        }else  if(c.getFeatures().getWidth() <= res[3]){
-            c.getFeatures().setWidth(200);
-        }else  if(c.getFeatures().getWidth() <= res[4]){
-            c.getFeatures().setWidth(400);
-        }else{
-            c.getFeatures().setWidth(800);
-        }
-
+//         res = maximumMinimumData.getWidthDivision(5);
+//        if(c.getFeatures().getWidth() <= res[0]){
+//            c.getFeatures().setWidth(20);
+//        }else  if(c.getFeatures().getWidth() <= res[1]){
+//            c.getFeatures().setWidth(40);
+//        }else  if(c.getFeatures().getWidth() <= res[2]){
+//            c.getFeatures().setWidth(100);
+//        }else  if(c.getFeatures().getWidth() <= res[3]){
+//            c.getFeatures().setWidth(200);
+//        }else  if(c.getFeatures().getWidth() <= res[4]){
+//            c.getFeatures().setWidth(400);
+//        }else{
+//            c.getFeatures().setWidth(800);
+//        }
+//
 
 //        float myHeight = (c.getFeatures().getHeight()-maximumMinimumData.minHeight);
 //        float deltaHeight = (maximumMinimumData.maxHeight-maximumMinimumData.minHeight)/ division;
@@ -157,23 +158,23 @@ public class AdjustSizeAnalyser implements Analyser<Integer> {
 //
 //
 //        }
-
-       res = maximumMinimumData.getHeightDivision(5);
-        if(c.getFeatures().getHeight() <= res[0]){
-            c.getFeatures().setHeight(20);
-        }else  if(c.getFeatures().getHeight() <= res[1]){
-            c.getFeatures().setHeight(40);
-        }else  if(c.getFeatures().getHeight() <= res[2]){
-            c.getFeatures().setHeight(100);
-        }else  if(c.getFeatures().getHeight() <= res[3]){
-            c.getFeatures().setHeight(200);
-        }else  if(c.getFeatures().getHeight() <= res[4]){
-            c.getFeatures().setHeight(400);
-        }else{
-            c.getFeatures().setHeight(800);
-        }
-
-        return 1;
+//
+//       res = maximumMinimumData.getHeightDivision(5);
+//        if(c.getFeatures().getHeight() <= res[0]){
+//            c.getFeatures().setHeight(20);
+//        }else  if(c.getFeatures().getHeight() <= res[1]){
+//            c.getFeatures().setHeight(40);
+//        }else  if(c.getFeatures().getHeight() <= res[2]){
+//            c.getFeatures().setHeight(100);
+//        }else  if(c.getFeatures().getHeight() <= res[3]){
+//            c.getFeatures().setHeight(200);
+//        }else  if(c.getFeatures().getHeight() <= res[4]){
+//            c.getFeatures().setHeight(400);
+//        }else{
+//            c.getFeatures().setHeight(800);
+//        }
+//
+       return 1;
 
     }
 

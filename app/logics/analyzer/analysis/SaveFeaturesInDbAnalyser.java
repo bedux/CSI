@@ -42,7 +42,7 @@ public class SaveFeaturesInDbAnalyser implements Analyser<Boolean> {
             target.setSize(source.getSize());
 
 
-            componentInfoList.get(0).update(componentInfoList.get(0).id);
+            componentInfoList.get(0).update();
         }
         return null;
     }

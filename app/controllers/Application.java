@@ -18,6 +18,7 @@ import views.html.*;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -30,9 +31,11 @@ public class Application extends Controller {
 
     public static Result indexGet(Long id){
         try {
-            new AnalyserHandler().process(new AnalyserHandlerParam(RepositoryVersion.find.byId(id)));
+            System.out.print(id);
+            RepositoryVersion.find.where().eq("id",id).findList().get(0);
+            new AnalyserHandler().process(new AnalyserHandlerParam(RepositoryVersion.find.where().eq("id", id).findList().get(0)));
         }catch (Exception e){
-            System.err.println(e.getMessage());
+            e.printStackTrace();
         }
         return ok("Done!");
 
@@ -67,7 +70,7 @@ public class Application extends Controller {
         try {
            Long size = Files.walk(Paths.get(Definitions.repositoryPath+version)).filter(p -> p.toFile().isFile()).mapToLong(p -> p.toFile().length()).sum();
 
-            info.put("size", Long.toString(size/1024L)+" Kb");
+            info.put("size", Long.toString(size / 1024L)+" Kb");
         } catch (IOException e) {
             e.printStackTrace();
         }
