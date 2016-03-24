@@ -170,12 +170,35 @@ class MainScene{
 
     keyPress(e){
         console.log(e.keyCode);
-        if(e.keyCode == 116){
+        if(e.keyCode == 48){
                 var h = Math.cos(this.camera.fov)*(build.maxX>build.maxZ?build.maxX:build.maxZ)
-
-            this.camera.position = new BABYLON.Vector3(build.maxX/2, h+h/2, build.maxZ/2);
+                h = h+h/2;
+                h = (h>build.maxY)?h:build.maxY+h;
+            this.camera.position = new BABYLON.Vector3(build.maxX/2, h, build.maxZ/2);
             this.camera.setTarget(new BABYLON.Vector3(build.maxX/2, 0, build.maxZ/2));
+        }else
+        if(e.keyCode == 49){
+            var h = Math.cos(this.camera.fov)*(build.maxX>build.maxZ?build.maxX:build.maxZ)
+            this.camera.position = new BABYLON.Vector3(build.maxX/2 , h+h/2, build.maxZ+build.maxZ);
+            this.camera.setTarget(new BABYLON.Vector3(build.maxX/2, 0, 0));
+        }else
+        if(e.keyCode == 50){
+            var h = Math.cos(this.camera.fov)*(build.maxX>build.maxZ?build.maxX:build.maxZ)
+            this.camera.position = new BABYLON.Vector3(build.maxX/2 , h+h/2, 0-build.maxZ);
+            this.camera.setTarget(new BABYLON.Vector3(build.maxX/2, 0, build.maxZ));
+        }else
+        if(e.keyCode == 51){
+            var h = Math.cos(this.camera.fov)*(build.maxX>build.maxZ?build.maxX:build.maxZ)
+            this.camera.position = new BABYLON.Vector3(build.maxX+build.maxX , h+h/2, build.maxZ/2);
+            this.camera.setTarget(new BABYLON.Vector3(0, 0, build.maxZ/2 -1));
+        }else
+        if(e.keyCode == 52){
+            var h = Math.cos(this.camera.fov)*(build.maxX>build.maxZ?build.maxX:build.maxZ)
+            this.camera.position = new BABYLON.Vector3(0-build.maxX , h+h/2, build.maxZ/2);
+            this.camera.setTarget(new BABYLON.Vector3(build.maxX, 0, build.maxZ/2 -1));
         }
+
+
     }
 
     getBlockOfCode(){
