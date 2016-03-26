@@ -17,9 +17,9 @@ public class BinaryFile implements Component {
         return new ArrayList<>();
     }
 
-    private DataFeatures features;
+    private Features features;
 
-    public BinaryFile(DataFeatures current){
+    public BinaryFile(Features current){
         features = current;
     }
 
@@ -28,7 +28,7 @@ public class BinaryFile implements Component {
     }
 
     @Override
-    public DataFeatures getFeatures() {
+    public Features getFeatures() {
         return features;
     }
 

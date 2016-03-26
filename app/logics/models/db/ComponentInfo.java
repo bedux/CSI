@@ -33,7 +33,6 @@ public class ComponentInfo extends Model implements DataAttributes {
     }
 
 
-
     public int noMethod = 0;
     public int noPrivateMethod = 0;
     public int noPublicMethod = 0;

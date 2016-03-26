@@ -45,12 +45,12 @@ public class GitRepo implements VersionedSystem {
         }
 
         final CloneCommand clone = Git.cloneRepository();
-        clone.setURI(repository.uri);
-        System.out.println(repository.user + " "+repository.pwd);
+        clone.setURI(repository.url);
+        System.out.println(repository.usr + " "+repository.pwd);
 
         //Login require?
-        if(repository.user!=null && repository.pwd !=null){
-            clone.setCredentialsProvider(new UsernamePasswordCredentialsProvider(repository.user, repository.pwd));
+        if(repository.usr!=null && repository.pwd !=null){
+            clone.setCredentialsProvider(new UsernamePasswordCredentialsProvider(repository.usr, repository.pwd));
         }
 
 

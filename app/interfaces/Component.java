@@ -1,6 +1,5 @@
 package interfaces;
 
-import logics.analyzer.DataFeatures;
 import logics.analyzer.Features;
 import logics.models.json.RenderChild;
 import logics.models.json.RenderComponent;
@@ -19,7 +18,7 @@ public interface Component {
 
     boolean add(String s,Path f,String allPath);
 
-    DataFeatures getFeatures();
+    Features getFeatures();
     //Compute the statistics independently from level to level
      <T> T  applyFunction(Function< Component, T> function);
 

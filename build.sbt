@@ -10,8 +10,10 @@ libraryDependencies ++= Seq( javaJdbc , javaEbean , cache , javaWs)
 
 libraryDependencies += "org.eclipse.jgit" % "org.eclipse.jgit" % "4.2.0.201601211800-r"
 
-libraryDependencies += "mysql" % "mysql-connector-java" % "5.1.18"
+libraryDependencies += "org.postgresql" % "postgresql" % "9.4.1208.jre7"
 
 libraryDependencies += "com.github.javaparser" % "javaparser-core" % "2.3.0"
 
 libraryDependencies += "com.typesafe.akka" %% "akka-actor" % "2.4.2"
+
+libraryDependencies += "javax.inject" % "javax.inject" % "1"

@@ -1,6 +1,5 @@
 package logics.analyzer;
 
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import interfaces.Component;
 import logics.models.json.RenderChild;
 import logics.models.json.RenderComponent;
@@ -14,13 +13,13 @@ import java.util.stream.Stream;
 
 public class Package implements Component {
 
-    private DataFeatures features;
+    private Features features;
     private List<Component> componentList = new ArrayList<>();
 
     public List<Component> getComponentList(){
         return componentList;
     }
-    public Package(DataFeatures current){
+    public Package(Features current){
         features = current;
     }
 
@@ -37,7 +36,7 @@ public class Package implements Component {
                        }
                     }
 
-                    Package p = new Package(new DataFeatures(toSearch.substring(toSearch.lastIndexOf('/')+1),toSearch,f));
+                    Package p = new Package(new Features(toSearch.substring(toSearch.lastIndexOf('/')+1),toSearch,f));
                     p.add(toSearch,f,remain);
                     componentList.add(p);
 
@@ -46,10 +45,10 @@ public class Package implements Component {
                     String name = remainPath;
                     //add file
                     if(isTextFile(f)){
-                        DataFile file = new DataFile(new DataFeatures(name,this.features.getPath()+"/"+remainPath,f));
+                        DataFile file = new DataFile(new Features(name,this.features.getPath()+"/"+remainPath,f));
                         componentList.add(file);
                     }else{
-                        BinaryFile file = new BinaryFile(new DataFeatures(name,this.features.getPath()+"/"+remainPath,f));
+                        BinaryFile file = new BinaryFile(new Features(name,this.features.getPath()+"/"+remainPath,f));
                         componentList.add(file);
 
                     }
@@ -70,7 +69,7 @@ public class Package implements Component {
 
 
     @Override
-    public DataFeatures getFeatures() {
+    public Features getFeatures() {
         return this.features;
     }
 

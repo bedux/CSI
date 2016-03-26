@@ -1,75 +1,125 @@
-# --- Created by Ebean DDL
-# To stop Ebean DDL generation, remove this comment and start using Evolutions
-
-# --- !Ups
-
-create table ComponentInfo (
-  id                        bigint auto_increment not null,
-  parent                    varchar(255),
-  file_name                 varchar(255),
-  no_method                 integer,
-  no_private_method         integer,
-  no_public_method          integer,
-  no_protected_method       integer,
-  no_f                      integer,
-  no_for_stm                integer,
-  no_foreach_stm            integer,
-  no_while                  integer,
-  no_if                     integer,
-  no_word                   integer,
-  size                      integer,
-  no_line                   integer,
-  repository_id             bigint,
-  constraint pk_ComponentInfo primary key (id))
-;
-
-create table Repository (
-  id                        bigint auto_increment not null,
-  user                      varchar(255),
-  uri                       varchar(255),
-  pwd                       varchar(255),
-  usr_id                    bigint,
-  type                      varchar(255),
-  constraint pk_Repository primary key (id))
-;
-
-create table RepositoryVersion (
-  id                        bigint auto_increment not null,
-  hss                       varchar(255),
-  num_of_file               integer,
-  mama                      varchar(255),
-  json                      varchar(255),
-  repository_id             bigint,
-  constraint pk_RepositoryVersion primary key (id))
-;
-
-create table User (
-  id                        bigint auto_increment not null,
-  name                      varchar(255),
-  constraint uq_User_name unique (name),
-  constraint pk_User primary key (id))
-;
-
-alter table ComponentInfo add constraint fk_ComponentInfo_repository_1 foreign key (repository_id) references RepositoryVersion (id) on delete restrict on update restrict;
-create index ix_ComponentInfo_repository_1 on ComponentInfo (repository_id);
-alter table Repository add constraint fk_Repository_usr_2 foreign key (usr_id) references User (id) on delete restrict on update restrict;
-create index ix_Repository_usr_2 on Repository (usr_id);
-alter table RepositoryVersion add constraint fk_RepositoryVersion_repository_3 foreign key (repository_id) references Repository (id) on delete restrict on update restrict;
-create index ix_RepositoryVersion_repository_3 on RepositoryVersion (repository_id);
+DROP TABLE IF EXISTS ContainsTransversalInformation CASCADE;
+CREATE TABLE IF NOT EXISTS ContainsTransversalInformation(
+  id  SERIAL PRIMARY KEY
+);
 
 
 
-# --- !Downs
+DROP TABLE IF EXISTS TrasversalInformation CASCADE;
+CREATE TABLE IF NOT EXISTS TrasversalInformation(
+  id  SERIAL PRIMARY KEY,
+  information JSONB,
+  containsTransversalInformation Integer REFERENCES ContainsTransversalInformation(id)
+);
 
-SET FOREIGN_KEY_CHECKS=0;
 
-drop table ComponentInfo;
 
-drop table Repository;
 
-drop table RepositoryVersion;
+DROP TABLE IF EXISTS Repository CASCADE;
+CREATE  TABLE  IF NOT EXISTS Repository(
+  id SERIAL PRIMARY KEY,
+  url varchar(255),
+  usr varchar(255),
+  pwd varchar(255),
+  localPath varchar(255),
+  subversiontype varchar(255)
+);
 
-drop table User;
 
-SET FOREIGN_KEY_CHECKS=1;
+DROP TABLE IF EXISTS RepositoryVersion CASCADE;
+CREATE  TABLE  IF NOT EXISTS RepositoryVersion(
+  id SERIAL PRIMARY KEY,
+  localPath varchar(255),
+  repositoryId Integer REFERENCES Repository(id)
 
+);
+
+
+DROP TABLE IF EXISTS File CASCADE;
+CREATE  TABLE  IF NOT EXISTS File(
+  id SERIAL PRIMARY KEY,
+  path varchar(255),
+  name varchar(255),
+  size INTEGER,
+  repositoryVersionId Integer REFERENCES RepositoryVersion(id)
+);
+
+
+
+
+DROP TABLE IF EXISTS BinaryFile CASCADE;
+CREATE  TABLE  IF NOT EXISTS BinaryFile(
+  id  SERIAL PRIMARY KEY,
+  information JSONB
+)INHERITS(File);
+
+DROP TABLE IF EXISTS TextFile CASCADE;
+CREATE  TABLE  IF NOT EXISTS TextFile(
+  id  SERIAL PRIMARY KEY,
+  information JSONB
+)INHERITS(File);
+
+DROP TABLE IF EXISTS JavaFile CASCADE;
+CREATE  TABLE  IF NOT EXISTS JavaFile(
+  id  SERIAL PRIMARY KEY,
+  information JSONB
+)INHERITS(File);
+
+DROP TABLE IF EXISTS JavaSourceObjects CASCADE;
+CREATE  TABLE  IF NOT EXISTS JavaSourceObjects(
+  id  SERIAL PRIMARY KEY,
+  javaFile Integer REFERENCES JavaFile(id),
+
+)INHERITS(ContainsTransversalInformation);
+
+DROP TABLE IF EXISTS JavaClass CASCADE;
+CREATE  TABLE  IF NOT EXISTS JavaClass(
+  id  SERIAL PRIMARY KEY,
+  information JSONB
+)INHERITS(JavaSourceObjects);
+
+DROP TABLE IF EXISTS JavaInterface CASCADE;
+CREATE  TABLE  IF NOT EXISTS JavaInterface(
+  id  SERIAL PRIMARY KEY,
+  information JSONB
+
+)INHERITS(JavaSourceObjects);
+
+DROP TABLE IF EXISTS JavaImport CASCADE;
+CREATE  TABLE  IF NOT EXISTS JavaImport(
+  id  SERIAL PRIMARY KEY,
+  information JSONB
+)INHERITS(JavaSourceObjects);
+
+DROP TABLE IF EXISTS JavaSpecificComponent CASCADE;
+CREATE  TABLE  IF NOT EXISTS JavaSpecificComponent(
+  id  SERIAL PRIMARY KEY,
+  javaSource Integer REFERENCES JavaSourceObjects(id),
+)INHERITS(ContainsTransversalInformation);
+
+
+DROP TABLE IF EXISTS Fileds CASCADE;
+CREATE  TABLE  IF NOT EXISTS Fileds(
+  id  SERIAL PRIMARY KEY,
+  information JSONB
+)INHERITS(JavaSpecificComponent);
+
+
+
+DROP TABLE IF EXISTS Methods CASCADE;
+CREATE  TABLE  IF NOT EXISTS Methods(
+  id  SERIAL PRIMARY KEY,
+  information JSONB
+
+)INHERITS(JavaSpecificComponent);
+
+
+
+
+
+
+DROP TABLE IF EXISTS JavaDoc CASCADE;
+CREATE TABLE IF NOT EXISTS JavaDoc(
+  id  SERIAL PRIMARY KEY,
+  doc VARCHAR(255)
+)INHERITS(TrasversalInformation);

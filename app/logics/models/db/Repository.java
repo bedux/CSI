@@ -1,86 +1,39 @@
 package logics.models.db;
 
+
 import exception.CustomException;
 import interfaces.VersionedSystem;
-import logics.models.form.RepoForm;
+import logics.databaseUtilities.IDatabaseClass;
+import logics.databaseUtilities.IDatabaseField;
 import logics.versionUtils.GitRepo;
-import play.data.validation.Constraints;
-import play.db.ebean.Model;
 
-import javax.persistence.*;
+@IDatabaseClass(tableName = "Repository")
+public class Repository {
 
-/**
- * Created by bedux on 22/02/16.
- */
-@Entity
-@Table(name="Repository")
-public class Repository extends Model {
+    @IDatabaseField(columnName = "id",save = false,isID = true)
+    public int id;
 
-    @Id
-    @GeneratedValue(strategy=GenerationType.AUTO)
-    public Long id;
+    @IDatabaseField(columnName = "url")
+    public String url;
 
-    public String user;
+    @IDatabaseField(columnName = "usr")
+    public String usr;
 
-    @Constraints.Required
-    public String uri;
-
+    @IDatabaseField(columnName = "pwd")
     public String pwd;
 
-    @ManyToOne
-    public User usr;
-//
-//    @OneToMany(cascade = CascadeType.ALL)
-//    public List<RepositoryVersion> repositoryVersions;
+    @IDatabaseField(columnName = "subversionType")
+    public String subversionType;
 
-    public String type;
+    public VersionedSystem CreateSystem()  {
 
-    public static Finder<Long,Repository> find = new Finder<Long, Repository>(Long.class,Repository.class);
-
-
-
-    /**
-     * @param user
-     * @param uri
-     * @param pwd
-     * @param usr
-     */
-    public static Repository CreareRepo(String user,String uri ,String pwd,User usr){
-        Repository r = new Repository();
-        r.user = user;
-        r.pwd = pwd;
-        r.uri = uri;
-        r.usr = usr;
-        r.save();
-        return r;
-    }
-
-    public static Repository CreareRepo(String user,String uri ,String pwd,String type){
-        Repository r = new Repository();
-        r.user = user;
-        r.pwd = pwd;
-        r.uri = uri;
-        r.type = type;
-        r.save();
-        return r;
-    }
-    public static Repository CreareRepo(RepoForm repoForm){
-        Repository r = new Repository();
-        r.user = repoForm.user;
-        r.pwd = repoForm.pwd;
-        r.uri = repoForm.uri;
-        r.type = repoForm.type;
-        r.save();
-        return r;
-    }
-
-    public  VersionedSystem CreateSystem()  {
-
-            if(this.type.equalsIgnoreCase("GIT")){
-                    return  new GitRepo(this);
-            }else{
-                throw new CustomException();
-            }
+        if(this.subversionType.equalsIgnoreCase("GIT")){
+            return  new GitRepo(this);
+        }else{
+            throw new CustomException("No Compatible Subversion System Found");
+        }
 
     }
+
+
 }

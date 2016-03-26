@@ -19,9 +19,9 @@ public class DataFile implements Component {
         return new ArrayList<>();
     }
 
-    private DataFeatures features;
+    private Features features;
 
-    public DataFile(DataFeatures current){
+    public DataFile(Features current){
         features = current;
     }
 
@@ -35,7 +35,7 @@ public class DataFile implements Component {
     }
 
     @Override
-    public DataFeatures getFeatures() {
+    public Features getFeatures() {
         return this.features;
     }
 

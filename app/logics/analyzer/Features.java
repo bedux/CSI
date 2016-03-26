@@ -7,7 +7,7 @@ import logics.renderTools.Packageable;
 import java.nio.file.Path;
 
 @JsonIgnoreProperties
-public abstract class Features extends Packageable{
+public  class Features extends Packageable{
 
     @JsonIgnore private final String name;
     @JsonIgnore private final String path;
@@ -44,7 +44,9 @@ public abstract class Features extends Packageable{
     }
 
     @Override
-    protected abstract void bindingToPakageble();
+    protected void bindingToPakageble(){
+
+    }
 
     @Override
     public String toString(){

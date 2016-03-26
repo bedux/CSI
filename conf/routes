@@ -9,23 +9,23 @@ GET     /addRepo                           controllers.Registration.repoRegistra
 
 POST     /addRepo                           controllers.Registration.repoRegistrationSubmit
 
-POST     /addRepoId/:id                           controllers.Application.getPrecomputedUrl(id:Long)
+POST     /addRepoId/:id                           controllers.Application.getPrecomputedUrl(id:Integer)
 
 GET     /getAllRepository                           controllers.Application.getRepositories
 
 
 
-GET     /renderRepo/:id/:version                  controllers.Application.renderRepo(id:String,version:Long)
+GET     /renderRepo/:id/:version                  controllers.Application.renderRepo(id:String,version:Integer)
 
 # Map static resources from the /public folder to the /assets URL path
 GET     /assets/*file               controllers.Assets.at(path="/public", file)
 
 
-GET /getData/:id              controllers.Application.indexGet(id:Long)
+GET /getData/:id              controllers.Application.indexGet(id:Integer)
 
 POST /applyFilter           controllers.Application.applyFilter
 
-GET /getFilters/:id             controllers.Application.getFilters(id:Long)
+GET /getFilters/:id             controllers.Application.getFilters(id:Integer)
 
 GET /fileContent/:path          controllers.Application.fileContent(path:String)
 

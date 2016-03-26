@@ -15,7 +15,7 @@ class MainScene{
         this.engine = new BABYLON.Engine(canvas, true);
         this.engine.isPointerLock = false;
         this.scene  = new BABYLON.Scene(this.engine);
-
+        this.scene.clearColor = new BABYLON.Color3(0.7,0.9,0.9);
         // create a FreeCamera, and set its position to (x:0, y:5, z:-10)
         this.camera = new BABYLON.FreeCamera("FreeCamera", new BABYLON.Vector3(1,0,0), this.scene);
         this.camera.maxZ = 100000;
@@ -169,7 +169,7 @@ class MainScene{
     }
 
     keyPress(e){
-        console.log(e.keyCode);
+
         if(e.keyCode == 48){
                 var h = Math.cos(this.camera.fov)*(build.maxX>build.maxZ?build.maxX:build.maxZ)
                 h = h+h/2;
@@ -196,6 +196,16 @@ class MainScene{
             var h = Math.cos(this.camera.fov)*(build.maxX>build.maxZ?build.maxX:build.maxZ)
             this.camera.position = new BABYLON.Vector3(0-build.maxX , h+h/2, build.maxZ/2);
             this.camera.setTarget(new BABYLON.Vector3(build.maxX, 0, build.maxZ/2 -1));
+        }else if(e.keyCode == 53){
+            var pickResult = this.scene.pick(this.scene.pointerX, this.scene.pointerY);
+            if(!pickResult.hit){return;}
+            let bbs = pickResult.pickedMesh.getBoundingInfo().boundingSphere;
+            var h = Math.cos(this.camera.fov)*(bbs.radiusWorld)
+            h = h*2;
+            h = h < bbs.radiusWorld*2?bbs.radiusWorld*2:h;
+            this.camera.position = (new BABYLON.Vector3(bbs.centerWorld.x,h,bbs.centerWorld.z));
+            this.camera.setTarget(new BABYLON.Vector3(bbs.centerWorld.x,0,bbs.centerWorld.z));
+
         }
 
 
@@ -233,14 +243,12 @@ class MainScene{
         material.diffuseColor = new BABYLON.Color3(1,1,0);
         pickResult.pickedMesh.material =material;
         var info = this.scene.data[pickResult.pickedMesh.id];
-        console.log(info)
 
         var arr = $("#tabInfo").find("td");
 
 
         for(var i in arr){
             if(arr[i].id && arr[i].id!="") {
-                console.log(info.features[arr[i].id]);
                 arr[i].innerHTML = info.features[arr[i].id];
             }
         }
@@ -267,7 +275,6 @@ window.addEventListener("keypress", (
 ).bind(scn));
 
 window.createScene = function(url) {
-    console.log(url)
     scn = new MainScene();
     $.get(url, scn.updateScene.bind(scn));
 };

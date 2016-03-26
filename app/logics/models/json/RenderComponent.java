@@ -1,6 +1,6 @@
 package logics.models.json;
 
-import logics.analyzer.DataFeatures;
+import logics.analyzer.Features;
 
 import java.util.Arrays;
 
@@ -13,12 +13,12 @@ public class RenderComponent  {
     public float height;
     public float deep;
 
-    public DataFeatures features;
-
-    public long size = 0;
+    public Features features;
 
 
 
+
+    public RenderChild[] children;
     public float color;
     public int buildingType;
     public String id;
@@ -26,7 +26,7 @@ public class RenderComponent  {
     public RenderComponent(float width, float height,float deep, float color, int buildingType, String id, RenderChild[] children) {
       inizialize(width,height,deep,color, buildingType,id,children);
     }
-    public RenderComponent(DataFeatures f, RenderChild[] children) {
+    public RenderComponent(Features f, RenderChild[] children) {
         inizialize(f.getRendererWidth(), f.getHeight(), f.getRendererDeep(), f.getColor(), f.getBuildingType(), f.getPath(), children);
 
         features = f;
@@ -42,18 +42,8 @@ public class RenderComponent  {
         this.deep = deep;
     }
 
-        public RenderChild[] children;
 
-    @Override
-    public String toString() {
-        return "RenderComponent{" +
-                "children=" + Arrays.toString(children) +
-                ", height=" + height +
-                ", color=" + (color) +
-                ", buildingType=" + buildingType +
-                ", id='" + id + '\'' +
-                ", width=" + width +
-                '}';
-    }
+
+
 }
 

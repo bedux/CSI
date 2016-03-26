@@ -2,10 +2,13 @@ package controllers;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import interfaces.DataAttributes;
+import logics.DatabaseManager;
 import logics.Definitions;
-import logics.analyzer.DataFeatures;
 
+import logics.databaseUtilities.SaveClassAsTable;
 import logics.models.db.ComponentInfo;
+import logics.models.db.JavaFile;
+import logics.models.db.JavaFileInformation;
 import logics.models.db.RepositoryVersion;
 import logics.models.tools.Data;
 import logics.filters.QueryBuilder;
@@ -18,6 +21,7 @@ import views.html.*;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.sql.SQLException;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
@@ -29,54 +33,83 @@ public class Application extends Controller {
     }
 
 
-    public static Result indexGet(Long id){
-        try {
-            System.out.print(id);
-            RepositoryVersion.find.where().eq("id",id).findList().get(0);
-            new AnalyserHandler().process(new AnalyserHandlerParam(RepositoryVersion.find.where().eq("id", id).findList().get(0)));
-        }catch (Exception e){
-            e.printStackTrace();
-        }
+    public static Result indexGet(int id){
+//        try {
+//            RepositoryVersion.find.where().eq("id",id).findList().get(0);
+//            new AnalyserHandler().process(new AnalyserHandlerParam(RepositoryVersion.find.where().eq("id", id).findList().get(0)));
+//        }catch (Exception e){
+//            e.printStackTrace();
+//        }
         return ok("Done!");
 
     }
 
 
-    public static Result getPrecomputedUrl(long id){
-        RepositoryVersion result = RepositoryVersion.find.byId(id);
-        System.out.println(id);
-        if(result!=null&&result.json!=null) {
-            return ok(result.json);
-        }else{
+    public static Result getPrecomputedUrl(int id){
+//        RepositoryVersion result = RepositoryVersion.find.byId(id);
+//        System.out.println(id);
+//        if(result!=null&&result.json!=null) {
+//            return ok(result.json);
+//        }else{
             return ok("Not Found");
-        }
+//        }
 
     }
 
     public static Result getRepositories(){
-        return ok(listRepository.render(RepositoryVersion.find.all()));
+//        SaveClassAsTable sast = new SaveClassAsTable();
+//        JavaFile js = new JavaFile();
+//        js.json = new JavaFileInformation();
+//        js.name="marco";
+//        js.id = 1;
+//        js.path = "asdasd/asd/asd/as/da/sd";
+//
+//        try {
+//            sast.save(js);
+//        } catch (IllegalAccessException e) {
+//            e.printStackTrace();
+//        } catch (SQLException e) {
+//            e.printStackTrace();
+//        } catch (InstantiationException e) {
+//            e.printStackTrace();
+//        }
+
+
+        try {
+            RepositoryVersion repositoryVersion = DatabaseManager.getInstance().getRepositoryVersionById(1);
+            new AnalyserHandler().process(new AnalyserHandlerParam(repositoryVersion));
+
+        } catch (IllegalAccessException e) {
+            e.printStackTrace();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        } catch (InstantiationException e) {
+            e.printStackTrace();
+        }
+        return ok();
     }
 
 
 
 
-    public static Result renderRepo(String id,Long version) {
+    public static Result renderRepo(String id,int version) {
         System.out.println(id);
         Map<String,String> info = new HashMap<>();
-        String name = RepositoryVersion.find.byId(version).repository.uri;
-        info.put("name", name);
-        info.put("nol", ((Integer) (ComponentInfo.find.where().eq("repository.id", version).findList().stream().mapToInt(x -> x.getNoLine()).sum())).toString());
-        info.put("nod", ((Integer) (ComponentInfo.find.where().eq("repository.id", version).findList().size())).toString());
-        try {
-           Long size = Files.walk(Paths.get(Definitions.repositoryPath+version)).filter(p -> p.toFile().isFile()).mapToLong(p -> p.toFile().length()).sum();
+////        String name = RepositoryVersion.find.byId(version).repository.uri;
+//        info.put("name", name);
+//        info.put("nol", ((Integer) (ComponentInfo.find.where().eq("repository.id", version).findList().stream().mapToInt(x -> x.getNoLine()).sum())).toString());
+//        info.put("nod", ((Integer) (ComponentInfo.find.where().eq("repository.id", version).findList().size())).toString());
+//        try {
+//           Long size = Files.walk(Paths.get(Definitions.repositoryPath+version)).filter(p -> p.toFile().isFile()).mapToLong(p -> p.toFile().length()).sum();
+//
+//            info.put("size", Long.toString(size / 1024L)+" Kb");
+//        } catch (IOException e) {
+//            e.printStackTrace();
+//        }
 
-            info.put("size", Long.toString(size / 1024L)+" Kb");
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
 
-
-        return ok(render.render(id,version,(QueryBuilder.getFilters(version)), DataFeatures.getMapMethod,info));
+//        return ok(render.render(id,version,(QueryBuilder.getFilters(version)), DataFeatures.getMapMethod,info));
+        return ok();
     }
 
     public static Result applyFilter() {
@@ -87,9 +120,10 @@ public class Application extends Controller {
         return ok(Json.stringify(result));
     }
 
-    public static Result getFilters(Long id) {
+    public static Result getFilters(int id) {
 
-        return ok(Json.stringify(QueryBuilder.getFilters(id)));
+       // return ok(Json.stringify(QueryBuilder.getFilters(id)));
+        return ok();
     }
 
     public static Result fileContent(String path) {
