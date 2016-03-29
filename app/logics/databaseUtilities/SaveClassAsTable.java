@@ -97,14 +97,18 @@ public class SaveClassAsTable {
                 insertQuery += " " + idbc.columnName() + " = ";
 
                 if (idbc.fromJSON()) {
-                    PGobject p = new PGobject();
                     String json = Json.stringify(Json.toJson(f.get(object)));
-                    json = Normalizer.normalize(json, Normalizer.Form.NFC);
-                    p.setValue(json);
-
-                    p.setType("jsonb");
-                    param.put(i, p);
-                    insertQuery += "?, ";
+                    System.out.print(json);
+                    param.put(i, json);
+//                    String s = " '{";
+//                    for(Field f1:  f.get(object).getClass().getFields()){
+//                        s+=f1.getName()+",";
+//                    }
+//                    s = s.substring(0,s.lastIndexOf(","));
+//                    s+="}' ";
+//                    System.out.print(s);
+                //   insertQuery += "jsonb_set( "+idbc.columnName()+" ,"+s+", ? ), ";
+                    insertQuery += "?::jsonb, ";
                     i++;
 
                 } else if (f.getType().isPrimitive()) {
@@ -127,6 +131,7 @@ public class SaveClassAsTable {
         if (id != null) {
             insertQuery += " WHERE "+ annotationClass.idName() +" = ?";
             param.put(i, id);
+            System.out.println(annotationClass.idName()+" "+id);
         }
         DatabaseManager.getInstance().makeUpdateQuery(insertQuery, param);
     }

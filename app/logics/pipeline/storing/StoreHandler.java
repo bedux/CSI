@@ -5,6 +5,7 @@ import interfaces.Handler;
 import logics.Definitions;
 import logics.databaseUtilities.SaveClassAsTable;
 import logics.models.db.JavaFile;
+import logics.models.db.JavaFileInformation;
 import logics.models.db.RepositoryVersion;
 import logics.models.db.TextFile;
 
@@ -28,35 +29,39 @@ public class StoreHandler implements Handler<StoreHandlerParam, StoreHandlerResu
                 String fn = s.substring(s.lastIndexOf(".") + 1);
 
                 if (Files.isRegularFile(x) && fn.indexOf("java") == 0) {
-                    System.out.print("JavaFile");
+
                     JavaFile javaFile = new JavaFile();
                     javaFile.path = s;
                     javaFile.name = x.getFileName().toString();
+                    javaFile.json = new JavaFileInformation();
                     javaFile.repositoryVersionId = param.repositoryVersion.id;
                     try {
                         int id = new SaveClassAsTable().save(javaFile);
-                        System.out.println("Saved as " + id);
+                        System.out.println("Saved as Java File " + id + " "+ s);
                     } catch (Exception e) {
-                        new CustomException(e);
+
+                        throw new CustomException(e);
                     }
-//                    ComponentInfo c = ComponentInfo.createComponentInfo(param.repositoryVersion, s);
-//                    param.repositoryVersion.addComponentInfo(c);
-//                    param.nOfFile++;
+
                 } else if (Files.isRegularFile(x)) {
 
                     TextFile textFile = new TextFile();
                     textFile.path = s;
                     textFile.name = x.getFileName().toString();
                     textFile.repositoryVersionId = param.repositoryVersion.id;
+                    textFile.json = new JavaFileInformation();
+
                     try {
+
                         int id = new SaveClassAsTable().save(textFile);
-                        System.out.println("Saved as " + id);
+                        System.out.println("Saved as Regular file" + id+ " "+ s);
                     } catch (Exception e) {
-                        new CustomException(e);
+                        throw new CustomException(e);
                     }
+
                 }
             });
-        } catch (IOException e1) {
+        } catch (Exception e1) {
 
             throw new CustomException(e1);
 

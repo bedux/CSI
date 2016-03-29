@@ -1,5 +1,6 @@
 package controllers;
 
+import exception.CustomException;
 import logics.Definitions;
 import logics.models.db.RepositoryVersion;
 import logics.models.query.QueryGetAllRepository;
@@ -62,26 +63,22 @@ public class Application extends Controller {
         } catch (InstantiationException e) {
             e.printStackTrace();
         }
-        new AnalyserHandler().process(new AnalyserHandlerParam((repositoryVersion)));
+        new AnalyserHandler().process(new AnalyserHandlerParam(new StoreHandler().process(new StoreHandlerParam(repositoryVersion))));
 
         return ok(listRepository.render(new QueryGetAllRepository().execute()));
     }
 
 
     public static Result renderRepo(String id, int version) {
-        System.out.println(id);
+        System.out.println(version);
+
         Map<String, String> info = new HashMap<>();
-////        String name = RepositoryVersion.find.byId(version).repository.uri;
-//        info.put("name", name);
-//        info.put("nol", ((Integer) (ComponentInfo.find.where().eq("repository.id", version).findList().stream().mapToInt(x -> x.getNoLine()).sum())).toString());
-//        info.put("nod", ((Integer) (ComponentInfo.find.where().eq("repository.id", version).findList().size())).toString());
-//        try {
-//           Long size = Files.walk(Paths.get(Definitions.repositoryPath+version)).filter(p -> p.toFile().isFile()).mapToLong(p -> p.toFile().length()).sum();
-//
-//            info.put("size", Long.toString(size / 1024L)+" Kb");
-//        } catch (IOException e) {
-//            e.printStackTrace();
-//        }
+        try {
+            info.put("size",Long.toString(QueryList.getInstance().getTotalSize(version)));
+        } catch (SQLException e) {
+          throw new CustomException(e);
+        }
+
         Map<String, String> getMapMethod = new HashMap();
 
 

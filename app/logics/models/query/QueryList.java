@@ -5,6 +5,7 @@ import logics.databaseUtilities.IDatabaseClass;
 import logics.models.db.File;
 import logics.models.db.JavaFile;
 import logics.models.db.RepositoryVersion;
+import logics.models.db.TextFile;
 
 import java.sql.SQLException;
 import java.util.HashMap;
@@ -16,8 +17,8 @@ import java.util.List;
 public class QueryList {
 
     private static QueryList instance = null;
-    public final QueryWithPath countAllMethodByFilePath = new QueryWithPath("select COUNT(*) from JavaMethod where javaSource in  (select id_JSO from JavaSourceObject where JavaSourceObject.javaFile in (select id_F from JavaFile where JavaFile.path = ? )LIMIT 1)", 1);
-    public final QueryWithPath countAllFieldsByFilePath = new QueryWithPath("select COUNT(*) from JavaField where javaSource in  (select id_JSO from JavaSourceObject where JavaSourceObject.javaFile in (select id_F from JavaFile where JavaFile.path = ? )LIMIT 1)", 1);
+    public final QueryWithPath countAllMethodByFilePath = new QueryWithPath("select COUNT(*) from JavaMethod where javaSource in  (select id from JavaSourceObject where JavaSourceObject.javaFile in (select id from JavaFile where JavaFile.path = ? )LIMIT 1)", 1);
+    public final QueryWithPath countAllFieldsByFilePath = new QueryWithPath("select COUNT(*) from JavaField where javaSource in  (select id from JavaSourceObject where JavaSourceObject.javaFile in (select id from JavaFile where JavaFile.path = ? )LIMIT 1)", 1);
     /***
      * Counting all the javaDoc of class and interface of a specific FilePath
      */
@@ -58,7 +59,7 @@ public class QueryList {
     }
 
     public JavaFile getJavaFileById(int idJavaFileId) throws IllegalAccessException, SQLException, InstantiationException {
-        String query = "SELECT * FROM JavaFile WHERE id_JF = ?";
+        String query = "SELECT * FROM JavaFile WHERE id = ?";
         return DatabaseManager.getInstance().makeQuery(query, new HashMap<Integer, Object>() {{
             put(1, idJavaFileId);
         }}, JavaFile.class).get(0);
@@ -67,10 +68,35 @@ public class QueryList {
 
     public JavaFile getJavaFileByPath(String path) throws IllegalAccessException, SQLException, InstantiationException {
         String query = "SELECT * FROM JavaFile WHERE path = ?";
+        System.out.println(query+path);
+
         return DatabaseManager.getInstance().makeQuery(query, new HashMap<Integer, Object>() {{
             put(1, path);
         }}, JavaFile.class).get(0);
 
+    }
+
+    public TextFile getTextFileByPath(String path) throws IllegalAccessException, SQLException, InstantiationException {
+        String query = "SELECT * FROM TextFile WHERE path = ?";
+        System.out.println(query+path);
+        return DatabaseManager.getInstance().makeQuery(query, new HashMap<Integer, Object>() {{
+            put(1, path);
+        }}, TextFile.class).get(0);
+
+    }
+
+
+    public long getTotalSize(int id) throws SQLException {
+        String query =  "select sum(CAST(information->>'size' AS integer)) from JavaFile where JavaFile.repositoryVersionId = ?";
+        long javaSize =  DatabaseManager.getInstance().makeQuery(query, new HashMap<Integer, Object>() {{
+            put(1, id);
+        }}, CountQuery.class).get(0).count;
+
+        query =  "select sum(CAST(information->>'size' AS integer)) from TextFile where TextFile.repositoryVersionId = ?";
+         javaSize +=  DatabaseManager.getInstance().makeQuery(query, new HashMap<Integer, Object>() {{
+            put(1, id);
+        }}, CountQuery.class).get(0).count;
+        return javaSize;
     }
 //    public final QueryWithPath countAllJavaDocInMethodFieldsByFilePath =new QueryWithPath(,1);
 

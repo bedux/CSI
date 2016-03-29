@@ -3,6 +3,8 @@ package logics;
 import exception.CustomException;
 import logics.databaseUtilities.ConvertTableToClass;
 import play.db.DB;
+import play.libs.Json;
+import scala.util.parsing.json.JSONObject$;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -79,12 +81,14 @@ public class DatabaseManager {
         try {
 
             PreparedStatement preparedStatement = buildPreparedStatement(connection, query, values);
+            System.out.println(preparedStatement+" "+ Json.stringify(Json.toJson(values)));
 
-            boolean result = preparedStatement.execute();
+            int  result = preparedStatement.executeUpdate();
+            System.out.println(result);
             preparedStatement.close();
             connection.close();
 
-            return result;
+            return true;
         }catch (Exception e){
             connection.close();
             throw new CustomException(e);
@@ -95,9 +99,7 @@ public class DatabaseManager {
         Connection connection = DB.getConnection();
        try {
            PreparedStatement preparedStatement = buildPreparedStatement(connection, query, values);
-           System.out.println();
 
-           System.out.println(query);
            ResultSet r = preparedStatement.executeQuery();
            r.next();
            int result = r.getInt(1);

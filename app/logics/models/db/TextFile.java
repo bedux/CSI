@@ -4,10 +4,10 @@ import logics.databaseUtilities.IDatabaseClass;
 import logics.databaseUtilities.IDatabaseField;
 
 
-@IDatabaseClass(tableName = "TextFile",idName = "id_TF")
+@IDatabaseClass(tableName = "TextFile",idName = "id")
 public class TextFile extends File {
 
-    @IDatabaseField(columnName = "id_TF", save = false, isID = true)
+    @IDatabaseField(columnName = "id", save = false, isID = true)
     public int id;
 
 

@@ -43,6 +43,7 @@ public class LoadFromDatabase implements Analyser<Integer> {
             c.getFeatures().setDeep(width);
             c.getFeatures().setHeight(heightQuery.executeAndGetResult(currentPath));
             long color = colorQuery.executeAndGetResult(currentPath);
+            System.out.println(color+"asd");
             c.getFeatures().setColor(color);
         }
     }

@@ -66,6 +66,7 @@ public class ColoringAnalyser implements Analyser<Integer> {
 
 
             p.getFeatures().setColor(p.getFeatures().getColor() / maximumMinimumData.maxColor);
+            System.out.println(maximumMinimumData.maxColor);
             p.getFeatures().setBuildingType(2);
 
 

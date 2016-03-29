@@ -4,11 +4,11 @@ import logics.databaseUtilities.IDatabaseClass;
 import logics.databaseUtilities.IDatabaseField;
 
 
-@IDatabaseClass(tableName = "JavaClass",idName = "id_JC")
+@IDatabaseClass(tableName = "JavaClass")
 public class JavaClass extends JavaSourceObject {
 
 
-    @IDatabaseField(columnName = "id_JC", save = false, isID = true)
+    @IDatabaseField(columnName = "id", save = false, isID = true)
     public int id;
 
 

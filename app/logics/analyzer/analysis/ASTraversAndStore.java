@@ -15,15 +15,18 @@ import com.github.javaparser.ast.visitor.VoidVisitorAdapter;
 import exception.CustomException;
 import interfaces.Analyser;
 import interfaces.Component;
+import logics.Definitions;
 import logics.analyzer.BinaryFile;
 import logics.analyzer.DataFile;
 import logics.databaseUtilities.SaveClassAsTable;
 import logics.models.db.*;
 import logics.models.query.QueryList;
 
+import java.io.IOException;
 import java.io.InputStream;
 import java.lang.reflect.Modifier;
 import java.nio.file.Files;
+import java.sql.SQLException;
 
 /**
  * Created by bedux on 25/03/16.
@@ -44,27 +47,42 @@ public class ASTraversAndStore implements Analyser<Integer> {
     private void analysisCast(DataFile c) {
         String fn = c.getFeatures().getPath().substring(c.getFeatures().getPath().lastIndexOf(".") + 1);
 
-
+        String filePath = c.getFeatures().getPath();
         if (fn.indexOf("java") == 0) {
 
-            String filePath = c.getFeatures().getPath();
+
             JavaFile analyzedFile;
 
 
             try {
                 analyzedFile = QueryList.getInstance().getJavaFileByPath(filePath);
-                if (analyzedFile.json == null) {
-                    analyzedFile.json = new JavaFileInformation();
+                Long l =  Files.size(c.getFeatures().getFilePath());
+                if(l!=null) {
+                    analyzedFile.json.size = l.intValue();
+                    new SaveClassAsTable().update(analyzedFile);
                 }
-                analyzedFile.json.size = (int) Files.size(c.getFeatures().getFilePath());
-            } catch (Exception e) {
-                throw new CustomException(e);
-            }
 
+            } catch (IllegalAccessException e) {
+                e.printStackTrace();
+                throw new CustomException(e);
+            } catch (InstantiationException e) {
+                e.printStackTrace();
+                throw new CustomException(e);
+
+            } catch (SQLException e) {
+                e.printStackTrace();
+                System.out.println(filePath);
+                throw new CustomException(e);
+
+            } catch (IOException e) {
+                e.printStackTrace();
+                throw new CustomException(e);
+
+
+            }
             try (InputStream is = Files.newInputStream(c.getFeatures().getFilePath())) {
                 CompilationUnit p = JavaParser.parse(is);
                 analyzedFile.json.noLine = p.getEndLine() - p.getBeginLine();
-
                 new SaveClassAsTable().update(analyzedFile);
                 new MethodVisitor().visit(p, analyzedFile.id);
                 is.close();
@@ -72,6 +90,36 @@ public class ASTraversAndStore implements Analyser<Integer> {
             } catch (Exception e) {
                 throw new CustomException(e);
             }
+        }else{
+            try {
+                TextFile analyzedFile = QueryList.getInstance().getTextFileByPath(filePath);
+                if (analyzedFile.json == null) {
+                    analyzedFile.json = new JavaFileInformation();
+                }
+                Long l =  Files.size(c.getFeatures().getFilePath());;
+                if(l!=null) {
+                    analyzedFile.json.size = l.intValue();
+                    new SaveClassAsTable().update(analyzedFile);
+                }
+            } catch (IllegalAccessException e) {
+                e.printStackTrace();
+                throw new CustomException(e);
+            } catch (InstantiationException e) {
+                e.printStackTrace();
+                throw new CustomException(e);
+
+            } catch (SQLException e) {
+                e.printStackTrace();
+                System.out.println(filePath);
+
+                throw new CustomException(e);
+
+            } catch (IOException e) {
+                e.printStackTrace();
+                throw new CustomException(e);
+            }
+
+
         }
 
     }
