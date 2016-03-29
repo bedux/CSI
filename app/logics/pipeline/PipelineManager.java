@@ -10,7 +10,7 @@ import logics.pipeline.storing.StoreHandlerParam;
 
 
 public class PipelineManager {
-    public void runPipeline(RepoForm repoForm){
-       new AnalyserHandler().process(new AnalyserHandlerParam(new StoreHandler().process(new StoreHandlerParam(new CloneHandler().process(new CloneHandlerParam(repoForm))))));
+    public void runPipeline(RepoForm repoForm) {
+        new AnalyserHandler().process(new AnalyserHandlerParam(new StoreHandler().process(new StoreHandlerParam(new CloneHandler().process(new CloneHandlerParam(repoForm))))));
     }
 }

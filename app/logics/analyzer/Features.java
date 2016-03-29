@@ -7,29 +7,32 @@ import logics.renderTools.Packageable;
 import java.nio.file.Path;
 
 @JsonIgnoreProperties
-public  class Features extends Packageable{
+public class Features extends Packageable {
 
-    @JsonIgnore private final String name;
-    @JsonIgnore private final String path;
-    @JsonIgnore private final Path filePath;
-    @JsonIgnore private int remoteness = 0;
+    @JsonIgnore
+    private final String name;
+    @JsonIgnore
+    private final String path;
+    @JsonIgnore
+    private final Path filePath;
+    @JsonIgnore
+    private int remoteness = 0;
 
 
-    public void setRemoteness(int remoteness){
-        this.remoteness = remoteness;
-    }
-
-    public int getRemoteness(){
-       return this.remoteness;
-    }
-
-    public Features(String name, String path,Path filePath) {
+    public Features(String name, String path, Path filePath) {
         super();
         this.name = name;
         this.path = path;
-        this.filePath=filePath;
+        this.filePath = filePath;
     }
 
+    public int getRemoteness() {
+        return this.remoteness;
+    }
+
+    public void setRemoteness(int remoteness) {
+        this.remoteness = remoteness;
+    }
 
     public Path getFilePath() {
         return filePath;
@@ -44,12 +47,12 @@ public  class Features extends Packageable{
     }
 
     @Override
-    protected void bindingToPakageble(){
+    protected void bindingToPakageble() {
 
     }
 
     @Override
-    public String toString(){
-        return path ;
+    public String toString() {
+        return path;
     }
 }

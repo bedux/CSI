@@ -1,15 +1,15 @@
-DROP TABLE IF EXISTS ContainsTransversalInformation CASCADE;
-CREATE TABLE IF NOT EXISTS ContainsTransversalInformation(
-  id  SERIAL PRIMARY KEY
+DROP TABLE IF EXISTS ContainsTransverseInformation CASCADE;
+CREATE TABLE IF NOT EXISTS ContainsTransverseInformation(
+  id_CTI  SERIAL PRIMARY KEY
 );
 
 
 
-DROP TABLE IF EXISTS TrasversalInformation CASCADE;
-CREATE TABLE IF NOT EXISTS TrasversalInformation(
-  id  SERIAL PRIMARY KEY,
+DROP TABLE IF EXISTS TransverseInformation CASCADE;
+CREATE TABLE IF NOT EXISTS TransverseInformation(
+  id_TI  SERIAL PRIMARY KEY,
   information JSONB,
-  containsTransversalInformation Integer REFERENCES ContainsTransversalInformation(id)
+  containsTransverseInformation Integer REFERENCES ContainsTransverseInformation(id_CTI)
 );
 
 
@@ -37,7 +37,7 @@ CREATE  TABLE  IF NOT EXISTS RepositoryVersion(
 
 DROP TABLE IF EXISTS File CASCADE;
 CREATE  TABLE  IF NOT EXISTS File(
-  id SERIAL PRIMARY KEY,
+  id_F SERIAL PRIMARY KEY,
   path varchar(255),
   name varchar(255),
   size INTEGER,
@@ -49,77 +49,73 @@ CREATE  TABLE  IF NOT EXISTS File(
 
 DROP TABLE IF EXISTS BinaryFile CASCADE;
 CREATE  TABLE  IF NOT EXISTS BinaryFile(
-  id  SERIAL PRIMARY KEY,
+  id_BF  SERIAL PRIMARY KEY,
   information JSONB
 )INHERITS(File);
 
 DROP TABLE IF EXISTS TextFile CASCADE;
 CREATE  TABLE  IF NOT EXISTS TextFile(
-  id  SERIAL PRIMARY KEY,
+  id_TF  SERIAL PRIMARY KEY,
   information JSONB
 )INHERITS(File);
 
 DROP TABLE IF EXISTS JavaFile CASCADE;
 CREATE  TABLE  IF NOT EXISTS JavaFile(
-  id  SERIAL PRIMARY KEY,
+  id_JF  SERIAL PRIMARY KEY,
   information JSONB
 )INHERITS(File);
 
-DROP TABLE IF EXISTS JavaSourceObjects CASCADE;
-CREATE  TABLE  IF NOT EXISTS JavaSourceObjects(
-  id  SERIAL PRIMARY KEY,
-  javaFile Integer REFERENCES JavaFile(id),
+DROP TABLE IF EXISTS JavaSourceObject CASCADE;
+CREATE  TABLE  IF NOT EXISTS JavaSourceObject(
+  id_JSO  SERIAL PRIMARY KEY,
+  javaFile Integer REFERENCES JavaFile(id_JF)
 
-)INHERITS(ContainsTransversalInformation);
+)INHERITS(ContainsTransverseInformation);
 
 DROP TABLE IF EXISTS JavaClass CASCADE;
 CREATE  TABLE  IF NOT EXISTS JavaClass(
-  id  SERIAL PRIMARY KEY,
+  id_JC  SERIAL PRIMARY KEY,
   information JSONB
-)INHERITS(JavaSourceObjects);
+)INHERITS(JavaSourceObject);
 
 DROP TABLE IF EXISTS JavaInterface CASCADE;
 CREATE  TABLE  IF NOT EXISTS JavaInterface(
-  id  SERIAL PRIMARY KEY,
+  id_JI  SERIAL PRIMARY KEY,
   information JSONB
 
-)INHERITS(JavaSourceObjects);
+)INHERITS(JavaSourceObject);
 
 DROP TABLE IF EXISTS JavaImport CASCADE;
 CREATE  TABLE  IF NOT EXISTS JavaImport(
-  id  SERIAL PRIMARY KEY,
+  id_JI  SERIAL PRIMARY KEY,
   information JSONB
-)INHERITS(JavaSourceObjects);
+)INHERITS(JavaSourceObject);
 
 DROP TABLE IF EXISTS JavaSpecificComponent CASCADE;
 CREATE  TABLE  IF NOT EXISTS JavaSpecificComponent(
-  id  SERIAL PRIMARY KEY,
-  javaSource Integer REFERENCES JavaSourceObjects(id),
-)INHERITS(ContainsTransversalInformation);
+  id_JSP  SERIAL PRIMARY KEY,
+  javaSource Integer REFERENCES JavaSourceObject(id_JSO)
+)INHERITS(ContainsTransverseInformation);
 
 
-DROP TABLE IF EXISTS Fileds CASCADE;
-CREATE  TABLE  IF NOT EXISTS Fileds(
-  id  SERIAL PRIMARY KEY,
+DROP TABLE IF EXISTS JavaField CASCADE;
+CREATE  TABLE  IF NOT EXISTS JavaField(
+  id_F  SERIAL PRIMARY KEY,
   information JSONB
 )INHERITS(JavaSpecificComponent);
 
 
 
-DROP TABLE IF EXISTS Methods CASCADE;
-CREATE  TABLE  IF NOT EXISTS Methods(
-  id  SERIAL PRIMARY KEY,
+DROP TABLE IF EXISTS JavaMethod CASCADE;
+CREATE  TABLE  IF NOT EXISTS JavaMethod(
+  id_M  SERIAL PRIMARY KEY,
   information JSONB
 
 )INHERITS(JavaSpecificComponent);
-
-
-
 
 
 
 DROP TABLE IF EXISTS JavaDoc CASCADE;
 CREATE TABLE IF NOT EXISTS JavaDoc(
-  id  SERIAL PRIMARY KEY,
-  doc VARCHAR(255)
-)INHERITS(TrasversalInformation);
+  id_JD  SERIAL PRIMARY KEY
+  )INHERITS(TransverseInformation);

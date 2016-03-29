@@ -1,24 +1,19 @@
 @import com.fasterxml.jackson.databind.JsonNode
 
-@(id:String,repoVersion:Long,filters:JsonNode,infoParams: Map[String, String],infoProject:Map[String,String])
-@mainNoMenu("Render",infoProject) {
+@(id: String, repoVersion: Long, filters: JsonNode, infoParams: Map[String, String], infoProject: Map[String, String])
+    @mainNoMenu("Render", infoProject) {
 
 
-    @components.infoTab(infoParams)
+        @components.infoTab(infoParams)
+        @* @components.sideBar(repoVersion,filters*@
+        @components.infoTemplateTab(repoVersion)
 
-
-
-    @components.sideBar(repoVersion,filters)
-
-    @components.infoTemplateTab(repoVersion)
-
-    <canvas id="renderCanvas" tabindex="0"></canvas>
-    <script src="@routes.Assets.at("javascripts/hand.minified.js")" type="text/javascript"></script>
-    <script src="@routes.Assets.at("javascripts/main.bundle.js")" type="text/javascript"></script>
-    <script type="text/javascript">
+        <canvas id="renderCanvas" tabindex="0"></canvas>
+        <script src="@routes.Assets.at("javascripts/hand.minified.js")" type="text/javascript"></script>
+        <script src="@routes.Assets.at("javascripts/main.bundle.js")" type="text/javascript"></script>
+        <script type="text/javascript">
         createScene("@id")
     </script>
 
 
-
-}
+    }

@@ -19,4 +19,4 @@ public interface VersionedSystem {
 
     String getCurrentVersion();
 
-    }
+}

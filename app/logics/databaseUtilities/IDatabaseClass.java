@@ -7,14 +7,16 @@ import java.lang.annotation.Target;
 
 
 /**
- *This class is responsive to manage the Annotation for convert a table into a class
+ * This class is responsive to manage the Annotation for convert a table into a class
  */
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.TYPE)
 public @interface IDatabaseClass {
     /**
      * Set te column name of tha database
+     *
      * @return
      */
     String tableName() default "";
+    String idName() default "id";
 }

@@ -2,13 +2,9 @@ package interfaces;
 
 import logics.analyzer.Features;
 import logics.models.json.RenderChild;
-import logics.models.json.RenderComponent;
 
-import java.io.File;
-import java.io.Serializable;
 import java.nio.file.Path;
 import java.util.List;
-import java.util.function.Consumer;
 import java.util.function.Function;
 
 /**
@@ -16,16 +12,16 @@ import java.util.function.Function;
  */
 public interface Component {
 
-    boolean add(String s,Path f,String allPath);
+    boolean add(String s, Path f, String allPath);
 
     Features getFeatures();
+
     //Compute the statistics independently from level to level
-     <T> T  applyFunction(Function< Component, T> function);
+    <T> T applyFunction(Function<Component, T> function);
 
-     RenderChild getRenderJSON() ;
+    RenderChild getRenderJSON();
 
-     List <Component> getComponentList();
-
+    List<Component> getComponentList();
 
 
 }

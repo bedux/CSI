@@ -6,7 +6,7 @@ package logics.models.db;
 public class MethodInfoJSON {
     public String modifier;
     public String signature;
-    public int lineStrat;
+    public int lineStart;
     public int lineEnd;
 
 

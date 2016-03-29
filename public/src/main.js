@@ -72,7 +72,6 @@ class MainScene{
     }
 
     updateScene(data){
-
         this.scene.data = {};
         this.width = data.data.width;
         this.deep = data.data.deep;
@@ -80,16 +79,20 @@ class MainScene{
         //this.light = new BABYLON.PointLight("Omnu1", new BABYLON.Vector3(0, 10000,0),this.scene);
         //this.light.setEnabled(1);
 
-        var box = BABYLON.Mesh.CreateBox("box", 6.0, this.scene, false, BABYLON.Mesh.DEFAULTSIDE);
+      // this.pivot = BABYLON.Mesh.CreateBox("box", 0.0, this.scene, false, BABYLON.Mesh.DEFAULTSIDE);
+
+
 
         //this.shadowGenerator = new BABYLON.ShadowGenerator(1024, this.light);
         //
         //this.shadowGenerator.useVarianceShadowMap = true;
 
-        build.recursiveDraw(this.scene,new BABYLON.Vector3(0,0,0),data.data,this.pivot);
+        build.recursiveDraw(this.scene,new BABYLON.Vector3(0,0,0),data.data,this.pivot,new BABYLON.Vector3(0,0,0));
+
 
         this.camera.position = new BABYLON.Vector3(build.maxX, build.maxY, build.maxZ);
         this.camera.setTarget(new BABYLON.Vector3(build.maxX/2, 0, build.maxZ/2));
+
 
 
     }
@@ -158,7 +161,6 @@ class MainScene{
 
         for(var i in this.scene.models){
             if( this.scene.models[i].material.setVector3) {
-
                 this.scene.models[i].material.setVector3("LightPosition",this.camera.position);
             }
 

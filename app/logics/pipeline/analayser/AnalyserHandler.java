@@ -3,21 +3,19 @@ package logics.pipeline.analayser;
 import com.fasterxml.jackson.databind.JsonNode;
 import exception.CustomException;
 import interfaces.Handler;
-import logics.DatabaseManager;
 import logics.Definitions;
-import logics.analyzer.*;
+import logics.analyzer.Features;
 import logics.analyzer.Package;
 import logics.analyzer.analysis.*;
 import logics.databaseUtilities.SaveClassAsTable;
-import logics.models.db.*;
-import logics.models.query.QueryWithPath;
+import logics.models.db.RepositoryVersion;
+import logics.models.query.ComputeWithSingleQuery;
+import logics.models.query.QueryList;
 import logics.models.tools.MaximumMinimumData;
 import play.libs.Json;
 
 import java.io.*;
-import java.io.File;
 import java.nio.file.Files;
-import java.util.HashMap;
 import java.util.List;
 
 /**
@@ -29,66 +27,67 @@ public class AnalyserHandler implements Handler<AnalyserHandlerParam, AnalyserHa
     public AnalyserHandlerResult process(AnalyserHandlerParam param) {
         List<logics.models.db.File> components;
         try {
-            components  = DatabaseManager.getInstance().getFileByRepositoryVersion(param.repositoryVersion.id);
+            components = QueryList.getInstance().getFileByRepositoryVersion(param.repositoryVersion.id);
         } catch (Exception e) {
             throw new CustomException(e);
         }
 
 
-            File fileRoot = new File(Definitions.repositoryPath + param.repositoryVersion.id);
-            Package root = new Package(new Features("root", param.repositoryVersion.id.toString(), fileRoot.toPath()));
-            for (logics.models.db.File component : components) {
-                File helper = new File(Definitions.repositoryPath + component.path);
-                String s = clearPath(helper.toPath().normalize().toString(), param.repositoryVersion);
-                String dir = s.substring(0, s.indexOf('/'));
-                String remainName = s.substring(s.indexOf('/') + 1);
-                root.add(dir, helper.toPath(), remainName);
-            }
+        File fileRoot = new File(Definitions.repositoryPath + param.repositoryVersion.id);
+        Package root = new Package(new Features("root", param.repositoryVersion.id.toString(), fileRoot.toPath()));
+        for (logics.models.db.File component : components) {
+            File helper = new File(Definitions.repositoryPath + component.path);
+            String s = clearPath(helper.toPath().normalize().toString(), param.repositoryVersion);
+            String dir = s.substring(0, s.indexOf('/'));
+            String remainName = s.substring(s.indexOf('/') + 1);
+            root.add(dir, helper.toPath(), remainName);
+        }
 
 
         //TODO
-           // root.applyFunction(new ASTraversAndStore()::analysis);
+        root.applyFunction(new ASTraversAndStore()::analysis);
 
-             QueryWithPath width = new QueryWithPath("select COUNT(*) from Methods where Methods.javaSource in  (select id from JavaSourceObjects where JavaSourceObjects.javaFile in (select id from JavaFile where JavaFile.path = ? )LIMIT 1)",1);
-             QueryWithPath height = new QueryWithPath("select COUNT(*) from Fileds where Fileds.javaSource in  (select id from JavaSourceObjects where JavaSourceObjects.javaFile in (select id from JavaFile where JavaFile.path = ? )LIMIT 1)",1);
-             QueryWithPath color = new QueryWithPath("select COUNT(*) from JavaDoc where JavaDoc.containstransversalinformation in  (select id from JavaSourceObjects where JavaSourceObjects.javaFile in (select id from JavaFile where JavaFile.path = ?)LIMIT 1)",1);
+        ComputeWithSingleQuery width = new ComputeWithSingleQuery(QueryList.getInstance().countAllMethodByFilePath);
+        ComputeWithSingleQuery height = new ComputeWithSingleQuery(QueryList.getInstance().countAllFieldsByFilePath);
+        ComputeWithSingleQuery color = new ComputeWithSingleQuery(QueryList.getInstance().countAllMethodByFilePath);
 
 //
-            root.applyFunction(new LoadFromDatabase(width,height,color)::analysis);
+
+        root.applyFunction(new LoadFromDatabase(width, height, color)::analysis);
 
 //            root.applyFunction(new WordCountAnalyser()::analysis);
 //            root.applyFunction(new MethodCountAnalyser()::analysis);
 
 
-           MaximumMinimumData mmd = root.applyFunction(new MaximumDimensionAnalyser()::analysis);
-            root.applyFunction(new AdjustSizeAnalyser(mmd)::analysis);
-            root.applyFunction(new PackingAnalyzer()::analysis);
+        MaximumMinimumData mmd = root.applyFunction(new MaximumDimensionAnalyser()::analysis);
+        root.applyFunction(new AdjustSizeAnalyser(mmd)::analysis);
+        root.applyFunction(new PackingAnalyzer()::analysis);
 //
 //
-            int max = root.applyFunction(new DepthAnalyser()::analysis);
-            mmd = root.applyFunction(new MaximumDimensionAnalyser()::analysis);
-            root.applyFunction(new ColoringAnalyser(max, mmd)::analysis);
+        int max = root.applyFunction(new DepthAnalyser()::analysis);
+        mmd = root.applyFunction(new MaximumDimensionAnalyser()::analysis);
+        root.applyFunction(new ColoringAnalyser(max, mmd)::analysis);
 //
-            JsonNode json = Json.toJson(root.getRenderJSON());
+        JsonNode json = Json.toJson(root.getRenderJSON());
 
-            if (Files.exists(new File(Definitions.jsonPath + param.repositoryVersion.id + ".json").toPath())) {
-                try {
-                    Files.delete(new File(Definitions.jsonPath + param.repositoryVersion.id + ".json").toPath());
-                } catch (IOException e) {
-                    throw new CustomException(e);
-                }
+        if (Files.exists(new File(Definitions.jsonPath + param.repositoryVersion.id + ".json").toPath())) {
+            try {
+                Files.delete(new File(Definitions.jsonPath + param.repositoryVersion.id + ".json").toPath());
+            } catch (IOException e) {
+                throw new CustomException(e);
             }
-            try (Writer writer = new BufferedWriter(new OutputStreamWriter(
-                    new FileOutputStream(Definitions.jsonPath + param.repositoryVersion.id + ".json"), "utf-8"))) {
-                writer.write(Json.stringify(json));
-                param.repositoryVersion.localPath = ("/assets/data/" + param.repositoryVersion.id + ".json");
-                new SaveClassAsTable().update(param.repositoryVersion);
-                return new AnalyserHandlerResult(json);
+        }
+        try (Writer writer = new BufferedWriter(new OutputStreamWriter(
+                new FileOutputStream(Definitions.jsonPath + param.repositoryVersion.id + ".json"), "utf-8"))) {
+            writer.write(Json.stringify(json));
+            param.repositoryVersion.localPath = ("/assets/data/" + param.repositoryVersion.id + ".json");
+            new SaveClassAsTable().update(param.repositoryVersion);
+            return new AnalyserHandlerResult(json);
 
 
-            }catch (Exception e){
-                throw  new CustomException(e);
-            }
+        } catch (Exception e) {
+            throw new CustomException(e);
+        }
 
     }
 

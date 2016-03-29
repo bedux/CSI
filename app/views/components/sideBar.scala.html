@@ -1,7 +1,5 @@
-@import play.api.libs.json.__
-
 @import com.fasterxml.jackson.databind.JsonNode
-@(id:Long,filters:JsonNode)
+@(id: Long, filters: JsonNode)
 @*
 remembre range value!!
 *@
@@ -24,26 +22,28 @@ remembre range value!!
 
     <div class="container-fluid filterContent" >
 
-        <form  id = "myForm">
+        <form id = "myForm">
 
 
+            @for(a <- (filters.get("filter")).elements()) {
+                @if(a.get("Type").toString.contains("RANGE")) {
 
-              @for( a <- (filters.get("filter")).elements()){
-                  @if(a.get("Type").toString.contains("RANGE")){
-                      
-                      @components.panelShowHide(a.get("Id").toString.replace("\"","")+"P") { @a.get("Name").toString.replace("\"","")} {
-                          @components.rangePicker(a.get("Id").toString.replace("\"",""), a.get("Min").asInt(), a.get("Max").asInt(), a.get("Min").asInt(), a.get("Max").asInt())
-                      }
-                  }
-                  @if(a.get("Type").toString.contains("INPUT")){
-                      @components.panelShowHide(a.get("Id").toString.replace("\"","")+"P") {  @a.get("Name").toString.replace("\"","")}{
-                          <input type="text" name='@a.get("Id")' id='@a.get("Id")' placeholder="path">
-                          }
-                  }
-              }
+                    @components.panelShowHide(a.get("Id").toString.replace("\"", "") + "P") {
+                        @a.get("Name").toString.replace("\"", "")
+                    } {
+                        @components.rangePicker(a.get("Id").toString.replace("\"", ""), a.get("Min").asInt(), a.get("Max").asInt(), a.get("Min").asInt(), a.get("Max").asInt())
+                    }
+                }
+                @if(a.get("Type").toString.contains("INPUT")) {
+                    @components.panelShowHide(a.get("Id").toString.replace("\"", "") + "P") {
+                        @a.get("Name").toString.replace("\"", "")
+                    } {
+                        <input type="text" name='@a.get("Id")' id='@a.get("Id")' placeholder="path">
+                    }
+                }
+            }
 
-
-            @components.panelShowHide("actionSelector") { Action}{
+            @components.panelShowHide("actionSelector") { Action} {
                 <div class="form-group">
                     <label for="sel1">Action</label>
                     <select class="form-control" id="sel1" name = "action">
@@ -55,7 +55,7 @@ remembre range value!!
                 </div>
             }
 
-            @components.panelShowHide("colorPiker") { Color}{
+            @components.panelShowHide("colorPiker") { Color} {
 
                 <input type="color" class="form-control" name="Color"/>
             }
@@ -69,10 +69,6 @@ remembre range value!!
 
 
         <input type="button" value="Apply" onclick="send()" class="centered"/>
-
-
-
-
 
 
     </div>
@@ -92,7 +88,9 @@ function send(){
 $.ajax({
   type: "POST",
   url: "@routes.Application.applyFilter()",
-  data: ($('#myForm').serialize())+"&id=@{id}",
+  data: ($('#myForm').serialize())+"&id=@{
+    id
+}",
   success: function(e){
         console.log(e,"asdasd");
 

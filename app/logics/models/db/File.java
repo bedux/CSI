@@ -8,7 +8,7 @@ import logics.databaseUtilities.IDatabaseField;
  */
 @IDatabaseClass(tableName = "File")
 public class File {
-    @IDatabaseField(columnName = "id",save = false,isID = true)
+    @IDatabaseField(columnName = "id_F", save = false, isID = true)
     public int id;
 
     @IDatabaseField(columnName = "path")
@@ -21,6 +21,6 @@ public class File {
     public int size;
 
     @IDatabaseField(columnName = "repositoryVersionId")
-    public  int repositoryVersionId;
+    public int repositoryVersionId;
 
 }

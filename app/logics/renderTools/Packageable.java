@@ -3,37 +3,56 @@ package logics.renderTools;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
-import java.io.Serializable;
-import java.util.Arrays;
-
 /**
  * Created by bedux on 27/02/16.
  */
 @JsonIgnoreProperties
-public abstract class Packageable{
-    @JsonIgnore public  float gap = 40;
-    @JsonIgnore private float height;
-    @JsonIgnore private float color;
-    @JsonIgnoreProperties private int buildingType;
-    @JsonIgnoreProperties private BoundingBox bb = new BoundingBox(0,0);
+public abstract class Packageable {
+    @JsonIgnore
+    public float gap = 40;
+    @JsonIgnore
+    private float height;
+    @JsonIgnore
+    private float color;
+    @JsonIgnore
+    private int buildingType;
+    @JsonIgnore
+    private BoundingBox bb = new BoundingBox(0, 0);
 
 
-    public float getRendererWidth(){
+    public Packageable(float width, float height, float deep) {
 
-        return bb.getWidth()-gap;
+        this.height = height;
+        bb = new BoundingBox(width, deep);
     }
 
-    public float getRendererDeep(){
-        return bb.getDeep()-gap;
+    public Packageable() {
+    }
+
+    public Packageable(float width, float height, float deep, float color, int buildingType) {
+        this.height = height;
+        this.buildingType = buildingType;
+        bb = new BoundingBox(width, deep);
+
 
     }
 
-    public float getRendererTop(){
-        return bb.getTop()+gap/2;
+    public float getRendererWidth() {
+
+        return bb.getWidth() - gap;
     }
 
-    public float getRendererLeft(){
-        return bb.getLeft()+gap/2;
+    public float getRendererDeep() {
+        return bb.getDeep() - gap;
+
+    }
+
+    public float getRendererTop() {
+        return bb.getTop() + gap / 2;
+    }
+
+    public float getRendererLeft() {
+        return bb.getLeft() + gap / 2;
 
     }
 
@@ -42,7 +61,7 @@ public abstract class Packageable{
     }
 
     public void setWidth(float width) {
-        bb.setWidth(width+gap);
+        bb.setWidth(width + gap);
     }
 
     public float getHeight() {
@@ -57,20 +76,14 @@ public abstract class Packageable{
         return bb.getDeep();
     }
 
+    ;
+
     public void setDeep(float deep) {
-        bb.setDeep(deep+gap);
+        bb.setDeep(deep + gap);
     }
 
-    public Packageable(float width, float height, float deep) {
-
-        this.height = height;
-        bb = new BoundingBox(width,deep);
-    }
-
-    public Packageable(){};
-
-    public BoundingBox getBoundingBox(){
-        return  bb;
+    public BoundingBox getBoundingBox() {
+        return bb;
     }
 
     public float getColor() {
@@ -89,20 +102,13 @@ public abstract class Packageable{
         this.buildingType = buildingType;
     }
 
-    public Packageable(float width, float height, float deep, float color, int buildingType) {
-        this.height = height;
-        this.buildingType = buildingType;
-        bb = new BoundingBox(width,deep);
-
-
-    }
-    protected abstract void  bindingToPakageble();
+    protected abstract void bindingToPakageble();
 
     @Override
     public String toString() {
         return "Packageable{" +
                 ", height=" + height +
-                ", color=" +(color) +
+                ", color=" + (color) +
                 ", buildingType=" + buildingType +
                 ", bb=" + bb +
                 '}';

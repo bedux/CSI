@@ -4,15 +4,15 @@ import logics.databaseUtilities.IDatabaseClass;
 import logics.databaseUtilities.IDatabaseField;
 
 
-@IDatabaseClass(tableName = "BinaryFile")
-public class BinaryFile extends File{
+@IDatabaseClass(tableName = "BinaryFile" ,idName = "id_BF")
+public class BinaryFile extends File {
 
 
-    @IDatabaseField(columnName = "id",save = false,isID = true)
+    @IDatabaseField(columnName = "id_BF", save = false, isID = true)
     public int id;
 
 
-    @IDatabaseField(columnName = "information",fromJSON = true)
+    @IDatabaseField(columnName = "information", fromJSON = true)
     public JavaFileInformation json;
 
 }

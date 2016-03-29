@@ -1,11 +1,9 @@
 package logics.models.json;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import interfaces.Component;
 import logics.analyzer.Features;
 
 import java.util.Arrays;
-import java.util.function.Consumer;
 
 /**
  * Created by bedux on 26/02/16.
@@ -17,6 +15,11 @@ public class RenderChild {
     @JsonIgnore
     private Features f;
 
+    public RenderChild(float[] position, RenderComponent data) {
+        this.position = position;
+        this.data = data;
+    }
+
     @JsonIgnore
 
     public Features getFeatures() {
@@ -26,11 +29,6 @@ public class RenderChild {
     @JsonIgnore
     public void setFeatures(Features f) {
         this.f = f;
-    }
-
-    public RenderChild(float[] position, RenderComponent data) {
-        this.position = position;
-        this.data = data;
     }
 
     @Override

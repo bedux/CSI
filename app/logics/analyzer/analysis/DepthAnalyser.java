@@ -10,9 +10,9 @@ public class DepthAnalyser implements Analyser<Integer> {
 
     @Override
     public Integer analysis(Component c) {
-        if(c.getComponentList().size()==0) return c.getFeatures().getRemoteness();
-        return c.getComponentList().stream().map((x) ->{
-            x.getFeatures().setRemoteness(c.getFeatures().getRemoteness()+1);
+        if (c.getComponentList().size() == 0) return c.getFeatures().getRemoteness();
+        return c.getComponentList().stream().map((x) -> {
+            x.getFeatures().setRemoteness(c.getFeatures().getRemoteness() + 1);
             return x.applyFunction((new DepthAnalyser())::analysis);
         }).max(Integer::compare).get();
     }

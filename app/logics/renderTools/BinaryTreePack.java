@@ -2,8 +2,6 @@ package logics.renderTools;
 
 import interfaces.Component;
 
-import java.util.Arrays;
-
 /**
  * Created by bedux on 29/02/16.
  */
@@ -11,14 +9,14 @@ public class BinaryTreePack {
 
     private Node root;
 
-    public BinaryTreePack(Component rootCP){
+    public BinaryTreePack(Component rootCP) {
         root = new Node(rootCP.getFeatures().getBoundingBox());
     }
 
 
-    public void insert(Component component){
+    public void insert(Component component) {
         Node toInsert = root.insert(component);
-        if(toInsert!=null){
+        if (toInsert != null) {
             toInsert = toInsert.split(component);
             toInsert.assign(component);
 //
@@ -26,17 +24,17 @@ public class BinaryTreePack {
 //            component.getFeatures().setDeep(toInsert.getBoundingBox().getDeep());
 
 
-        }else{
-             resize(component);
+        } else {
+            resize(component);
             Node n = root.insert(component);
-            if(n!=null) {
+            if (n != null) {
                 n = n.split(component);
                 n.assign(component);
 
 //                component.getFeatures().setWidth(n.getBoundingBox().getWidth());
 //                component.getFeatures().setDeep(n.getBoundingBox().getDeep());
 
-            }else{
+            } else {
             }
 
 
@@ -45,65 +43,64 @@ public class BinaryTreePack {
 
     }
 
-    public Node resize(Component c){
+    public Node resize(Component c) {
         BoundingBox target = c.getFeatures().getBoundingBox();
 
-        boolean cantGoButton =  target.getWidth()<=root.getBoundingBox().getWidth();
-        boolean cantGoRight =  target.getDeep()<=root.getBoundingBox().getDeep();
+        boolean cantGoButton = target.getWidth() <= root.getBoundingBox().getWidth();
+        boolean cantGoRight = target.getDeep() <= root.getBoundingBox().getDeep();
 
-        boolean shouldGoRight =  cantGoRight && ((root.getBoundingBox().getWidth() + target.getWidth()) < root.getBoundingBox().getDeep());
+        boolean shouldGoRight = cantGoRight && ((root.getBoundingBox().getWidth() + target.getWidth()) < root.getBoundingBox().getDeep());
         boolean shouldGoButton = cantGoButton && ((root.getBoundingBox().getDeep() + target.getDeep()) < root.getBoundingBox().getWidth());
 
 
-        if(shouldGoRight){
+        if (shouldGoRight) {
             return growRight(target);
-        }else if(shouldGoButton){
+        } else if (shouldGoButton) {
             return growBottom(target);
 
-        }else if(cantGoRight){
-            return  growRight(target);
-        }else if(cantGoButton){
+        } else if (cantGoRight) {
+            return growRight(target);
+        } else if (cantGoButton) {
             return growBottom(target);
 
-        }else return null;
-
+        } else return null;
 
 
     }
 
-    public Node growBottom(BoundingBox bb){
-            Node helper = root;
-            root = new Node(new BoundingBox(
-                                            0,
-                                            0,
-                                            root.getBoundingBox().getWidth(),
-                                            root.getBoundingBox().getButton()+bb.getDeep()));
+    public Node growBottom(BoundingBox bb) {
+        Node helper = root;
+        root = new Node(new BoundingBox(
+                0,
+                0,
+                root.getBoundingBox().getWidth(),
+                root.getBoundingBox().getButton() + bb.getDeep()));
 
 
-            root.setbottom(new Node(new BoundingBox(
-                    0,
-                    helper.getBoundingBox().getDeep(),
-                    helper.getBoundingBox().getWidth(),
-                    bb.getDeep(),1
-                    )));
+        root.setbottom(new Node(new BoundingBox(
+                0,
+                helper.getBoundingBox().getDeep(),
+                helper.getBoundingBox().getWidth(),
+                bb.getDeep(), 1
+        )));
 
-            root.setRight(helper);
+        root.setRight(helper);
 
         root.assign();
-        return  root;
+        return root;
     }
 
-    public Node growRight(BoundingBox bb){
+    public Node growRight(BoundingBox bb) {
         Node helper = root;
         root = new Node(new BoundingBox(0,
-                                        0,
-                                        root.getBoundingBox().getRight()+bb.getWidth(),
-                                        root.getBoundingBox().getDeep()));
+                0,
+                root.getBoundingBox().getRight() + bb.getWidth(),
+                root.getBoundingBox().getDeep()));
 
         root.setRight(new Node(new BoundingBox(
                 helper.getBoundingBox().getWidth(),
-                                                0,
-                                                bb.getWidth(),
+                0,
+                bb.getWidth(),
                 helper.getBoundingBox().getDeep(), 1)));
 
         root.setbottom(helper);
@@ -113,7 +110,7 @@ public class BinaryTreePack {
 //        System.out.println(root.getBottom().getBoundingBox()+ " Button ");
 //        System.out.println(root.getRight().getBoundingBox()+ " Right ");
         root.assign();
-        return  root;
+        return root;
 
     }
 }

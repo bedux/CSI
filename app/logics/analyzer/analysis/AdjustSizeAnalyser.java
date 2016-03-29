@@ -2,11 +2,10 @@ package logics.analyzer.analysis;
 
 import interfaces.Analyser;
 import interfaces.Component;
-import logics.analyzer.*;
+import logics.analyzer.BinaryFile;
+import logics.analyzer.DataFile;
 import logics.analyzer.Package;
 import logics.models.tools.MaximumMinimumData;
-
-import java.util.Arrays;
 
 
 public class AdjustSizeAnalyser implements Analyser<Integer> {
@@ -15,12 +14,10 @@ public class AdjustSizeAnalyser implements Analyser<Integer> {
     private static final float unit = 20;
 
 
-
-
-
     private MaximumMinimumData maximumMinimumData;
-    public AdjustSizeAnalyser(MaximumMinimumData maximumMinimumData){
-        this.maximumMinimumData=maximumMinimumData;
+
+    public AdjustSizeAnalyser(MaximumMinimumData maximumMinimumData) {
+        this.maximumMinimumData = maximumMinimumData;
     }
 
     @Override
@@ -34,8 +31,8 @@ public class AdjustSizeAnalyser implements Analyser<Integer> {
 
 
         } else if (c instanceof DataFile) {
-           analysisCast((DataFile)c);
-        }else if (c instanceof logics.analyzer.Package){
+            analysisCast((DataFile) c);
+        } else if (c instanceof logics.analyzer.Package) {
             analysisCast((Package) c);
         }
 
@@ -44,16 +41,16 @@ public class AdjustSizeAnalyser implements Analyser<Integer> {
     }
 
 
-    private Integer analysisCast(Package p){
+    private Integer analysisCast(Package p) {
         p.getFeatures().setHeight(unit);
 
         return 1;
     }
 
-    private Integer analysisCast(DataFile c){
+    private Integer analysisCast(DataFile c) {
 
         String fn = c.getFeatures().getPath().substring(c.getFeatures().getPath().lastIndexOf(".") + 1);
-        if(fn.indexOf("java")==-1){
+        if (fn.indexOf("java") == -1) {
             c.getFeatures().setHeight(unit);
             c.getFeatures().setWidth(unit);
             c.getFeatures().setDeep(unit);
@@ -62,9 +59,9 @@ public class AdjustSizeAnalyser implements Analyser<Integer> {
         }
 
 
-        c.getFeatures().setDeep(c.getFeatures().getRendererDeep()*unit+unit);
-        c.getFeatures().setWidth(c.getFeatures().getRendererWidth()*unit+unit);
-        c.getFeatures().setHeight(c.getFeatures().getHeight()*unit+unit);
+        c.getFeatures().setDeep(c.getFeatures().getRendererDeep() * unit + unit);
+        c.getFeatures().setWidth(c.getFeatures().getRendererWidth() * unit + unit);
+        c.getFeatures().setHeight(c.getFeatures().getHeight() * unit + unit);
 
 //        float myDepth = (c.getFeatures().getDeep()-maximumMinimumData.minDepth);
 //        float deltaDepth = (maximumMinimumData.maxDepth-maximumMinimumData.minDepth)/ division;
@@ -174,7 +171,7 @@ public class AdjustSizeAnalyser implements Analyser<Integer> {
 //            c.getFeatures().setHeight(800);
 //        }
 //
-       return 1;
+        return 1;
 
     }
 

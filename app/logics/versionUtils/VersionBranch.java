@@ -7,16 +7,16 @@ public class VersionBranch {
 
     private final String name;
 
-    public String getName() {
-        return name;
-    }
-
     public VersionBranch(String name) {
         this.name = name;
     }
 
+    public String getName() {
+        return name;
+    }
+
     @Override
     public String toString() {
-        return ("Name: "+name);
+        return ("Name: " + name);
     }
 }

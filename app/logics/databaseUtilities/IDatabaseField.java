@@ -7,7 +7,7 @@ import java.lang.annotation.Target;
 
 
 /**
- *This class is responsive to manage the Annotation for convert a table into a class
+ * This class is responsive to manage the Annotation for convert a table into a class
  */
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.FIELD)
@@ -15,11 +15,16 @@ import java.lang.annotation.Target;
 public @interface IDatabaseField {
     /**
      * Set te column name of tha database
+     *
      * @return
      */
     String columnName() default "";
+
     boolean fromJSON() default false;
+
     boolean save() default true;
+
     boolean isID() default false;
+
     int columnId() default -1;
 }

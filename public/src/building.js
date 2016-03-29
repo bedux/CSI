@@ -123,6 +123,7 @@ function createBuilding(scene, position, data,parent,lp) {
             uniforms: ["worldViewProjection","world","color","LightPosition","maxSize"]
         });
     if(data.color==-1){
+
         material.setColor3("color",materials[data.buildingType].diffuseColor);
 
 
@@ -165,7 +166,7 @@ function recursiveDraw(scene,position,data,parent,lp){
 
         if(data.children.length>0){
             for(let i of  data.children){
-                recursiveDraw(scene,position.add(new BABYLON.Vector3(i.position[0],i.position[1]+data.height,i.position[2])),i.data,parent);
+                recursiveDraw(scene,position.add(new BABYLON.Vector3(i.position[0],i.position[1]+data.height,i.position[2])),i.data,parent,lp);
             }
         }
 }

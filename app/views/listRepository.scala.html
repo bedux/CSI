@@ -1,11 +1,11 @@
 @import logics.models.db.RepositoryVersion
-@(repository:List[RepositoryVersion])
-@main("Repositories") {
-    <div class="list-group">
-    @for(p <- repository) {
-        @if(p!=null) {
-            @bootstrapComponent.repositoryCard(p)
+@(repository: List[RepositoryVersion])
+    @main("Repositories") {
+        <div class="list-group">
+        @for(p <- repository) {
+            @if(p != null) {
+                @bootstrapComponent.repositoryCard(p)
+            }
         }
+        </div>
     }
-</div>
-}

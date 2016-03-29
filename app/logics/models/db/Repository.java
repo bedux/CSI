@@ -10,7 +10,7 @@ import logics.versionUtils.GitRepo;
 @IDatabaseClass(tableName = "Repository")
 public class Repository {
 
-    @IDatabaseField(columnName = "id",save = false,isID = true)
+    @IDatabaseField(columnName = "id", save = false, isID = true)
     public int id;
 
     @IDatabaseField(columnName = "url")
@@ -25,11 +25,11 @@ public class Repository {
     @IDatabaseField(columnName = "subversionType")
     public String subversionType;
 
-    public VersionedSystem CreateSystem()  {
+    public VersionedSystem CreateSystem() {
 
-        if(this.subversionType.equalsIgnoreCase("GIT")){
-            return  new GitRepo(this);
-        }else{
+        if (this.subversionType.equalsIgnoreCase("GIT")) {
+            return new GitRepo(this);
+        } else {
             throw new CustomException("No Compatible Subversion System Found");
         }
 

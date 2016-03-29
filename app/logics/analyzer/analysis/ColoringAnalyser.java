@@ -2,10 +2,10 @@ package logics.analyzer.analysis;
 
 import interfaces.Analyser;
 import interfaces.Component;
-import logics.analyzer.*;
+import logics.analyzer.BinaryFile;
+import logics.analyzer.DataFile;
 import logics.analyzer.Package;
 import logics.models.tools.MaximumMinimumData;
-import logics.renderTools.Point3d;
 
 /**
  * Created by bedux on 03/03/16.
@@ -38,11 +38,11 @@ public class ColoringAnalyser implements Analyser<Integer> {
 
     private void analysisCast(Package p) {
 
-        if(p.getFeatures().getRemoteness()==0){
+        if (p.getFeatures().getRemoteness() == 0) {
 
             p.getFeatures().setColor(-1);
             p.getFeatures().setBuildingType(4);
-        }else {
+        } else {
             float color = p.getFeatures().getRemoteness() / ((float) max);
             p.getFeatures().setColor(color + 0.01f);
 
@@ -65,8 +65,8 @@ public class ColoringAnalyser implements Analyser<Integer> {
 //            p.getFeatures().setBuildingType((int)(f1/f3)+2);
 
 
-                p.getFeatures().setColor(p.getFeatures().getColor()/maximumMinimumData.maxColor);
-                p.getFeatures().setBuildingType(2);
+            p.getFeatures().setColor(p.getFeatures().getColor() / maximumMinimumData.maxColor);
+            p.getFeatures().setBuildingType(2);
 
 
         }

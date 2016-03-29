@@ -15,6 +15,7 @@ public class AnalyserHandlerParam implements HandlerParam {
     public AnalyserHandlerParam(@NotNull RepositoryVersion repositoryVersion) {
         this.repositoryVersion = repositoryVersion;
     }
+
     public AnalyserHandlerParam(@NotNull StoreHandlerResult storeHandlerResult) {
         this.repositoryVersion = storeHandlerResult.repositoryVersion;
     }

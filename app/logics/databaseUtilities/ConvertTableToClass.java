@@ -1,6 +1,5 @@
 package logics.databaseUtilities;
 
-import org.omg.PortableInterceptor.SYSTEM_EXCEPTION;
 import org.postgresql.util.PGobject;
 import play.libs.Json;
 
@@ -14,14 +13,14 @@ import java.sql.SQLException;
 public class ConvertTableToClass {
 
     private ResultSet resultSet;
-    public ConvertTableToClass(ResultSet resultSet){
+
+    public ConvertTableToClass(ResultSet resultSet) {
         this.resultSet = resultSet;
     }
 
     /**
-     *
      * @param resultClass The class type of the result
-     * @param <T> the result type
+     * @param <T>         the result type
      * @return the create T object
      * @throws SQLException
      * @throws IllegalAccessException
@@ -30,15 +29,15 @@ public class ConvertTableToClass {
 
         T returnValue = resultClass.newInstance();
 
-        for(Field f:SaveClassAsTable.getInheritedFields(resultClass)) {
-            IDatabaseField annotation =  f.getAnnotation(IDatabaseField.class);
-            if(!annotation.fromJSON() && annotation.columnId()==-1) {
+        for (Field f : SaveClassAsTable.getInheritedFields(resultClass)) {
+            IDatabaseField annotation = f.getAnnotation(IDatabaseField.class);
+            if (!annotation.fromJSON() && annotation.columnId() == -1) {
                 f.set(returnValue, getObjectFromColumnIndex(getColumnIndexFromName(annotation.columnName())));
-            }else if(!annotation.fromJSON() && annotation.columnId()!=-1){
+            } else if (!annotation.fromJSON() && annotation.columnId() != -1) {
                 f.set(returnValue, getObjectFromColumnIndex(annotation.columnId()));
-            }else{
-                PGobject obj =(PGobject)getObjectFromColumnIndex(getColumnIndexFromName(annotation.columnName()));
-                if(obj!=null){
+            } else {
+                PGobject obj = (PGobject) getObjectFromColumnIndex(getColumnIndexFromName(annotation.columnName()));
+                if (obj != null) {
                     f.set(returnValue, Json.fromJson(Json.parse(obj.getValue()), f.getType()));
                 }
             }
@@ -47,22 +46,20 @@ public class ConvertTableToClass {
     }
 
     /**
-     *
      * @param columnName name of the column
      * @return the index of the column
      * @throws SQLException
      */
-    private  int getColumnIndexFromName(String columnName) throws SQLException {
-        return  resultSet.findColumn(columnName);
+    private int getColumnIndexFromName(String columnName) throws SQLException {
+        return resultSet.findColumn(columnName);
     }
 
     /**
-     * 
      * @param index the index of the column
      * @return the object
      * @throws SQLException
      */
-    private  Object getObjectFromColumnIndex(int index)throws SQLException {
+    private Object getObjectFromColumnIndex(int index) throws SQLException {
         return resultSet.getObject(index);
 
     }

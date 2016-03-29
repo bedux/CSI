@@ -10,36 +10,35 @@ import java.util.concurrent.ConcurrentLinkedQueue;
 /**
  * Created by bedux on 23/02/16.
  */
-public class RepositoryManager  {
-    Queue<Runnable> toDo = new ConcurrentLinkedQueue<>();
+public class RepositoryManager {
     private static RepositoryManager instance;
-    private RepositoryManager(){
+    Queue<Runnable> toDo = new ConcurrentLinkedQueue<>();
+
+    private RepositoryManager() {
 
     }
 
-    public static  RepositoryManager  getInstance(){
-        if(instance==null){
+    public static RepositoryManager getInstance() {
+        if (instance == null) {
             instance = new RepositoryManager();
         }
-        return  instance;
+        return instance;
     }
 
 
+    public void AddRepo(Repository repositoryInfo) {
+        Runnable runn = () -> {
+            try {
+                VersionedSystem sys = repositoryInfo.CreateSystem();
+                //sys.clone();
 
-
-   public void AddRepo(Repository repositoryInfo){
-      Runnable runn = () -> {
-          try {
-              VersionedSystem sys = repositoryInfo.CreateSystem();
-              //sys.clone();
-
-          }catch (Exception inv ){
-              throw new CustomException(inv);
-          }
-      };
-      Thread t = new Thread(runn);
-      t.start();
-      return;
+            } catch (Exception inv) {
+                throw new CustomException(inv);
+            }
+        };
+        Thread t = new Thread(runn);
+        t.start();
+        return;
 
     }
 
