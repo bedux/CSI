@@ -1,12 +1,12 @@
 package logics.models.query;
 
 import logics.DatabaseManager;
+import logics.Definitions;
 import logics.databaseUtilities.IDatabaseClass;
-import logics.models.db.File;
-import logics.models.db.JavaFile;
-import logics.models.db.RepositoryVersion;
-import logics.models.db.TextFile;
+import logics.models.db.*;
 
+import java.io.IOException;
+import java.nio.file.Files;
 import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.List;
@@ -86,17 +86,49 @@ public class QueryList {
     }
 
 
-    public long getTotalSize(int id) throws SQLException {
-        String query =  "select sum(CAST(information->>'size' AS integer)) from JavaFile where JavaFile.repositoryVersionId = ?";
+    public long getTotalSize(int id) throws SQLException, IOException {
+//        String query = "select * from RepositoryVersion where id = ?";
+//        RepositoryVersion repo =DatabaseManager.getInstance().makeQuery(query, new HashMap<Integer, Object>() {{
+//            put(1, id);
+//        }}, RepositoryVersion.class).get(0);
+
+       return  Files.walk(new java.io.File(Definitions.repositoryPath+id).toPath())
+               .filter(path -> !Files.isDirectory(path)).mapToLong(x -> x.toFile().length()).sum();
+
+//        String query =  "select sum(CAST(information->>'size' AS integer)) from JavaFile where JavaFile.repositoryVersionId = ?";
+//        long javaSize =  DatabaseManager.getInstance().makeQuery(query, new HashMap<Integer, Object>() {{
+//            put(1, id);
+//        }}, CountQuery.class).get(0).count;
+//
+//        query =  "select sum(CAST(information->>'size' AS integer)) from TextFile where TextFile.repositoryVersionId = ?";
+//         javaSize +=  DatabaseManager.getInstance().makeQuery(query, new HashMap<Integer, Object>() {{
+//            put(1, id);
+//        }}, CountQuery.class).get(0).count;
+
+    }
+
+    public long getTotalNumberOfCodeLines(int id) throws SQLException {
+        String query =  "select sum(CAST(information->>'noLine' AS integer)) from JavaFile where JavaFile.repositoryVersionId = ?";
         long javaSize =  DatabaseManager.getInstance().makeQuery(query, new HashMap<Integer, Object>() {{
             put(1, id);
         }}, CountQuery.class).get(0).count;
-
-        query =  "select sum(CAST(information->>'size' AS integer)) from TextFile where TextFile.repositoryVersionId = ?";
-         javaSize +=  DatabaseManager.getInstance().makeQuery(query, new HashMap<Integer, Object>() {{
-            put(1, id);
-        }}, CountQuery.class).get(0).count;
         return javaSize;
+    }
+
+    public String getProjectName(int version)throws SQLException {
+        String query = "select * from Repository,RepositoryVersion where Repository.id = ?";
+        Repository repo =DatabaseManager.getInstance().makeQuery(query, new HashMap<Integer, Object>() {{
+            put(1, version);
+        }}, Repository.class).get(0);
+        return repo.url;
+    }
+
+    public long getNumberOfFile(int version)throws SQLException {
+        String query = "select COUNT(*) from File where File.RepositoryVersionId = ?";
+        long repo =DatabaseManager.getInstance().makeQuery(query, new HashMap<Integer, Object>() {{
+            put(1, version);
+        }},CountQuery.class).get(0).count;
+        return repo;
     }
 //    public final QueryWithPath countAllJavaDocInMethodFieldsByFilePath =new QueryWithPath(,1);
 

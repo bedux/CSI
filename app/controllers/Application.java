@@ -63,7 +63,7 @@ public class Application extends Controller {
         } catch (InstantiationException e) {
             e.printStackTrace();
         }
-        new AnalyserHandler().process(new AnalyserHandlerParam(new StoreHandler().process(new StoreHandlerParam(repositoryVersion))));
+        new AnalyserHandler().process(new AnalyserHandlerParam((repositoryVersion)));
 
         return ok(listRepository.render(new QueryGetAllRepository().execute()));
     }
@@ -75,8 +75,15 @@ public class Application extends Controller {
         Map<String, String> info = new HashMap<>();
         try {
             info.put("size",Long.toString(QueryList.getInstance().getTotalSize(version)));
+            info.put("nol",Long.toString(QueryList.getInstance().getTotalNumberOfCodeLines(version)));
+            info.put("name",(QueryList.getInstance().getProjectName(version)));
+            info.put("nod",Long.toString(QueryList.getInstance().getNumberOfFile(version)));
+
+
         } catch (SQLException e) {
           throw new CustomException(e);
+        } catch (IOException e) {
+            throw new CustomException(e);
         }
 
         Map<String, String> getMapMethod = new HashMap();
