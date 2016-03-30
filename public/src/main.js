@@ -72,6 +72,7 @@ class MainScene{
     }
 
     updateScene(data){
+        console.log(data);
         this.scene.data = {};
         this.width = data.data.width;
         this.deep = data.data.deep;
@@ -209,6 +210,10 @@ class MainScene{
             this.camera.setTarget(new BABYLON.Vector3(bbs.centerWorld.x,0,bbs.centerWorld.z));
 
         }
+        if(this.camera.position.y > this.camera.maxZ){
+            this.camera.maxZ = this.camera.position.y + 30;
+        }
+
 
 
     }

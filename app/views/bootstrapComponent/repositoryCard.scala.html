@@ -2,8 +2,8 @@
 @(repoInfo: RepositoryVersion)
 @if(repoInfo.localPath) {
     <a href="@routes.Application.renderRepo(repoInfo.localPath, repoInfo.id)" class="list-group-item">
-        @*<span class="badge">@repoInfo.</span>*@
-        @repoInfo.localPath
+        <span class="badge">@repoInfo.numberOfFileToDispaly</span>
+        @repoInfo.nameToDisplay
     </a>
 }
 

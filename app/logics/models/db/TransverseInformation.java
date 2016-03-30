@@ -10,10 +10,10 @@ import logics.databaseUtilities.IDatabaseField;
 public class TransverseInformation {
 
     @IDatabaseField(columnName = "id_TI", save = false, isID = true)
-    public int id;
+    public long id;
 
     @IDatabaseField(columnName = "ContainsTransverseInformation")
-    public int containsTransverseInformation;
+    public long containsTransverseInformation;
 
 
 }

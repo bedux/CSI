@@ -5,6 +5,8 @@ package logics.models.query;
  */
 public class ComputeProportionOfTwoQuery implements IComputeAttributeContainer {
 
+
+
     IComputeAttributeContainer q1;
     IComputeAttributeContainer q2;
 
@@ -18,7 +20,13 @@ public class ComputeProportionOfTwoQuery implements IComputeAttributeContainer {
 
         long a1 = q1.executeAndGetResult(path);
         long a2 = q2.executeAndGetResult(path);
+        if(a1==0) return  0 ;
+        float resuult = (((float)(a2) / (float)(a1))*100f);
+        if(a1<a2){
+          System.out.println(path);
 
-        return a2 / a1;
+         }
+
+        return (long)(resuult);
     }
 }

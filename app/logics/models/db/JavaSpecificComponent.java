@@ -8,10 +8,10 @@ import logics.databaseUtilities.IDatabaseField;
 public class JavaSpecificComponent {
 
     @IDatabaseField(columnName = "id", save = false, isID = true)
-    public int id;
+    public long id;
 
     @IDatabaseField(columnName = "javaSource")
-    public int javaSource;
+    public long javaSource;
 
 
 }

@@ -10,6 +10,7 @@ import logics.analyzer.analysis.*;
 import logics.databaseUtilities.SaveClassAsTable;
 import logics.models.db.RepositoryVersion;
 import logics.models.query.ComputeWithSingleQuery;
+import logics.models.query.IComputeAttributeContainer;
 import logics.models.query.QueryList;
 import logics.models.tools.MaximumMinimumData;
 import play.libs.Json;
@@ -47,9 +48,9 @@ public class AnalyserHandler implements Handler<AnalyserHandlerParam, AnalyserHa
         //TODO
         root.applyFunction(new ASTraversAndStore()::analysis);
 
-        ComputeWithSingleQuery width = new ComputeWithSingleQuery(QueryList.getInstance().countAllMethodByFilePath);
-        ComputeWithSingleQuery height = new ComputeWithSingleQuery(QueryList.getInstance().countAllFieldsByFilePath);
-        ComputeWithSingleQuery color = new ComputeWithSingleQuery(QueryList.getInstance().countAllMethodByFilePath);
+        IComputeAttributeContainer width = new ComputeWithSingleQuery(QueryList.getInstance().countAllMethodByFilePath);
+        IComputeAttributeContainer height = new ComputeWithSingleQuery(QueryList.getInstance().countAllFieldsByFilePath);
+        IComputeAttributeContainer color = QueryList.getInstance().ratioJavaDocMethodsByPath;
 
 //
 

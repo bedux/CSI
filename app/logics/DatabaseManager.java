@@ -81,10 +81,7 @@ public class DatabaseManager {
         try {
 
             PreparedStatement preparedStatement = buildPreparedStatement(connection, query, values);
-            System.out.println(preparedStatement+" "+ Json.stringify(Json.toJson(values)));
-
             int  result = preparedStatement.executeUpdate();
-            System.out.println(result);
             preparedStatement.close();
             connection.close();
 

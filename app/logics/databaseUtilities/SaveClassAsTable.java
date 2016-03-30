@@ -14,10 +14,18 @@ import java.util.HashMap;
 import java.util.List;
 
 /**
- * Created by bedux on 25/03/16.
+ * Update and Save Table in Database
  */
 public class SaveClassAsTable {
+    private String clear(String s) {
+        return s.replaceAll("[\u0000]", "");
+    }
 
+    /***
+     *
+     * @param type class to analyse
+     * @return all field of the class, and also inherited fields
+     */
     public static List<Field> getInheritedFields(Class<?> type) {
         List<Field> result = new ArrayList<Field>();
 
@@ -29,6 +37,13 @@ public class SaveClassAsTable {
         return result;
     }
 
+    /***
+     *
+     * This Funcion is used for save object @See IDatabaseClass and @See IDatabaseField
+     * @param object to save, Use the @see IDatabaseClass
+     * @param <T> the class element to be saved and  return
+     * @return the saved element
+     */
     public <T> Integer save(T object) {
         try {
             IDatabaseClass annotationClass = object.getClass().getAnnotation(IDatabaseClass.class);
@@ -37,7 +52,6 @@ public class SaveClassAsTable {
             }
             String insertQuery = "INSERT INTO " + annotationClass.tableName() + " (";
             String filedValue = "(";
-            String idName = "id";
             HashMap<Integer, Object> param = new HashMap<>();
             int i = 1;
             for (Field f : getInheritedFields(object.getClass())) {
@@ -80,6 +94,15 @@ public class SaveClassAsTable {
         }
     }
 
+
+    /***
+     *
+     * @param object object to be update
+     * @param <T> Type of the object
+     * @throws IllegalAccessException
+     * @throws SQLException
+     * @throws InstantiationException
+     */
     public <T> void update(T object) throws IllegalAccessException, SQLException, InstantiationException {
         IDatabaseClass annotationClass = object.getClass().getAnnotation(IDatabaseClass.class);
         if (annotationClass.tableName() == "") {
@@ -97,17 +120,8 @@ public class SaveClassAsTable {
                 insertQuery += " " + idbc.columnName() + " = ";
 
                 if (idbc.fromJSON()) {
-                    String json = Json.stringify(Json.toJson(f.get(object)));
-                    System.out.print(json);
+                    String json =clear( Json.stringify(Json.toJson(f.get(object))));
                     param.put(i, json);
-//                    String s = " '{";
-//                    for(Field f1:  f.get(object).getClass().getFields()){
-//                        s+=f1.getName()+",";
-//                    }
-//                    s = s.substring(0,s.lastIndexOf(","));
-//                    s+="}' ";
-//                    System.out.print(s);
-                //   insertQuery += "jsonb_set( "+idbc.columnName()+" ,"+s+", ? ), ";
                     insertQuery += "?::jsonb, ";
                     i++;
 
@@ -131,7 +145,6 @@ public class SaveClassAsTable {
         if (id != null) {
             insertQuery += " WHERE "+ annotationClass.idName() +" = ?";
             param.put(i, id);
-            System.out.println(annotationClass.idName()+" "+id);
         }
         DatabaseManager.getInstance().makeUpdateQuery(insertQuery, param);
     }

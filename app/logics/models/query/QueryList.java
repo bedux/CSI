@@ -11,18 +11,22 @@ import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.List;
 
+
+
 /**
  * Created by bedux on 29/03/16.
  */
 public class QueryList {
 
     private static QueryList instance = null;
-    public final QueryWithPath countAllMethodByFilePath = new QueryWithPath("select COUNT(*) from JavaMethod where javaSource in  (select id from JavaSourceObject where JavaSourceObject.javaFile in (select id from JavaFile where JavaFile.path = ? )LIMIT 1)", 1);
+    public final QueryWithPath countAllMethodByFilePath = new QueryWithPath("select COUNT(*) from JavaMethod where JavaMethod.JavaSource  in (select JavaSourceObject.id from JavaSourceObject,JavaFile where JavaSourceObject.javaFile = JavaFile.id AND JavaFile.path = ?);", 1);
     public final QueryWithPath countAllFieldsByFilePath = new QueryWithPath("select COUNT(*) from JavaField where javaSource in  (select id from JavaSourceObject where JavaSourceObject.javaFile in (select id from JavaFile where JavaFile.path = ? )LIMIT 1)", 1);
     /***
      * Counting all the javaDoc of class and interface of a specific FilePath
      */
-    public final QueryWithPath countAllJavaDocInClassInterfaceByFilePath = new QueryWithPath("select COUNT(*) from JavaDoc where JavaDoc.containstransversalinformation in  (select id from JavaSourceObjects where JavaSourceObjects.javaFile in (select id from JavaFile where JavaFile.path = ?)LIMIT 1)", 1);
+    public final QueryWithPath countAllJavaDocInClassInterfaceByFilePath = new QueryWithPath("select COUNT(*) from JavaDoc where JavaDoc.ContainsTransverseInformation in  (select id from JavaMethod where JavaMethod.JavaSource  in (select JavaSourceObject.id from JavaSourceObject,JavaFile where JavaSourceObject.javaFile = JavaFile.id AND JavaFile.path = ?));", 1);
+    public final ComputeProportionOfTwoQuery ratioJavaDocMethodsByPath = new ComputeProportionOfTwoQuery(new ComputeWithSingleQuery(countAllMethodByFilePath),new ComputeWithSingleQuery(countAllJavaDocInClassInterfaceByFilePath));
+
 
     private QueryList() {
 
@@ -87,23 +91,8 @@ public class QueryList {
 
 
     public long getTotalSize(int id) throws SQLException, IOException {
-//        String query = "select * from RepositoryVersion where id = ?";
-//        RepositoryVersion repo =DatabaseManager.getInstance().makeQuery(query, new HashMap<Integer, Object>() {{
-//            put(1, id);
-//        }}, RepositoryVersion.class).get(0);
-
        return  Files.walk(new java.io.File(Definitions.repositoryPath+id).toPath())
                .filter(path -> !Files.isDirectory(path)).mapToLong(x -> x.toFile().length()).sum();
-
-//        String query =  "select sum(CAST(information->>'size' AS integer)) from JavaFile where JavaFile.repositoryVersionId = ?";
-//        long javaSize =  DatabaseManager.getInstance().makeQuery(query, new HashMap<Integer, Object>() {{
-//            put(1, id);
-//        }}, CountQuery.class).get(0).count;
-//
-//        query =  "select sum(CAST(information->>'size' AS integer)) from TextFile where TextFile.repositoryVersionId = ?";
-//         javaSize +=  DatabaseManager.getInstance().makeQuery(query, new HashMap<Integer, Object>() {{
-//            put(1, id);
-//        }}, CountQuery.class).get(0).count;
 
     }
 
@@ -123,6 +112,12 @@ public class QueryList {
         return repo.url;
     }
 
+    /***
+     * Given a repository version, return the number of the file
+     * @param version Repository Version @see RepositoryVersion
+     * @return the number of files(java file + text file + binary file)
+     * @throws SQLException
+     */
     public long getNumberOfFile(int version)throws SQLException {
         String query = "select COUNT(*) from File where File.RepositoryVersionId = ?";
         long repo =DatabaseManager.getInstance().makeQuery(query, new HashMap<Integer, Object>() {{
@@ -130,6 +125,51 @@ public class QueryList {
         }},CountQuery.class).get(0).count;
         return repo;
     }
-//    public final QueryWithPath countAllJavaDocInMethodFieldsByFilePath =new QueryWithPath(,1);
+
+    /***
+     * Make a query that return the maximum number of field in a single class.
+     * @param id repository Version id
+     * @return the maximum field
+     * @throws SQLException
+     */
+    public long getMaximumJavaFields(int id) throws SQLException{
+        String query =  "select COUNT(JavaClass) from JavaFile,JavaClass,JavaField where ? = JavaFile.repositoryVersionId AND JavaFile.id = JavaClass.JavaFile AND JavaClass.id = JavaField.JavaSource GROUP BY(JavaClass) ORDER BY COUNT(*) DESC LIMIT 1;";
+        long javaSize =  DatabaseManager.getInstance().makeQuery(query, new HashMap<Integer, Object>() {{
+            put(1, id);
+        }}, CountQuery.class).get(0).count;
+        return javaSize;
+
+    }
+
+    /***
+     * Make a query that return the maximum number of methods in a single class.
+     * @param id repository Version id
+     * @return the maximum methods
+     * @throws SQLException
+     */
+    public long getMaximumJavaMethods(int id) throws SQLException{
+        String query =  "select COUNT(JavaClass) from JavaFile,JavaClass,JavaMethod where ? = JavaFile.repositoryVersionId AND JavaFile.id = JavaClass.JavaFile AND JavaClass.id = JavaMethod.JavaSource GROUP BY(JavaClass) ORDER BY COUNT(*) DESC LIMIT 1;";
+        long javaSize =  DatabaseManager.getInstance().makeQuery(query, new HashMap<Integer, Object>() {{
+            put(1, id);
+        }}, CountQuery.class).get(0).count;
+        return javaSize;
+
+    }
+
+    /***
+     * Make a quey that return the number of java doc for the method of the given file path. He doesn't count the constructor!!!
+     * @param path
+     * @return the number of javaDoc
+     * @throws SQLException
+     */
+    public long countJavaDocMethodsByPath(String path)throws SQLException{
+        String query =  "select Count(*) from JavaDoc where JavaDoc.ContainsTransverseInformation in  (select id from JavaMethod where JavaMethod.JavaSource   in (select JavaClass.id from JavaClass,JavaFile where JavaClass.javaFile = JavaFile.id AND JavaFile.path = ? ));";
+        long javaSize =  DatabaseManager.getInstance().makeQuery(query, new HashMap<Integer, Object>() {{
+            put(1, path);
+        }}, CountQuery.class).get(0).count;
+        return javaSize;
+    }
+
+
 
 }

@@ -4,53 +4,6 @@ package interfaces;
 public interface DataAttributes {
 
 
-    public int getNoMethod();
-
-    public void setNoMethod(int noMethod);
-
-    public int getNoPrivateMethod();
-
-    public void setNoPrivateMethod(int noPrivateMethod);
-
-    public int getNoPublicMethod();
-
-    public void setNoPublicMethod(int noPublicMethod);
-
-    public int getNoProtectedMethod();
-
-    public void setNoProtectedMethod(int noProtectedMethod);
-
-    public int getNoF();
-
-    public void setNoF(int NOF);
-
-    public int getNoForSTM();
-
-    public void setNoForSTM(int noForSTM);
-
-    public int getNoForeachSTM();
-
-    public void setNoForeachSTM(int noForeachSTM);
-
-    public int getNoWhile();
-
-    public void setNoWhile(int noWhile);
-
-    public int getNoIf();
-
-    public void setNoIf(int noIf);
-
-    public int getNoWord();
-
-    public void setNoWord(int noWord);
-
-    public int getSize();
-
-    public void setSize(int size);
-
-    public int getNoLine();
-
-    public void setNoLine(int noLine);
 
     enum DataName {
         NoMethod("noMethod"), NoPrivateMethod("noPrivateMethod"), NoPublicMethod("noPublicMethod"), NoProtectedMethod("noProtectedMethod"),

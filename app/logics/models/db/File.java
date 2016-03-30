@@ -9,7 +9,7 @@ import logics.databaseUtilities.IDatabaseField;
 @IDatabaseClass(tableName = "File")
 public class File {
     @IDatabaseField(columnName = "id", save = false, isID = true)
-    public int id;
+    public long id;
 
     @IDatabaseField(columnName = "path")
     public String path;

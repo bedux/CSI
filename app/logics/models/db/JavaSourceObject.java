@@ -8,10 +8,10 @@ import logics.databaseUtilities.IDatabaseField;
 public class JavaSourceObject {
 
     @IDatabaseField(columnName = "id_JSO", save = false, isID = true)
-    public int id;
+    public long id;
 
     @IDatabaseField(columnName = "JavaFile")
-    public int javaFile;
+    public long javaFile;
 
 
 }

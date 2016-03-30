@@ -7,18 +7,26 @@ import logics.analyzer.DataFile;
 import logics.models.query.IComputeAttributeContainer;
 
 /**
- * Created by bedux on 26/03/16.
+ * Analyser that retrieve information for each file
  */
 public class LoadFromDatabase implements Analyser<Integer> {
+
     IComputeAttributeContainer widthQuery;
     IComputeAttributeContainer heightQuery;
     IComputeAttributeContainer colorQuery;
 
+    /***
+     *
+     * @param width the with query  used to get the metrics
+     * @param height the with query  used to get the metrics
+     * @param color the with query  used to get the metrics
+     */
     public LoadFromDatabase(IComputeAttributeContainer width, IComputeAttributeContainer height, IComputeAttributeContainer color) {
         this.widthQuery = width;
         this.heightQuery = height;
         this.colorQuery = color;
     }
+
 
     @Override
     public Integer analysis(Component value) {
@@ -36,15 +44,13 @@ public class LoadFromDatabase implements Analyser<Integer> {
 
 
         if (fn.indexOf("java") == 0) {
-
             String currentPath = c.getFeatures().getPath();
             int width = (int) widthQuery.executeAndGetResult(currentPath);
-            c.getFeatures().setWidth(width);
-            c.getFeatures().setDeep(width);
-            c.getFeatures().setHeight(heightQuery.executeAndGetResult(currentPath));
+            c.getFeatures().setWidthMetrics(width);
+            c.getFeatures().setDepthMetrics(width);
+            c.getFeatures().setHeightMetrics(heightQuery.executeAndGetResult(currentPath));
             long color = colorQuery.executeAndGetResult(currentPath);
-            System.out.println(color+"asd");
-            c.getFeatures().setColor(color);
+            c.getFeatures().setColorMetrics(color);
         }
     }
 }

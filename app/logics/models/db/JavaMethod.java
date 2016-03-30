@@ -8,7 +8,7 @@ import logics.databaseUtilities.IDatabaseField;
 public class JavaMethod extends JavaSpecificComponent {
 
     @IDatabaseField(columnName = "id", save = false, isID = true)
-    public int id;
+    public long id;
 
 
     @IDatabaseField(columnName = "information", fromJSON = true)

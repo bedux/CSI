@@ -2,6 +2,7 @@ package controllers;
 
 import exception.CustomException;
 import logics.Definitions;
+import logics.models.db.Repository;
 import logics.models.db.RepositoryVersion;
 import logics.models.query.QueryGetAllRepository;
 import logics.models.query.QueryList;
@@ -9,7 +10,6 @@ import logics.pipeline.analayser.AnalyserHandler;
 import logics.pipeline.analayser.AnalyserHandlerParam;
 import logics.pipeline.storing.StoreHandler;
 import logics.pipeline.storing.StoreHandlerParam;
-import logics.pipeline.storing.StoreHandlerResult;
 import play.mvc.Controller;
 import play.mvc.Result;
 import views.html.listRepository;
@@ -20,6 +20,7 @@ import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.sql.SQLException;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 public class Application extends Controller {
@@ -30,12 +31,17 @@ public class Application extends Controller {
 
 
     public static Result indexGet(int id) {
-//        try {
-//            RepositoryVersion.find.where().eq("id",id).findList().get(0);
-//            new AnalyserHandler().process(new AnalyserHandlerParam(RepositoryVersion.find.where().eq("id", id).findList().get(0)));
-//        }catch (Exception e){
-//            e.printStackTrace();
-//        }
+        RepositoryVersion repositoryVersion = null;
+        try {
+            repositoryVersion = QueryList.getInstance().getRepositoryVersionById(id);
+        } catch (IllegalAccessException e) {
+            e.printStackTrace();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        } catch (InstantiationException e) {
+            e.printStackTrace();
+        }
+        new AnalyserHandler().process(new AnalyserHandlerParam(new StoreHandler().process(new StoreHandlerParam(repositoryVersion))));
         return ok("Done!");
 
     }
@@ -53,24 +59,21 @@ public class Application extends Controller {
     }
 
     public static Result getRepositories() {
-        RepositoryVersion repositoryVersion = null;
-        try {
-            repositoryVersion = QueryList.getInstance().getRepositoryVersionById(1);
-        } catch (IllegalAccessException e) {
-            e.printStackTrace();
-        } catch (SQLException e) {
-            e.printStackTrace();
-        } catch (InstantiationException e) {
-            e.printStackTrace();
+        List<RepositoryVersion> repositoryVersionList = new QueryGetAllRepository().execute();
+        for(RepositoryVersion v:repositoryVersionList){
+            try {
+                v.nameToDisplay = QueryList.getInstance().getProjectName(v.repositoryId);
+                v.numberOfFileToDispaly = QueryList.getInstance().getNumberOfFile(v.repositoryId);
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
         }
-        new AnalyserHandler().process(new AnalyserHandlerParam((repositoryVersion)));
 
-        return ok(listRepository.render(new QueryGetAllRepository().execute()));
+        return ok(listRepository.render(repositoryVersionList));
     }
 
 
     public static Result renderRepo(String id, int version) {
-        System.out.println(version);
 
         Map<String, String> info = new HashMap<>();
         try {
@@ -87,6 +90,10 @@ public class Application extends Controller {
         }
 
         Map<String, String> getMapMethod = new HashMap();
+        getMapMethod.put("Method Count","depthMetrics");
+        getMapMethod.put("Fields Count","heightMetrics");
+        getMapMethod.put("Java Doc Percentage","colorMetrics");
+
 
 
         return ok(render.render(id, (long) version, null, getMapMethod, info));

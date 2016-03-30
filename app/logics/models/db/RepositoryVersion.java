@@ -14,4 +14,8 @@ public class RepositoryVersion {
     @IDatabaseField(columnName = "repositoryId")
     public Integer repositoryId;
 
+
+    public String nameToDisplay="";
+
+    public Long numberOfFileToDispaly = 0L;
 }

@@ -12,7 +12,7 @@ public class MaximumDimensionAnalyser implements Analyser<MaximumMinimumData> {
         if (c.getComponentList().size() == 0) {
 
 
-            return new MaximumMinimumData(c.getFeatures().getWidth(), c.getFeatures().getHeight(), c.getFeatures().getDeep(), c.getFeatures().getColor());
+            return new MaximumMinimumData(c.getFeatures().getWidthMetrics(), c.getFeatures().getHeightMetrics(), c.getFeatures().getDepthMetrics(), c.getFeatures().getColorMetrics());
         }
         MaximumMinimumData[] streamResult = c.getComponentList().stream().map((x) ->
                         x.applyFunction((new MaximumDimensionAnalyser())::analysis)
@@ -26,12 +26,12 @@ public class MaximumDimensionAnalyser implements Analyser<MaximumMinimumData> {
             myMax.setOnlyIfMaxMinDepth(mh.maxDepth);
             myMax.setOnlyIfMaxMinHeight(mh.maxHeight);
             myMax.setOnlyIfMaxMinWidth(mh.maxWidth);
-            myMax.setOnlyIfMaxMinColor(mh.maxColor);
+            myMax.setOnlyIfMaxMinColor(100);
 
             myMax.setOnlyIfMaxMinDepth(mh.minDepth);
             myMax.setOnlyIfMaxMinHeight(mh.minHeight);
             myMax.setOnlyIfMaxMinWidth(mh.minWidth);
-            myMax.setOnlyIfMaxMinColor(mh.minColor);
+            myMax.setOnlyIfMaxMinColor(0);
 
         }
         return myMax;

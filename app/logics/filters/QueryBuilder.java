@@ -1,32 +1,31 @@
-//package logics.filters;
-//
-//import com.avaje.ebean.Expr;
-//import com.avaje.ebean.ExpressionList;
-//import com.fasterxml.jackson.databind.JsonNode;
-//import com.fasterxml.jackson.databind.node.ObjectNode;
-//import interfaces.Filter;
-//import logics.models.db.ComponentInfo;
-//import logics.models.tools.Data;
-//import play.libs.Json;
-//
-//import java.beans.Expression;
-//import java.util.ArrayList;
-//import java.util.List;
-//
+package logics.filters;
+
+import com.avaje.ebean.Expr;
+import com.avaje.ebean.ExpressionList;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.node.ObjectNode;
+import interfaces.Filter;
+
+import play.libs.Json;
+
+import java.beans.Expression;
+import java.util.ArrayList;
+import java.util.List;
+
 ///**
 // * Created by bedux on 10/03/16.
 // */
-//public class QueryBuilder {
-//
-//
-//    public static ArrayList<Filter<ComponentInfo>> filters =new ArrayList<Filter<ComponentInfo>>()
+public class QueryBuilder {
+
+
+//    public static ArrayList<Filter> filters =new ArrayList<Filter>()
 //                        {{
 //                            add(new PathName());
 //                            add(new NumberOfMethods());
 //                            add(new NumberOfWords());
 //                            add(new NumberOfLine());
 //                        }};
-//
+
 //
 //
 //
@@ -103,4 +102,4 @@
 //        return null;
 //    }
 //
-//}
+}

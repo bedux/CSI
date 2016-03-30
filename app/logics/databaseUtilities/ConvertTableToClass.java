@@ -31,11 +31,12 @@ public class ConvertTableToClass {
 
         for (Field f : SaveClassAsTable.getInheritedFields(resultClass)) {
             IDatabaseField annotation = f.getAnnotation(IDatabaseField.class);
-            if (!annotation.fromJSON() && annotation.columnId() == -1) {
+
+            if (annotation!=null && !annotation.fromJSON() && annotation.columnId() == -1) {
                 f.set(returnValue, getObjectFromColumnIndex(getColumnIndexFromName(annotation.columnName())));
-            } else if (!annotation.fromJSON() && annotation.columnId() != -1) {
+            } else if (annotation!=null && !annotation.fromJSON() && annotation.columnId() != -1) {
                 f.set(returnValue, getObjectFromColumnIndex(annotation.columnId()));
-            } else {
+            } else if(annotation!=null ) {
                 PGobject obj = (PGobject) getObjectFromColumnIndex(getColumnIndexFromName(annotation.columnName()));
                 if (obj != null) {
                     f.set(returnValue, Json.fromJson(Json.parse(obj.getValue()), f.getType()));

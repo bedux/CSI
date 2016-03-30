@@ -59,9 +59,9 @@ public class AdjustSizeAnalyser implements Analyser<Integer> {
         }
 
 
-        c.getFeatures().setDeep(c.getFeatures().getRendererDeep() * unit + unit);
-        c.getFeatures().setWidth(c.getFeatures().getRendererWidth() * unit + unit);
-        c.getFeatures().setHeight(c.getFeatures().getHeight() * unit + unit);
+        c.getFeatures().setDeep(c.getFeatures().getDepthMetrics() * unit + unit);
+        c.getFeatures().setWidth(c.getFeatures().getWidthMetrics() * unit + unit);
+        c.getFeatures().setHeight(c.getFeatures().getHeightMetrics() * unit + unit);
 
 //        float myDepth = (c.getFeatures().getDeep()-maximumMinimumData.minDepth);
 //        float deltaDepth = (maximumMinimumData.maxDepth-maximumMinimumData.minDepth)/ division;

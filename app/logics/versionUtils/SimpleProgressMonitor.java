@@ -24,6 +24,7 @@ public class SimpleProgressMonitor implements ProgressMonitor {
 
     @Override
     public void update(int i) {
+        Logger.info("Update Task " + status);
         status -= i;
 
     }

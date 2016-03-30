@@ -21,6 +21,7 @@ import logics.analyzer.DataFile;
 import logics.databaseUtilities.SaveClassAsTable;
 import logics.models.db.*;
 import logics.models.query.QueryList;
+import org.apache.commons.lang3.StringEscapeUtils;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -62,22 +63,8 @@ public class ASTraversAndStore implements Analyser<Integer> {
                     new SaveClassAsTable().update(analyzedFile);
                 }
 
-            } catch (IllegalAccessException e) {
-                e.printStackTrace();
+            } catch (Exception  e) {
                 throw new CustomException(e);
-            } catch (InstantiationException e) {
-                e.printStackTrace();
-                throw new CustomException(e);
-
-            } catch (SQLException e) {
-                e.printStackTrace();
-                System.out.println(filePath);
-                throw new CustomException(e);
-
-            } catch (IOException e) {
-                e.printStackTrace();
-                throw new CustomException(e);
-
 
             }
             try (InputStream is = Files.newInputStream(c.getFeatures().getFilePath())) {
@@ -88,7 +75,7 @@ public class ASTraversAndStore implements Analyser<Integer> {
                 is.close();
 
             } catch (Exception e) {
-                throw new CustomException(e);
+                 new CustomException(e);
             }
         }else{
             try {
@@ -101,22 +88,9 @@ public class ASTraversAndStore implements Analyser<Integer> {
                     analyzedFile.json.size = l.intValue();
                     new SaveClassAsTable().update(analyzedFile);
                 }
-            } catch (IllegalAccessException e) {
-                e.printStackTrace();
-                throw new CustomException(e);
-            } catch (InstantiationException e) {
-                e.printStackTrace();
-                throw new CustomException(e);
+            } catch (Exception  e) {
+                 new CustomException(e);
 
-            } catch (SQLException e) {
-                e.printStackTrace();
-                System.out.println(filePath);
-
-                throw new CustomException(e);
-
-            } catch (IOException e) {
-                e.printStackTrace();
-                throw new CustomException(e);
             }
 
 
@@ -127,11 +101,11 @@ public class ASTraversAndStore implements Analyser<Integer> {
 
 }
 
-class MethodVisitor extends VoidVisitorAdapter<Integer> {
+class MethodVisitor extends VoidVisitorAdapter<Long> {
 
 
     private String clear(String s) {
-        return s.replace("\\u0000", "");
+        return s.replaceAll("[\u0000-\uFFFF]", "");
     }
 
     private String getModifierAsString(int m) {
@@ -147,47 +121,48 @@ class MethodVisitor extends VoidVisitorAdapter<Integer> {
 
 
     @Override
-    public void visit(MethodDeclaration n, Integer arg) {
-        super.visit(n, arg);
+    public void visit(MethodDeclaration n, Long arg) {
 
         MethodInfoJSON thisInfo = new MethodInfoJSON();
-
         thisInfo.modifier = clear(getModifierAsString(n.getModifiers()));
-
         thisInfo.lineEnd = n.getEndLine();
         thisInfo.lineStart = n.getBeginLine();
-        //thisInfo.signature = clear(n.getDeclarationAsString());
+        thisInfo.signature = clear(n.getName());
         JavaMethod method = new JavaMethod();
         method.javaSource = arg;
         method.json = thisInfo;
-        new SaveClassAsTable().save(method);
+        long newId = new SaveClassAsTable().save(method);
+        super.visit(n, newId);
+
     }
 
     @Override
-    public void visit(FieldDeclaration n, Integer o) {
-        super.visit(n, o);
+    public void visit(FieldDeclaration n, Long o) {
+
         FieldsInfoJSON info = new FieldsInfoJSON();
-        info.name = clear(n.toString());
+
         info.type = clear(n.getType().toString());
         info.modifier = getModifierAsString(n.getModifiers());
-
+        info.name =   n.getVariables().get(0).getId().getName();
         JavaField jf = new JavaField();
         jf.javaSource = o;
         jf.json = info;
-        new SaveClassAsTable().save(jf);
-
+        long newId =  new SaveClassAsTable().save(jf);
+        super.visit(n, newId);
     }
 
     @Override
-    public void visit(ForeachStmt n, Integer o) {
+    public void visit(ForeachStmt n, Long o) {
+
         super.visit(n, o);
+
 //        o.setNoForeachSTM(o.getNoForeachSTM()+1);
 
 
     }
 
     @Override
-    public void visit(ForStmt n, Integer o) {
+    public void visit(ForStmt n, Long o) {
         super.visit(n, o);
 //        o.setNoForSTM(o.getNoForSTM()+1);
 
@@ -195,56 +170,42 @@ class MethodVisitor extends VoidVisitorAdapter<Integer> {
     }
 
     @Override
-    public void visit(WhileStmt n, Integer o) {
+    public void visit(WhileStmt n, Long o) {
         super.visit(n, o);
 //        o.setNoWhile(o.getNoWhile() + 1);
 
     }
 
     @Override
-    public void visit(IfStmt n, Integer o) {
+    public void visit(IfStmt n, Long o) {
         super.visit(n, o);
 //        o.setNoIf(o.getNoIf()+1);
 
     }
 
     @Override
-    public void visit(JavadocComment n, Integer e) {
-        super.visit(n, e);
+    public void visit(JavadocComment n, Long e) {
         JavaDocIfoJSON info = new JavaDocIfoJSON();
-        info.text = clear(n.getContent());
-        ;
+        info.text = clear(n.toStringWithoutComments());
         JavaDoc jdc = new JavaDoc();
         jdc.json = info;
         jdc.containsTransverseInformation = e;
         new SaveClassAsTable().save(jdc);
-
-    }
-
-    @Override
-    public void visit(ClassExpr n, Integer e) {
-        MethodInfoJSON thisInfo = new MethodInfoJSON();
-        thisInfo.modifier = clear(n.getType().toString());
-        thisInfo.lineEnd = n.getEndLine();
-        thisInfo.lineStart = n.getBeginLine();
-        //thisInfo.signature = clear(n.toString());
-        JavaClass method = new JavaClass();
-        method.javaFile = e;
-        method.json = thisInfo;
-        int newId = new SaveClassAsTable().save(method);
-        super.visit(n, newId);
+        super.visit(n, e);
 
 
     }
 
+
+
     @Override
-    public void visit(ClassOrInterfaceDeclaration n, Integer e) {
+    public void visit(ClassOrInterfaceDeclaration n, Long e) {
         MethodInfoJSON thisInfo = new MethodInfoJSON();
         thisInfo.modifier = "PUBLIC";
         thisInfo.lineEnd = n.getEndLine();
         thisInfo.lineStart = n.getBeginLine();
-        //  thisInfo.signature = clear(n.toString());
-        int newId = 0;
+        thisInfo.signature = clear(n.getName());
+        long newId = 0;
         if (n.isInterface()) {
             JavaInterface method = new JavaInterface();
             method.javaFile = e;
