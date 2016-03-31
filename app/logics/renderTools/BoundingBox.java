@@ -59,8 +59,8 @@ public class BoundingBox implements Serializable {
     }
 
     public Fitting isFit(BoundingBox bb) {
-        if ((this.getDeep() == bb.getDeep()) && (this.getWidth() == bb.getWidth())) return Fitting.PERFECT;
-        if ((this.getDeep() >= bb.getDeep()) && (this.getWidth() >= bb.getWidth())) return Fitting.BIG;
+        if ((this.getDepth() == bb.getDepth()) && (this.getWidth() == bb.getWidth())) return Fitting.PERFECT;
+        if ((this.getDepth() >= bb.getDepth()) && (this.getWidth() >= bb.getWidth())) return Fitting.BIG;
         return Fitting.SMALL;
 
 
@@ -82,11 +82,11 @@ public class BoundingBox implements Serializable {
         this.right = this.left + w;
     }
 
-    public float getDeep() {
+    public float getDepth() {
         return bottom - top;
     }
 
-    public void setDeep(float d) {
+    public void setDepth(float d) {
         this.bottom = this.top + d;
     }
 

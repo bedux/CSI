@@ -2,34 +2,22 @@ package logics.analyzer.analysis;
 
 import com.github.javaparser.JavaParser;
 import com.github.javaparser.ast.CompilationUnit;
-import com.github.javaparser.ast.body.ClassOrInterfaceDeclaration;
-import com.github.javaparser.ast.body.ConstructorDeclaration;
-import com.github.javaparser.ast.body.FieldDeclaration;
-import com.github.javaparser.ast.body.MethodDeclaration;
+import com.github.javaparser.ast.ImportDeclaration;
+import com.github.javaparser.ast.body.*;
 import com.github.javaparser.ast.comments.JavadocComment;
-import com.github.javaparser.ast.expr.ClassExpr;
-import com.github.javaparser.ast.stmt.ForStmt;
-import com.github.javaparser.ast.stmt.ForeachStmt;
-import com.github.javaparser.ast.stmt.IfStmt;
-import com.github.javaparser.ast.stmt.WhileStmt;
-import com.github.javaparser.ast.type.ClassOrInterfaceType;
 import com.github.javaparser.ast.visitor.VoidVisitorAdapter;
 import exception.CustomException;
 import interfaces.Analyser;
 import interfaces.Component;
-import logics.Definitions;
 import logics.analyzer.BinaryFile;
 import logics.analyzer.DataFile;
 import logics.databaseUtilities.SaveClassAsTable;
 import logics.models.db.*;
 import logics.models.query.QueryList;
-import org.apache.commons.lang3.StringEscapeUtils;
 
-import java.io.IOException;
 import java.io.InputStream;
 import java.lang.reflect.Modifier;
 import java.nio.file.Files;
-import java.sql.SQLException;
 
 /**
  * Created by bedux on 25/03/16.
@@ -156,11 +144,24 @@ class MethodVisitor extends VoidVisitorAdapter<MethodVisitorParameter> {
         info.modifier = getModifierAsString(n.getModifiers());
         info.name =   n.getVariables().get(0).getId().getName();
         JavaField jf = new JavaField();
-        jf.javaSource = o.idJavaSource;
+        jf.javaSource = o.idFile;
         jf.json = info;
         o.idJavaDoc = new SaveClassAsTable().save(jf);
 
         super.visit(n, o);
+    }
+
+    @Override
+    public void visit(ImportDeclaration n, MethodVisitorParameter arg) {
+        super.visit(n, arg);
+        JavaImport javaImport = new JavaImport();
+        javaImport.json = new JavaImportInformation();
+        javaImport.json.isAsterisk = n.isAsterisk();
+        javaImport.json.isStatic = n.isStatic();
+        javaImport.javaFile = arg.idFile;
+        javaImport.json.name = n.getName().toString();
+        new SaveClassAsTable().save(javaImport);
+
     }
 
 
@@ -174,7 +175,6 @@ class MethodVisitor extends VoidVisitorAdapter<MethodVisitorParameter> {
             jdc.containsTransverseInformation = e.idJavaDoc;
             e.idJavaDoc = -1;
             long id = new SaveClassAsTable().save(jdc);
-            System.out.println(id + " <=JavaDoc Id; " + e.idJavaDoc + " <= containsTransverseInformation");
         }
         super.visit(n, e);
 
@@ -223,6 +223,32 @@ class MethodVisitor extends VoidVisitorAdapter<MethodVisitorParameter> {
         method.json = thisInfo;
         arg.idJavaDoc = new SaveClassAsTable().save(method);
         super.visit(n, arg);
+    }
+
+    @Override
+    public void visit(EnumDeclaration n, MethodVisitorParameter arg) {
+        super.visit(n, arg);
+
+        JavaEnum javaEnum =  new JavaEnum();
+        javaEnum.javaFile = arg.idFile;
+        javaEnum.json = new JavaEnumInformation();
+        javaEnum.json.name = n.toString();
+        new SaveClassAsTable().save(javaEnum);
+
+
+    }
+
+    @Override
+    public void visit(EnumConstantDeclaration n, MethodVisitorParameter arg) {
+        super.visit(n, arg);
+
+        JavaEnum javaEnum =  new JavaEnum();
+        javaEnum.javaFile = arg.idFile;
+        javaEnum.json = new JavaEnumInformation();
+        javaEnum.json.name = n.toString();
+        System.out.println(n.getName()+"<===================================");
+        new SaveClassAsTable().save(javaEnum);
+
     }
 }
 

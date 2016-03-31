@@ -64,17 +64,17 @@ public class Node {
         left = new Node(new BoundingBox(boundingBox.getLeft() + component.getFeatures().getBoundingBox().getWidth(),
                 boundingBox.getTop(),
                 boundingBox.getWidth() - component.getFeatures().getBoundingBox().getWidth(),
-                component.getFeatures().getBoundingBox().getDeep(), 1));
+                component.getFeatures().getBoundingBox().getDepth(), 1));
 
         bottom = new Node(new BoundingBox(boundingBox.getLeft(),
-                boundingBox.getTop() + component.getFeatures().getBoundingBox().getDeep(),
+                boundingBox.getTop() + component.getFeatures().getBoundingBox().getDepth(),
                 boundingBox.getWidth(),
-                boundingBox.getDeep() - component.getFeatures().getBoundingBox().getDeep(), 1));
+                boundingBox.getDepth() - component.getFeatures().getBoundingBox().getDepth(), 1));
 
         boundingBox = (new BoundingBox(boundingBox.getLeft(),
                 boundingBox.getTop(),
                 boundingBox.getLeft() + component.getFeatures().getBoundingBox().getWidth(),
-                boundingBox.getTop() + component.getFeatures().getBoundingBox().getDeep()));
+                boundingBox.getTop() + component.getFeatures().getBoundingBox().getDepth()));
 
         return this;
     }

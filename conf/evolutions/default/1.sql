@@ -82,6 +82,11 @@ CREATE  TABLE  IF NOT EXISTS JavaClass(
   information JSONB
 )INHERITS(JavaSourceObject);
 
+DROP TABLE IF EXISTS JavaEnum CASCADE;
+CREATE  TABLE  IF NOT EXISTS JavaEnum(
+  information JSONB
+)INHERITS(JavaSourceObject);
+
 DROP TABLE IF EXISTS JavaInterface CASCADE;
 CREATE  TABLE  IF NOT EXISTS JavaInterface(
   information JSONB

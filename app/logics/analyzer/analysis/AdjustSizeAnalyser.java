@@ -63,43 +63,43 @@ public class AdjustSizeAnalyser implements Analyser<Integer> {
         c.getFeatures().setWidth(c.getFeatures().getWidthMetrics() * unit + unit);
         c.getFeatures().setHeight(c.getFeatures().getHeightMetrics() * unit + unit);
 
-//        float myDepth = (c.getFeatures().getDeep()-maximumMinimumData.minDepth);
+//        float myDepth = (c.getFeatures().getDepth()-maximumMinimumData.minDepth);
 //        float deltaDepth = (maximumMinimumData.maxDepth-maximumMinimumData.minDepth)/ division;
 //        int depthStepNumber = (int)( myDepth/deltaDepth)+1;
 //        switch(depthStepNumber){
 //            case 1:
 //                c.getFeatures().gap = 60;
-//                c.getFeatures().setDeep(50);
+//                c.getFeatures().setDepth(50);
 //                break;
 //            case 2:
 //                c.getFeatures().gap = 110;
-//                c.getFeatures().setDeep(75);
+//                c.getFeatures().setDepth(75);
 //                break;
 //            case 3:
 //                c.getFeatures().gap = 200;
-//                c.getFeatures().setDeep(100);
+//                c.getFeatures().setDepth(100);
 //                break;
 //        }
 
 //        float [] res = maximumMinimumData.getDepthDivision(5);
-//        if(c.getFeatures().getDeep() <= res[0]){
+//        if(c.getFeatures().getDepth() <= res[0]){
 //            c.getFeatures().gap = 20;
-//            c.getFeatures().setDeep(20);
-//        }else  if(c.getFeatures().getDeep() <= res[1]){
+//            c.getFeatures().setDepth(20);
+//        }else  if(c.getFeatures().getDepth() <= res[1]){
 //            c.getFeatures().gap = 40;
-//            c.getFeatures().setDeep(40);
-//        }else  if(c.getFeatures().getDeep() <= res[2]){
+//            c.getFeatures().setDepth(40);
+//        }else  if(c.getFeatures().getDepth() <= res[2]){
 //            c.getFeatures().gap = 50;
-//            c.getFeatures().setDeep(100);
-//        }else  if(c.getFeatures().getDeep() <= res[3]){
+//            c.getFeatures().setDepth(100);
+//        }else  if(c.getFeatures().getDepth() <= res[3]){
 //            c.getFeatures().gap = 100;
-//            c.getFeatures().setDeep(200);
-//        }else  if(c.getFeatures().getDeep() <= res[4]){
+//            c.getFeatures().setDepth(200);
+//        }else  if(c.getFeatures().getDepth() <= res[4]){
 //            c.getFeatures().gap = 120;
-//            c.getFeatures().setDeep(400);
+//            c.getFeatures().setDepth(400);
 //        }else {
 //            c.getFeatures().gap = 160;
-//            c.getFeatures().setDeep(800);
+//            c.getFeatures().setDepth(800);
 //        }
 
 //        float myWidth = (c.getFeatures().getWidth()-maximumMinimumData.minWidth);

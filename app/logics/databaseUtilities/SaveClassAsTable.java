@@ -148,4 +148,10 @@ public class SaveClassAsTable {
         }
         DatabaseManager.getInstance().makeUpdateQuery(insertQuery, param);
     }
+
+
+    public void updateJsonField(long id,String fieldPath,Object newValue){
+
+    }
+
 }

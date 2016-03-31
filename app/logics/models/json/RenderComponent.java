@@ -26,7 +26,7 @@ public class RenderComponent {
     }
 
     public RenderComponent(Features f, RenderChild[] children) {
-        inizialize(f.getRendererWidth(), f.getHeight(), f.getRendererDeep(), f.getColor(), f.getBuildingType(), f.getPath(), children);
+        inizialize(f.getRendererWidth(), f.getHeight(), f.getRendererDepth(), f.getColor(), f.getBuildingType(), f.getPath(), children);
 
         features = f;
     }

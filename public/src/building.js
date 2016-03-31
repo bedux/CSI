@@ -129,7 +129,7 @@ function createBuilding(scene, position, data,parent,lp) {
 
     }else{
             if(data.buildingType==2){
-                var color = hsvToRgb((1-data.color)*240,100,100);
+                var color = hsvToRgb((data.color)*240,100,100);
                 material.setColor3("color",   new BABYLON.Color3(color[0],color[1],color[2]));
 
             }

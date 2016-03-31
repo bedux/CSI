@@ -18,15 +18,15 @@ public class PackingAnalyzer implements Analyser<Integer> {
         c.getComponentList().stream().forEach((x) -> x.applyFunction((new PackingAnalyzer())::analysis));
         BinaryTreePack r;
         Component[] strm = c.getComponentList().stream().sorted((x, y) -> {
-            float a = x.getFeatures().getWidth() * x.getFeatures().getDeep();
-            float b = y.getFeatures().getWidth() * y.getFeatures().getDeep();
+            float a = x.getFeatures().getWidth() * x.getFeatures().getDepth();
+            float b = y.getFeatures().getWidth() * y.getFeatures().getDepth();
 
             if (a == b) return 0;
             else return a > b ? -1 : 1;
         }).toArray(x -> new Component[x]);
         r = new BinaryTreePack(strm[0]);
         Arrays.stream(strm).forEach((x -> {
-            if (x.getFeatures().getWidth() > 0 && x.getFeatures().getDeep() > 0)
+            if (x.getFeatures().getWidth() > 0 && x.getFeatures().getDepth() > 0)
                 r.insert(x);
         }));
 

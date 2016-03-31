@@ -42,8 +42,8 @@ public abstract class Packageable {
         return bb.getWidth() - gap;
     }
 
-    public float getRendererDeep() {
-        return bb.getDeep() - gap;
+    public float getRendererDepth() {
+        return bb.getDepth() - gap;
 
     }
 
@@ -72,14 +72,14 @@ public abstract class Packageable {
         this.height = height;
     }
 
-    public float getDeep() {
-        return bb.getDeep();
+    public float getDepth() {
+        return bb.getDepth();
     }
 
     ;
 
     public void setDeep(float deep) {
-        bb.setDeep(deep + gap);
+        bb.setDepth(deep + gap);
     }
 
     public BoundingBox getBoundingBox() {

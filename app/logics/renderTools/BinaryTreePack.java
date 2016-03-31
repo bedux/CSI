@@ -21,7 +21,7 @@ public class BinaryTreePack {
             toInsert.assign(component);
 //
 //            component.getFeatures().setWidth(toInsert.getBoundingBox().getWidth());
-//            component.getFeatures().setDeep(toInsert.getBoundingBox().getDeep());
+//            component.getFeatures().setDepth(toInsert.getBoundingBox().getDepth());
 
 
         } else {
@@ -32,7 +32,7 @@ public class BinaryTreePack {
                 n.assign(component);
 
 //                component.getFeatures().setWidth(n.getBoundingBox().getWidth());
-//                component.getFeatures().setDeep(n.getBoundingBox().getDeep());
+//                component.getFeatures().setDepth(n.getBoundingBox().getDepth());
 
             } else {
             }
@@ -47,10 +47,10 @@ public class BinaryTreePack {
         BoundingBox target = c.getFeatures().getBoundingBox();
 
         boolean cantGoButton = target.getWidth() <= root.getBoundingBox().getWidth();
-        boolean cantGoRight = target.getDeep() <= root.getBoundingBox().getDeep();
+        boolean cantGoRight = target.getDepth() <= root.getBoundingBox().getDepth();
 
-        boolean shouldGoRight = cantGoRight && ((root.getBoundingBox().getWidth() + target.getWidth()) < root.getBoundingBox().getDeep());
-        boolean shouldGoButton = cantGoButton && ((root.getBoundingBox().getDeep() + target.getDeep()) < root.getBoundingBox().getWidth());
+        boolean shouldGoRight = cantGoRight && ((root.getBoundingBox().getWidth() + target.getWidth()) < root.getBoundingBox().getDepth());
+        boolean shouldGoButton = cantGoButton && ((root.getBoundingBox().getDepth() + target.getDepth()) < root.getBoundingBox().getWidth());
 
 
         if (shouldGoRight) {
@@ -74,14 +74,14 @@ public class BinaryTreePack {
                 0,
                 0,
                 root.getBoundingBox().getWidth(),
-                root.getBoundingBox().getButton() + bb.getDeep()));
+                root.getBoundingBox().getButton() + bb.getDepth()));
 
 
         root.setbottom(new Node(new BoundingBox(
                 0,
-                helper.getBoundingBox().getDeep(),
+                helper.getBoundingBox().getDepth(),
                 helper.getBoundingBox().getWidth(),
-                bb.getDeep(), 1
+                bb.getDepth(), 1
         )));
 
         root.setRight(helper);
@@ -95,13 +95,13 @@ public class BinaryTreePack {
         root = new Node(new BoundingBox(0,
                 0,
                 root.getBoundingBox().getRight() + bb.getWidth(),
-                root.getBoundingBox().getDeep()));
+                root.getBoundingBox().getDepth()));
 
         root.setRight(new Node(new BoundingBox(
                 helper.getBoundingBox().getWidth(),
                 0,
                 bb.getWidth(),
-                helper.getBoundingBox().getDeep(), 1)));
+                helper.getBoundingBox().getDepth(), 1)));
 
         root.setbottom(helper);
 
