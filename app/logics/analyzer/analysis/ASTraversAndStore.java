@@ -3,6 +3,7 @@ package logics.analyzer.analysis;
 import com.github.javaparser.JavaParser;
 import com.github.javaparser.ast.CompilationUnit;
 import com.github.javaparser.ast.body.ClassOrInterfaceDeclaration;
+import com.github.javaparser.ast.body.ConstructorDeclaration;
 import com.github.javaparser.ast.body.FieldDeclaration;
 import com.github.javaparser.ast.body.MethodDeclaration;
 import com.github.javaparser.ast.comments.JavadocComment;
@@ -11,6 +12,7 @@ import com.github.javaparser.ast.stmt.ForStmt;
 import com.github.javaparser.ast.stmt.ForeachStmt;
 import com.github.javaparser.ast.stmt.IfStmt;
 import com.github.javaparser.ast.stmt.WhileStmt;
+import com.github.javaparser.ast.type.ClassOrInterfaceType;
 import com.github.javaparser.ast.visitor.VoidVisitorAdapter;
 import exception.CustomException;
 import interfaces.Analyser;
@@ -71,7 +73,9 @@ public class ASTraversAndStore implements Analyser<Integer> {
                 CompilationUnit p = JavaParser.parse(is);
                 analyzedFile.json.noLine = p.getEndLine() - p.getBeginLine();
                 new SaveClassAsTable().update(analyzedFile);
-                new MethodVisitor().visit(p, analyzedFile.id);
+                MethodVisitorParameter mvh = new MethodVisitorParameter();
+                mvh.idFile = analyzedFile.id;
+                new MethodVisitor().visit(p,mvh);
                 is.close();
 
             } catch (Exception e) {
@@ -101,11 +105,17 @@ public class ASTraversAndStore implements Analyser<Integer> {
 
 }
 
-class MethodVisitor extends VoidVisitorAdapter<Long> {
+class MethodVisitorParameter{
+    public long idFile;
+    public long idJavaSource;
+    public long idJavaDoc;
+}
+
+class MethodVisitor extends VoidVisitorAdapter<MethodVisitorParameter> {
 
 
     private String clear(String s) {
-        return s.replaceAll("[\u0000-\uFFFF]", "");
+        return s.replaceAll("[\u0000]", "");
     }
 
     private String getModifierAsString(int m) {
@@ -121,7 +131,7 @@ class MethodVisitor extends VoidVisitorAdapter<Long> {
 
 
     @Override
-    public void visit(MethodDeclaration n, Long arg) {
+    public void visit(MethodDeclaration n, MethodVisitorParameter arg) {
 
         MethodInfoJSON thisInfo = new MethodInfoJSON();
         thisInfo.modifier = clear(getModifierAsString(n.getModifiers()));
@@ -129,15 +139,16 @@ class MethodVisitor extends VoidVisitorAdapter<Long> {
         thisInfo.lineStart = n.getBeginLine();
         thisInfo.signature = clear(n.getName());
         JavaMethod method = new JavaMethod();
-        method.javaSource = arg;
+        method.javaSource = arg.idJavaSource;
         method.json = thisInfo;
-        long newId = new SaveClassAsTable().save(method);
-        super.visit(n, newId);
+        arg.idJavaDoc = new SaveClassAsTable().save(method);
+
+        super.visit(n, arg);
 
     }
 
     @Override
-    public void visit(FieldDeclaration n, Long o) {
+    public void visit(FieldDeclaration n, MethodVisitorParameter o) {
 
         FieldsInfoJSON info = new FieldsInfoJSON();
 
@@ -145,52 +156,26 @@ class MethodVisitor extends VoidVisitorAdapter<Long> {
         info.modifier = getModifierAsString(n.getModifiers());
         info.name =   n.getVariables().get(0).getId().getName();
         JavaField jf = new JavaField();
-        jf.javaSource = o;
+        jf.javaSource = o.idJavaSource;
         jf.json = info;
-        long newId =  new SaveClassAsTable().save(jf);
-        super.visit(n, newId);
-    }
-
-    @Override
-    public void visit(ForeachStmt n, Long o) {
+        o.idJavaDoc = new SaveClassAsTable().save(jf);
 
         super.visit(n, o);
-
-//        o.setNoForeachSTM(o.getNoForeachSTM()+1);
-
-
     }
 
-    @Override
-    public void visit(ForStmt n, Long o) {
-        super.visit(n, o);
-//        o.setNoForSTM(o.getNoForSTM()+1);
-
-
-    }
 
     @Override
-    public void visit(WhileStmt n, Long o) {
-        super.visit(n, o);
-//        o.setNoWhile(o.getNoWhile() + 1);
-
-    }
-
-    @Override
-    public void visit(IfStmt n, Long o) {
-        super.visit(n, o);
-//        o.setNoIf(o.getNoIf()+1);
-
-    }
-
-    @Override
-    public void visit(JavadocComment n, Long e) {
-        JavaDocIfoJSON info = new JavaDocIfoJSON();
-        info.text = clear(n.toStringWithoutComments());
-        JavaDoc jdc = new JavaDoc();
-        jdc.json = info;
-        jdc.containsTransverseInformation = e;
-        new SaveClassAsTable().save(jdc);
+    public void visit(JavadocComment n, MethodVisitorParameter e) {
+        if(!n.isLineComment() && e.idJavaDoc!=-1) {
+            JavaDocIfoJSON info = new JavaDocIfoJSON();
+            info.text = clear(n.toStringWithoutComments());
+            JavaDoc jdc = new JavaDoc();
+            jdc.json = info;
+            jdc.containsTransverseInformation = e.idJavaDoc;
+            e.idJavaDoc = -1;
+            long id = new SaveClassAsTable().save(jdc);
+            System.out.println(id + " <=JavaDoc Id; " + e.idJavaDoc + " <= containsTransverseInformation");
+        }
         super.visit(n, e);
 
 
@@ -199,30 +184,46 @@ class MethodVisitor extends VoidVisitorAdapter<Long> {
 
 
     @Override
-    public void visit(ClassOrInterfaceDeclaration n, Long e) {
+    public void visit(ClassOrInterfaceDeclaration n, MethodVisitorParameter e) {
         MethodInfoJSON thisInfo = new MethodInfoJSON();
         thisInfo.modifier = "PUBLIC";
         thisInfo.lineEnd = n.getEndLine();
         thisInfo.lineStart = n.getBeginLine();
         thisInfo.signature = clear(n.getName());
-        long newId = 0;
+        MethodVisitorParameter newId = new MethodVisitorParameter();
+        newId.idFile = e.idFile;
+
         if (n.isInterface()) {
             JavaInterface method = new JavaInterface();
-            method.javaFile = e;
+            method.javaFile = e.idFile;
             method.json = thisInfo;
-            newId = new SaveClassAsTable().save(method);
+            newId.idJavaSource = new SaveClassAsTable().save(method);
+            newId.idJavaDoc =  newId.idJavaSource;
         } else {
             JavaClass method = new JavaClass();
-            method.javaFile = e;
+            method.javaFile = e.idFile;
             method.json = thisInfo;
-            newId = new SaveClassAsTable().save(method);
+            newId.idJavaSource = new SaveClassAsTable().save(method);
+            newId.idJavaDoc =  newId.idJavaSource;
         }
         super.visit(n, newId);
 
 
     }
 
-
+    @Override
+    public void visit(ConstructorDeclaration n, MethodVisitorParameter arg) {
+        MethodInfoJSON thisInfo = new MethodInfoJSON();
+        thisInfo.modifier = clear(getModifierAsString(n.getModifiers()));
+        thisInfo.lineEnd = n.getEndLine();
+        thisInfo.lineStart = n.getBeginLine();
+        thisInfo.signature = clear(n.getName());
+        JavaMethod method = new JavaMethod();
+        method.javaSource = arg.idJavaSource;
+        method.json = thisInfo;
+        arg.idJavaDoc = new SaveClassAsTable().save(method);
+        super.visit(n, arg);
+    }
 }
 
 

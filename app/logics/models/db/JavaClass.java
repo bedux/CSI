@@ -9,7 +9,7 @@ public class JavaClass extends JavaSourceObject {
 
 
     @IDatabaseField(columnName = "id", save = false, isID = true)
-    public int id;
+    public long id;
 
 
     @IDatabaseField(columnName = "information", fromJSON = true)

@@ -20,11 +20,13 @@ public class QueryList {
 
     private static QueryList instance = null;
     public final QueryWithPath countAllMethodByFilePath = new QueryWithPath("select COUNT(*) from JavaMethod where JavaMethod.JavaSource  in (select JavaSourceObject.id from JavaSourceObject,JavaFile where JavaSourceObject.javaFile = JavaFile.id AND JavaFile.path = ?);", 1);
-    public final QueryWithPath countAllFieldsByFilePath = new QueryWithPath("select COUNT(*) from JavaField where javaSource in  (select id from JavaSourceObject where JavaSourceObject.javaFile in (select id from JavaFile where JavaFile.path = ? )LIMIT 1)", 1);
+    public final QueryWithPath countAllFieldsByFilePath = new QueryWithPath("select COUNT(*) from JavaField where javaSource in  (select id from JavaSourceObject where JavaSourceObject.javaFile in (select id from JavaFile where JavaFile.path = ? ))", 1);
     /***
      * Counting all the javaDoc of class and interface of a specific FilePath
      */
     public final QueryWithPath countAllJavaDocInClassInterfaceByFilePath = new QueryWithPath("select COUNT(*) from JavaDoc where JavaDoc.ContainsTransverseInformation in  (select id from JavaMethod where JavaMethod.JavaSource  in (select JavaSourceObject.id from JavaSourceObject,JavaFile where JavaSourceObject.javaFile = JavaFile.id AND JavaFile.path = ?));", 1);
+
+
     public final ComputeProportionOfTwoQuery ratioJavaDocMethodsByPath = new ComputeProportionOfTwoQuery(new ComputeWithSingleQuery(countAllMethodByFilePath),new ComputeWithSingleQuery(countAllJavaDocInClassInterfaceByFilePath));
 
 
@@ -171,5 +173,20 @@ public class QueryList {
     }
 
 
+    public List<JavaClass> getAllJavaClassByJavaFile(long id) throws SQLException {
+        String query = "select * from JavaClass where JavaClass.JavaFile = ?";
+        List<JavaClass> repo =DatabaseManager.getInstance().makeQuery(query, new HashMap<Integer, Object>() {{
+             put(1, id);
+         }}, JavaClass.class);
+        return repo;
+    }
+
+    public List<JavaInterface> getAllJavaInterfaceByJavaFile(long id) throws SQLException {
+        String query = "select * from JavaInterface where JavaInterface.JavaFile = ?";
+        List<JavaInterface> repo =DatabaseManager.getInstance().makeQuery(query, new HashMap<Integer, Object>() {{
+            put(1, id);
+        }}, JavaInterface.class);
+        return repo;
+    }
 
 }
