@@ -1,4 +1,4 @@
-package logics.models.db;
+package logics.models.db.information;
 
 import logics.databaseUtilities.IDatabaseClass;
 import logics.databaseUtilities.IDatabaseField;

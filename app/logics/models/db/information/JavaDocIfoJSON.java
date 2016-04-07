@@ -1,4 +1,4 @@
-package logics.models.db;
+package logics.models.db.information;
 
 /**
  * Created by bedux on 26/03/16.
