@@ -2,18 +2,17 @@ package logics.models.db;
 
 import logics.databaseUtilities.IDatabaseClass;
 import logics.databaseUtilities.IDatabaseField;
-import logics.models.db.information.MethodInfoJSON;
+import logics.models.db.information.JavaPackageInformation;
 
 
-@IDatabaseClass(tableName = "JavaClass")
-public class JavaClass extends JavaSourceObject {
 
+@IDatabaseClass(tableName = "JavaPackage")
+public class JavaPackage extends JavaSourceObject {
 
     @IDatabaseField(columnName = "id", save = false, isID = true)
     public long id;
 
-
     @IDatabaseField(columnName = "information", fromJSON = true)
-    public MethodInfoJSON json;
+    public JavaPackageInformation json;
 
 }

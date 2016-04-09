@@ -5,11 +5,10 @@ import interfaces.Handler;
 import logics.Definitions;
 import logics.databaseUtilities.SaveClassAsTable;
 import logics.models.db.JavaFile;
-import logics.models.db.JavaFileInformation;
+import logics.models.db.information.JavaFileInformation;
 import logics.models.db.RepositoryVersion;
 import logics.models.db.TextFile;
 
-import java.io.IOException;
 import java.nio.file.FileSystems;
 import java.nio.file.Files;
 

@@ -77,6 +77,12 @@ CREATE  TABLE  IF NOT EXISTS JavaSourceObject(
 
 )INHERITS(ContainsTransverseInformation);
 
+DROP TABLE IF EXISTS JavaPackage CASCADE;
+CREATE  TABLE  IF NOT EXISTS JavaPackage(
+  information JSONB
+)INHERITS(JavaSourceObject);
+
+
 DROP TABLE IF EXISTS JavaClass CASCADE;
 CREATE  TABLE  IF NOT EXISTS JavaClass(
   information JSONB

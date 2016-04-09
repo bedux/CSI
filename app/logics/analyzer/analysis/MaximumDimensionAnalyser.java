@@ -6,15 +6,18 @@ import logics.models.tools.MaximumMinimumData;
 
 public class MaximumDimensionAnalyser implements Analyser<MaximumMinimumData> {
 
+    /***
+     *
+     * @param component
+     * @return the maximumMinimum of the subtree
+     */
     @Override
-    public MaximumMinimumData analysis(Component c) {
+    public MaximumMinimumData analysis(Component component) {
 
-        if (c.getComponentList().size() == 0) {
-
-
-            return new MaximumMinimumData(c.getFeatures().getWidthMetrics(), c.getFeatures().getHeightMetrics(), c.getFeatures().getDepthMetrics(), c.getFeatures().getColorMetrics());
+        if (component.getComponentList().size() == 0) {
+            return new MaximumMinimumData(component.getFeatures().getWidthMetrics(), component.getFeatures().getHeightMetrics(), component.getFeatures().getDepthMetrics(), component.getFeatures().getColorMetrics());
         }
-        MaximumMinimumData[] streamResult = c.getComponentList().stream().map((x) ->
+        MaximumMinimumData[] streamResult = component.getComponentList().stream().map((x) ->
                         x.applyFunction((new MaximumDimensionAnalyser())::analysis)
         ).toArray(x -> new MaximumMinimumData[x]);
 

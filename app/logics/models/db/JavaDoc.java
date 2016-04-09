@@ -2,6 +2,8 @@ package logics.models.db;
 
 import logics.databaseUtilities.IDatabaseClass;
 import logics.databaseUtilities.IDatabaseField;
+import logics.models.db.information.JavaDocIfoJSON;
+import logics.models.db.information.TransverseInformation;
 
 /**
  * Created by bedux on 25/03/16.

@@ -11,13 +11,19 @@ import java.util.Arrays;
  * Created by bedux on 03/03/16.
  */
 public class PackingAnalyzer implements Analyser<Integer> {
-    @Override
-    public Integer analysis(Component c) {
-        if (c.getComponentList().size() == 0) return 0;
 
-        c.getComponentList().stream().forEach((x) -> x.applyFunction((new PackingAnalyzer())::analysis));
+    /**
+     *
+     * @param component where starting the packing
+     * @return random Number, NOT USE!
+     */
+    @Override
+    public Integer analysis(Component component) {
+        if (component.getComponentList().size() == 0) return 0;
+
+        component.getComponentList().stream().forEach((x) -> x.applyFunction((new PackingAnalyzer())::analysis));
         BinaryTreePack r;
-        Component[] strm = c.getComponentList().stream().sorted((x, y) -> {
+        Component[] strm = component.getComponentList().stream().sorted((x, y) -> {
             float a = x.getFeatures().getWidth() * x.getFeatures().getDepth();
             float b = y.getFeatures().getWidth() * y.getFeatures().getDepth();
 
@@ -33,11 +39,11 @@ public class PackingAnalyzer implements Analyser<Integer> {
 
         float w = 0;
         float d = 0;
-        for (Component x : c.getComponentList()) {
+        for (Component x : component.getComponentList()) {
             w = w < x.getFeatures().getBoundingBox().getRight() ? x.getFeatures().getBoundingBox().getRight() : w;
             d = d < x.getFeatures().getBoundingBox().getButton() ? x.getFeatures().getBoundingBox().getButton() : d;
         }
-        c.getFeatures().getBoundingBox().setBB(new BoundingBox(d + c.getFeatures().gap, w + c.getFeatures().gap));
+        component.getFeatures().getBoundingBox().setBB(new BoundingBox(d + component.getFeatures().gap, w + component.getFeatures().gap));
         return 1;
 
     }

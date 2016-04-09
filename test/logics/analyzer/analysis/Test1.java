@@ -21,7 +21,7 @@ public class Test1 {
          * @param l asdasd
          */
         private void GetNestedStuff(int l){
-
+                int a = Integer.bitCount(3);
         }
     }
 

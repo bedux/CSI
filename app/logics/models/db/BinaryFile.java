@@ -2,6 +2,7 @@ package logics.models.db;
 
 import logics.databaseUtilities.IDatabaseClass;
 import logics.databaseUtilities.IDatabaseField;
+import logics.models.db.information.JavaFileInformation;
 
 
 @IDatabaseClass(tableName = "BinaryFile" ,idName = "id")

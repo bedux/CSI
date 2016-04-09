@@ -15,64 +15,87 @@ public class ColoringAnalyser implements Analyser<Integer> {
     private int max = 0;
     private MaximumMinimumData maximumMinimumData;
 
+    /***
+     *
+     * @param max tha max remoteness used to compute the package coloring
+     * @param maximumMinimumData the bounding value of teh metrics of the project
+     */
     public ColoringAnalyser(int max, MaximumMinimumData maximumMinimumData) {
         this.max = max;
         this.maximumMinimumData = maximumMinimumData;
     }
 
+
+    /***
+     * Compute the color of a given Component. It cast the type and call different function depending the type of the Component
+     *
+     * @param component
+     * @return only a random number, NOT USE!
+     */
     @Override
-    public Integer analysis(Component c) {
+    public Integer analysis(Component component) {
 
-        c.getComponentList().stream().forEach((x) -> x.applyFunction((new ColoringAnalyser(max, maximumMinimumData))::analysis));
-        if (c instanceof BinaryFile) {
-            c.getFeatures().setBuildingType(0);
-            c.getFeatures().setColor(-1);
-        } else if (c instanceof DataFile) {
-            analysisCast((DataFile) c);
-        } else if (c instanceof logics.analyzer.Package) {
-            analysisCast((Package) c);
+        component.getComponentList().stream().forEach((x) -> x.applyFunction((new ColoringAnalyser(max, maximumMinimumData))::analysis));
+
+        if (component instanceof BinaryFile) {
+            computeColor((BinaryFile)component);
+        } else if (component instanceof DataFile) {
+            computeColor((DataFile) component);
+        } else if (component instanceof logics.analyzer.Package) {
+            computeColor((Package) component);
         }
-
         return 0;
     }
 
-    private void analysisCast(Package p) {
+    /***
+     * Compute the color of the package, using remoteness
+     * @param packages The Component
+     */
+    private void computeColor(Package packages) {
 
-        if (p.getFeatures().getRemoteness() == 0) {
+        if (packages.getFeatures().getRemoteness() == 0) {
 
-            p.getFeatures().setColor(-1);
-            p.getFeatures().setBuildingType(4);
+            packages.getFeatures().setColor(-1);
+            packages.getFeatures().setBuildingType(4);
         } else {
-            float color = p.getFeatures().getRemoteness() / ((float) max);
-            p.getFeatures().setColor(color + 0.01f);
+            float color = packages.getFeatures().getRemoteness() / ((float) max);
+            packages.getFeatures().setColor(color + 0.01f);
 
         }
     }
 
-    private void analysisCast(DataFile p) {
-        //some computation about the color!
+    /**
+     * Compute the color of a data file. If is not a java file, if assign a default color
+     * @param dataFile The Component
+     */
+    private void computeColor(DataFile dataFile) {
 
-        if (p.getFeatures().getPath().indexOf(".java") != p.getFeatures().getPath().length() - 5) {
+        if (dataFile.getFeatures().getPath().indexOf(".java") != dataFile.getFeatures().getPath().length() - 5) {
 
-            p.getFeatures().setColor(-1);
-            p.getFeatures().setBuildingType(1);
+            dataFile.getFeatures().setColor(-1);
+            dataFile.getFeatures().setBuildingType(1);
 
         } else {
-//            float f1 = p.getFeatures().getColor() - this.maximumMinimumData.minColor;
-//            float f2 = this.maximumMinimumData.maxColor - this.maximumMinimumData.minColor;
-//            float f3 = f2 / 2;
-//            p.getFeatures().setColor(-1);
-//            p.getFeatures().setBuildingType((int)(f1/f3)+2);
-
-
-            p.getFeatures().setColor(p.getFeatures().getColorMetrics()/ maximumMinimumData.maxColor);
-            p.getFeatures().setBuildingType(2);
-
+            
+            dataFile.getFeatures().setColor(dataFile.getFeatures().getColorMetrics()/ maximumMinimumData.maxColor);
+            dataFile.getFeatures().setBuildingType(2);
 
         }
-        //end computation
-        //p.getFeatures().setColor(0);
+
 
     }
+
+    /**
+     * Compute the color of a data file. If is not a java file, if assign a default color
+     * @param binaryFile The Component
+     */
+    private void computeColor(BinaryFile binaryFile) {
+
+        binaryFile.getFeatures().setBuildingType(0);
+        binaryFile.getFeatures().setColor(-1);
+
+
+    }
+
 
 }

@@ -90,9 +90,9 @@ public class Application extends Controller {
         }
 
         Map<String, String> getMapMethod = new HashMap();
-        getMapMethod.put("Method Count","depthMetrics");
-        getMapMethod.put("Fields Count","heightMetrics");
-        getMapMethod.put("Java Doc Percentage","colorMetrics");
+        getMapMethod.put("Method Count Width/Depth","depthMetrics");
+        getMapMethod.put("Fields Count Height","heightMetrics");
+        getMapMethod.put("Java Doc Percentage Color","colorMetrics");
 
 
 

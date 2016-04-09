@@ -78,8 +78,8 @@ public abstract class Packageable {
 
     ;
 
-    public void setDeep(float deep) {
-        bb.setDepth(deep + gap);
+    public void setDepth(float depth) {
+        bb.setDepth(depth + gap);
     }
 
     public BoundingBox getBoundingBox() {

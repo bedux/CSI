@@ -3,16 +3,21 @@ package logics.analyzer.analysis;
 import com.github.javaparser.JavaParser;
 import com.github.javaparser.ast.CompilationUnit;
 import com.github.javaparser.ast.ImportDeclaration;
+import com.github.javaparser.ast.PackageDeclaration;
 import com.github.javaparser.ast.body.*;
 import com.github.javaparser.ast.comments.JavadocComment;
+import com.github.javaparser.ast.expr.MethodCallExpr;
+import com.github.javaparser.ast.expr.VariableDeclarationExpr;
 import com.github.javaparser.ast.visitor.VoidVisitorAdapter;
 import exception.CustomException;
 import interfaces.Analyser;
 import interfaces.Component;
 import logics.analyzer.BinaryFile;
 import logics.analyzer.DataFile;
+import logics.databaseUtilities.IDatabaseClass;
 import logics.databaseUtilities.SaveClassAsTable;
 import logics.models.db.*;
+import logics.models.db.information.*;
 import logics.models.query.QueryList;
 
 import java.io.InputStream;
@@ -40,11 +45,7 @@ public class ASTraversAndStore implements Analyser<Integer> {
 
         String filePath = c.getFeatures().getPath();
         if (fn.indexOf("java") == 0) {
-
-
             JavaFile analyzedFile;
-
-
             try {
                 analyzedFile = QueryList.getInstance().getJavaFileByPath(filePath);
                 Long l =  Files.size(c.getFeatures().getFilePath());
@@ -90,13 +91,14 @@ public class ASTraversAndStore implements Analyser<Integer> {
 
     }
 
-
 }
 
 class MethodVisitorParameter{
     public long idFile;
     public long idJavaSource;
     public long idJavaDoc;
+    public long javaMethodId;
+    public long countJavaMethod= 0;
 }
 
 class MethodVisitor extends VoidVisitorAdapter<MethodVisitorParameter> {
@@ -117,6 +119,11 @@ class MethodVisitor extends VoidVisitorAdapter<MethodVisitorParameter> {
         return "UNDEF";
     }
 
+    @Override
+    public void visit(MethodCallExpr n, MethodVisitorParameter arg) {
+        super.visit(n, arg);
+        System.out.print(n.getName());
+    }
 
     @Override
     public void visit(MethodDeclaration n, MethodVisitorParameter arg) {
@@ -130,7 +137,7 @@ class MethodVisitor extends VoidVisitorAdapter<MethodVisitorParameter> {
         method.javaSource = arg.idJavaSource;
         method.json = thisInfo;
         arg.idJavaDoc = new SaveClassAsTable().save(method);
-
+        arg.javaMethodId =  arg.idJavaDoc;
         super.visit(n, arg);
 
     }
@@ -148,6 +155,7 @@ class MethodVisitor extends VoidVisitorAdapter<MethodVisitorParameter> {
         jf.json = info;
         o.idJavaDoc = new SaveClassAsTable().save(jf);
 
+
         super.visit(n, o);
     }
 
@@ -160,10 +168,10 @@ class MethodVisitor extends VoidVisitorAdapter<MethodVisitorParameter> {
         javaImport.json.isStatic = n.isStatic();
         javaImport.javaFile = arg.idFile;
         javaImport.json.name = n.getName().toString();
-        new SaveClassAsTable().save(javaImport);
+        long id = new SaveClassAsTable().save(javaImport);
+
 
     }
-
 
     @Override
     public void visit(JavadocComment n, MethodVisitorParameter e) {
@@ -180,8 +188,6 @@ class MethodVisitor extends VoidVisitorAdapter<MethodVisitorParameter> {
 
 
     }
-
-
 
     @Override
     public void visit(ClassOrInterfaceDeclaration n, MethodVisitorParameter e) {
@@ -246,9 +252,28 @@ class MethodVisitor extends VoidVisitorAdapter<MethodVisitorParameter> {
         javaEnum.javaFile = arg.idFile;
         javaEnum.json = new JavaEnumInformation();
         javaEnum.json.name = n.toString();
-        System.out.println(n.getName()+"<===================================");
         new SaveClassAsTable().save(javaEnum);
 
+    }
+
+    @Override
+    public void visit(PackageDeclaration n, MethodVisitorParameter arg) {
+        super.visit(n, arg);
+        JavaPackage javaPackage = new JavaPackage();
+        javaPackage.javaFile = arg.idFile;
+        javaPackage.json = new JavaPackageInformation();
+        javaPackage.json.name = n.getName().toStringWithoutComments();
+        new SaveClassAsTable().save(javaPackage);
+
+    }
+
+    @Override
+    public void visit(VariableDeclarationExpr n, MethodVisitorParameter arg) {
+        super.visit(n, arg);
+
+
+          new SaveClassAsTable().updateJsonField("JavaMethod","Information","{variableDeclaration,"+arg.countJavaMethod+"}",n.getType().toStringWithoutComments(),arg.javaMethodId);
+        arg.countJavaMethod++;
     }
 }
 

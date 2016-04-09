@@ -2,7 +2,6 @@ package logics.analyzer.analysis;
 
 import interfaces.Analyser;
 import interfaces.Component;
-import logics.analyzer.BinaryFile;
 import logics.analyzer.DataFile;
 import logics.models.query.IComputeAttributeContainer;
 
@@ -11,9 +10,9 @@ import logics.models.query.IComputeAttributeContainer;
  */
 public class LoadFromDatabase implements Analyser<Integer> {
 
-    IComputeAttributeContainer widthQuery;
-    IComputeAttributeContainer heightQuery;
-    IComputeAttributeContainer colorQuery;
+    private  IComputeAttributeContainer widthQuery;
+    private IComputeAttributeContainer heightQuery;
+    private IComputeAttributeContainer colorQuery;
 
     /***
      *
@@ -28,29 +27,38 @@ public class LoadFromDatabase implements Analyser<Integer> {
     }
 
 
+    /***
+     *
+     * @param component The current component
+     * @return random number, NOT USE!
+     */
     @Override
-    public Integer analysis(Component value) {
-        value.getComponentList().stream().forEach((x) -> x.applyFunction((new LoadFromDatabase(widthQuery, heightQuery, colorQuery))::analysis));
-        if (value instanceof BinaryFile) {
+    public Integer analysis(Component component) {
+        component.getComponentList().stream().forEach((x) -> x.applyFunction((new LoadFromDatabase(widthQuery, heightQuery, colorQuery))::analysis));
 
-        } else if (value instanceof DataFile) {
-            analysisCast((DataFile) value);
+        if (component instanceof DataFile) {
+            computeMetricsOfComponent((DataFile) component);
         }
         return 1;
     }
 
-    private void analysisCast(DataFile c) {
-        String fn = c.getFeatures().getPath().substring(c.getFeatures().getPath().lastIndexOf(".") + 1);
+
+    /***
+     *
+     * @param dataFile set the component feature by a given query,Note: set only the matrix value no the actual size
+     */
+    private void computeMetricsOfComponent(DataFile dataFile) {
+        String fn = dataFile.getFeatures().getPath().substring(dataFile.getFeatures().getPath().lastIndexOf(".") + 1);
 
 
         if (fn.indexOf("java") == 0) {
-            String currentPath = c.getFeatures().getPath();
+            String currentPath = dataFile.getFeatures().getPath();
             int width = (int) widthQuery.executeAndGetResult(currentPath);
-            c.getFeatures().setWidthMetrics(width);
-            c.getFeatures().setDepthMetrics(width);
-            c.getFeatures().setHeightMetrics(heightQuery.executeAndGetResult(currentPath));
+            dataFile.getFeatures().setWidthMetrics(width);
+            dataFile.getFeatures().setDepthMetrics(width);
+            dataFile.getFeatures().setHeightMetrics(heightQuery.executeAndGetResult(currentPath));
             long color = colorQuery.executeAndGetResult(currentPath);
-            c.getFeatures().setColorMetrics(color);
+            dataFile.getFeatures().setColorMetrics(color);
         }
     }
 }

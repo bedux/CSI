@@ -81,7 +81,7 @@ public class DatabaseManager {
         try {
 
             PreparedStatement preparedStatement = buildPreparedStatement(connection, query, values);
-            int  result = preparedStatement.executeUpdate();
+            preparedStatement.executeUpdate();
             preparedStatement.close();
             connection.close();
 
@@ -110,6 +110,8 @@ public class DatabaseManager {
        }
 
     }
+
+
 
     private PreparedStatement buildPreparedStatement(Connection connection, String query, HashMap<Integer, Object> values) throws SQLException {
 
