@@ -3,6 +3,7 @@ package logics.databaseUtilities;
 import exception.CustomException;
 import logics.DatabaseManager;
 
+import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.List;
 
@@ -56,7 +57,8 @@ public class QueryContainer<T> {
     public T executeAndGetFirst() {
         try {
             return DatabaseManager.getInstance().makeQuery(query, params, resultClass).get(0);
-        } catch (Exception e) {
+        } catch (SQLException e) {
+            System.out.println(e.getSQLState());
             throw new CustomException(e);
         }
     }

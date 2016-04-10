@@ -45,12 +45,11 @@ public class AnalyserHandler implements Handler<AnalyserHandlerParam, AnalyserHa
         }
 
 
-        //TODO
         root.applyFunction(new ASTraversAndStore()::analysis);
 
         IComputeAttributeContainer width = new ComputeWithSingleQuery(QueryList.getInstance().countAllMethodByFilePath);
         IComputeAttributeContainer height = new ComputeWithSingleQuery(QueryList.getInstance().countAllFieldsByFilePath);
-        IComputeAttributeContainer color = QueryList.getInstance().ratioJavaDocMethodsByPath;
+        IComputeAttributeContainer color = QueryList.getInstance().ratioImportDiscussion;
 
 //
 

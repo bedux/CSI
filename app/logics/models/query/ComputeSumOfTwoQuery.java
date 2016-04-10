@@ -17,7 +17,15 @@ public class ComputeSumOfTwoQuery implements IComputeAttributeContainer {
 
         long a1 = q1.executeAndGetResult(path);
         long a2 = q2.executeAndGetResult(path);
-
         return a2 + a1;
     }
+
+    @Override
+    public long executeAndGetResult(long id) {
+
+        long a1 = q1.executeAndGetResult(id);
+        long a2 = q2.executeAndGetResult(id);
+        return a2 + a1;
+    }
+
 }

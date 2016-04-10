@@ -8,6 +8,7 @@ import logics.models.db.*;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
@@ -189,4 +190,78 @@ public class QueryList {
         return repo;
     }
 
+
+    /***
+     * Given a javaFile. return all the imports that are not a package of the project
+     * @param javaFileId id of the file
+     * @return a list of the import
+     * @throws SQLException
+     */
+    public List<JavaImport> getAllNonProjectImport(long javaFileId) throws  SQLException{
+        String query = "select * from javaImport where (javaImport.information ->>'name') not in (select DISTINCT javaImport.information ->>'name'  from javaImport,javaPackage where (javaImport.information ->>'name' ~~ (javaPackage.information ->>'name'  || '%')) AND javaImport.javaFile = ? ) and javaImport.javaFile = ?;";
+        List<JavaImport> javaImports =DatabaseManager.getInstance().makeQuery(query, new HashMap<Integer, Object>() {{
+            put(1, javaFileId);
+            put(2, javaFileId);
+        }}, JavaImport.class);
+        return javaImports;
+    }
+
+    /***
+     * Given a javaFile. return all the imports that are not a package of the project
+     * @param path path of the file
+     * @return a list of the import
+     * @throws SQLException
+     */
+    public List<JavaImport> getAllNonProjectImport(String path) throws  SQLException{
+        String query = "select * from javaImport where (javaImport.information ->>'name') not in (select DISTINCT javaImport.information ->>'name'  from javaImport,javaPackage where (javaImport.information ->>'name' ~~ (javaPackage.information ->>'name'  || '%')) AND javaImport.path = ? ) and javaImport.path = ?;";
+        List<JavaImport> javaImports =DatabaseManager.getInstance().makeQuery(query, new HashMap<Integer, Object>() {{
+            put(1, path);
+            put(2, path);
+        }}, JavaImport.class);
+        return javaImports;
+    }
+
+
+    /***
+     * Given a javaFile. return all the imports taht are in both git discussion and java file
+     * @param javaFileId id of the file
+     * @return a list of the import
+     * @throws SQLException
+     */
+    public List<ImportDiscussion> gelAllImportFromDiscussion(long javaFileId) throws  SQLException{
+        String query =
+                "select * from import where import.package in (select javaImport.information ->>'name' from javaImport where (javaImport.information ->>'name') not in (select DISTINCT javaImport.information ->>'name'  from javaImport,javaPackage where (javaImport.information ->>'name' ~~ (javaPackage.information ->>'name'  || '%')) AND javaImport.javaFile = ? ) and javaImport.javaFile = ?);";
+        List<ImportDiscussion> importDiscussion =DatabaseManager.getInstance().makeQuery(query, new HashMap<Integer, Object>() {{
+            put(1, javaFileId);
+            put(2, javaFileId);
+        }}, ImportDiscussion.class);
+        return importDiscussion;
+    }
+
+    /***
+     * Given a javaFile. return all the imports taht are in both git discussion and java file
+     * @param path path of the file
+     *
+     *
+     * @return a list of the import
+     * @throws SQLException
+     */
+    public List<ImportDiscussion> gelAllImportFromDiscussion(String path) throws  SQLException{
+        String query =
+                "select * from import where import.package in (select javaImport.information ->>'name' from javaImport where (javaImport.information ->>'name') not in (select DISTINCT javaImport.information ->>'name'  from javaImport,javaPackage where (javaImport.information ->>'name' ~~ (javaPackage.information ->>'name'  || '%')) AND javaImport.path = ? ) and javaImport.path = ?);\n";
+        List<ImportDiscussion> importDiscussion =DatabaseManager.getInstance().makeQuery(query, new HashMap<Integer, Object>() {{
+            put(1, path);
+            put(2, path);
+        }}, ImportDiscussion.class);
+        return importDiscussion;
+    }
+
+
+
+
+    public final QueryWithPath getAllNonProjectImport = new QueryWithPath("select COUNT(*) from javaImport where (javaImport.information ->>'name') not in (select DISTINCT javaImport.information ->>'name'  from javaImport,javaPackage where (javaImport.information ->>'name' ~~ (javaPackage.information ->>'name'  || '%')) AND javaImport.javafile = ? ) and javaImport.javafile = ?;",new ArrayList<Integer>(){{add(1);add(2);}});
+
+    public final QueryWithPath countDiscussionAndActualImport = new QueryWithPath("select COUNT(*) from import where import.package in (select javaImport.information ->>'name' from javaImport where (javaImport.information ->>'name') not in (select DISTINCT javaImport.information ->>'name'  from javaImport,javaPackage where (javaImport.information ->>'name' ~~ (javaPackage.information ->>'name'  || '%')) AND javaImport.javafile = ? ) and javaImport.javafile = ?);",new ArrayList<Integer>(){{add(1);add(2);}});
+
+    public final ComputeProportionOfTwoQueryById ratioImportDiscussion = new ComputeProportionOfTwoQueryById(new ComputeWithSingleQuery(getAllNonProjectImport),new ComputeWithSingleQuery(countDiscussionAndActualImport));
 }

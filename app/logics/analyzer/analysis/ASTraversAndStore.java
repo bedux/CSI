@@ -12,9 +12,8 @@ import com.github.javaparser.ast.visitor.VoidVisitorAdapter;
 import exception.CustomException;
 import interfaces.Analyser;
 import interfaces.Component;
-import logics.analyzer.BinaryFile;
+import logics.ExtensionTool;
 import logics.analyzer.DataFile;
-import logics.databaseUtilities.IDatabaseClass;
 import logics.databaseUtilities.SaveClassAsTable;
 import logics.models.db.*;
 import logics.models.db.information.*;
@@ -28,55 +27,37 @@ import java.nio.file.Files;
  * Created by bedux on 25/03/16.
  */
 public class ASTraversAndStore implements Analyser<Integer> {
+
+    /***
+     * Given a component, run the analysis on his child and, if is a javaFile, it compute all the characteristic using the AST
+     * @param value component to be analyzed
+     * @return NOt important!Just a random number
+     */
     @Override
     public Integer analysis(Component value) {
         value.getComponentList().stream().forEach((x) -> x.applyFunction((new ASTraversAndStore())::analysis));
-        if (value instanceof BinaryFile) {
-
-        } else if (value instanceof DataFile) {
-            analysisCast((DataFile) value);
+        if (value instanceof DataFile) {
+            analysisDataFile((DataFile) value);
         }
         return 1;
     }
 
 
-    private void analysisCast(DataFile c) {
-        String fn = c.getFeatures().getPath().substring(c.getFeatures().getPath().lastIndexOf(".") + 1);
-
-        String filePath = c.getFeatures().getPath();
-        if (fn.indexOf("java") == 0) {
-            JavaFile analyzedFile;
-            try {
-                analyzedFile = QueryList.getInstance().getJavaFileByPath(filePath);
-                Long l =  Files.size(c.getFeatures().getFilePath());
-                if(l!=null) {
-                    analyzedFile.json.size = l.intValue();
-                    new SaveClassAsTable().update(analyzedFile);
-                }
-
-            } catch (Exception  e) {
-                throw new CustomException(e);
-
-            }
-            try (InputStream is = Files.newInputStream(c.getFeatures().getFilePath())) {
-                CompilationUnit p = JavaParser.parse(is);
-                analyzedFile.json.noLine = p.getEndLine() - p.getBeginLine();
-                new SaveClassAsTable().update(analyzedFile);
-                MethodVisitorParameter mvh = new MethodVisitorParameter();
-                mvh.idFile = analyzedFile.id;
-                new MethodVisitor().visit(p,mvh);
-                is.close();
-
-            } catch (Exception e) {
-                 new CustomException(e);
-            }
+    /***
+     * Run the analise overe DataFile component
+     * @param c the data file
+     */
+    private void analysisDataFile(DataFile c) {
+        ExtensionTool currentPath = new ExtensionTool(c.getFeatures().getFilePath(),c.getFeatures().getPath());
+        if (currentPath.isJava()) {
+            analyseJavaFile(currentPath);
         }else{
             try {
-                TextFile analyzedFile = QueryList.getInstance().getTextFileByPath(filePath);
+                TextFile analyzedFile = QueryList.getInstance().getTextFileByPath(currentPath.getPath());
                 if (analyzedFile.json == null) {
                     analyzedFile.json = new JavaFileInformation();
                 }
-                Long l =  Files.size(c.getFeatures().getFilePath());;
+                Long l =  Files.size(c.getFeatures().getFilePath());
                 if(l!=null) {
                     analyzedFile.json.size = l.intValue();
                     new SaveClassAsTable().update(analyzedFile);
@@ -91,8 +72,41 @@ public class ASTraversAndStore implements Analyser<Integer> {
 
     }
 
+
+    /***
+     * @param currentPath the java file to be analyses
+     */
+    private void analyseJavaFile(ExtensionTool currentPath){
+        JavaFile analyzedFile;
+        try {
+            analyzedFile = QueryList.getInstance().getJavaFileByPath(currentPath.getPath());
+            Long l =  Files.size(currentPath.getFilePath());
+            if(l!=null) {
+                analyzedFile.json.size = l.intValue();
+                new SaveClassAsTable().update(analyzedFile);
+            }
+        } catch (Exception  e) {
+            throw new CustomException(e);
+        }
+        try (InputStream is = Files.newInputStream(currentPath.getFilePath())) {
+            CompilationUnit p = JavaParser.parse(is);
+            analyzedFile.json.noLine = p.getEndLine() - p.getBeginLine();
+            new SaveClassAsTable().update(analyzedFile);
+            MethodVisitorParameter mvh = new MethodVisitorParameter();
+            mvh.idFile = analyzedFile.id;
+            new MethodVisitor().visit(p,mvh);
+            is.close();
+
+        } catch (Exception e) {
+            new CustomException(e);
+        }
+    }
+
 }
 
+/***
+ * Only a field class for travers the AST
+ */
 class MethodVisitorParameter{
     public long idFile;
     public long idJavaSource;
@@ -100,6 +114,7 @@ class MethodVisitorParameter{
     public long javaMethodId;
     public long countJavaMethod= 0;
 }
+
 
 class MethodVisitor extends VoidVisitorAdapter<MethodVisitorParameter> {
 
@@ -270,14 +285,8 @@ class MethodVisitor extends VoidVisitorAdapter<MethodVisitorParameter> {
     @Override
     public void visit(VariableDeclarationExpr n, MethodVisitorParameter arg) {
         super.visit(n, arg);
-
-
-          new SaveClassAsTable().updateJsonField("JavaMethod","Information","{variableDeclaration,"+arg.countJavaMethod+"}",n.getType().toStringWithoutComments(),arg.javaMethodId);
+        new SaveClassAsTable().updateJsonField("JavaMethod","Information","{variableDeclaration,"+arg.countJavaMethod+"}",n.getType().toStringWithoutComments(),arg.javaMethodId);
         arg.countJavaMethod++;
     }
 }
 
-
-//class ASTHelperPreviews{
-//    JavaSourceObject currentContext;
-//}

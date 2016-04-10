@@ -16,4 +16,10 @@ public class ComputeWithSingleQuery implements IComputeAttributeContainer {
         countQuery.setPath(path);
         return this.countQuery.executeAndGetFirst().getCount();
     }
+
+    @Override
+    public long executeAndGetResult(long id) {
+        countQuery.setPath(id);
+        return this.countQuery.executeAndGetFirst().getCount();
+    }
 }
