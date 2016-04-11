@@ -14,5 +14,5 @@ public class ImportDiscussion {
 
 
     @IDatabaseField(columnName = "package")
-    public String json;
+    public String packageDiscussion;
 }

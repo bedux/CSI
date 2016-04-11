@@ -180,7 +180,6 @@ public class SaveClassAsTable {
 
         try {
             String query = "UPDATE " + tableName + " SET "+columnName+" = jsonb_set(" + columnName + ", '" + path + "', '" + Json.stringify(Json.toJson(newObject)) + "', true) where id = " + objectId;
-            System.out.println(query);
             DatabaseManager.getInstance().makeUpdateQuery(query, new HashMap<Integer, Object>());
         }catch  (SQLException e){
             System.out.println("Erorororor!!!"+e.getSQLState());

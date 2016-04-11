@@ -49,9 +49,9 @@ public class DatabaseManager {
         Connection connection = DB.getConnection();
         try {
             PreparedStatement preparedStatement = buildPreparedStatement(connection, query, values);
-            System.out.println();
-            System.out.print(preparedStatement.toString()+Json.stringify(Json.toJson(values)));
-            System.out.println();
+//            System.out.println();
+//            System.out.print(preparedStatement.toString()+Json.stringify(Json.toJson(values)));
+//            System.out.println();
 
             ArrayList<T> returnedValue = new ArrayList<>();
             ResultSet resultSet = preparedStatement.executeQuery();

@@ -10,6 +10,7 @@ import logics.analyzer.analysis.*;
 import logics.databaseUtilities.SaveClassAsTable;
 import logics.models.db.RepositoryVersion;
 import logics.models.query.ComputeWithSingleQuery;
+import logics.models.query.CountingExternalPackage;
 import logics.models.query.IComputeAttributeContainer;
 import logics.models.query.QueryList;
 import logics.models.tools.MaximumMinimumData;
@@ -49,7 +50,7 @@ public class AnalyserHandler implements Handler<AnalyserHandlerParam, AnalyserHa
 
         IComputeAttributeContainer width = new ComputeWithSingleQuery(QueryList.getInstance().countAllMethodByFilePath);
         IComputeAttributeContainer height = new ComputeWithSingleQuery(QueryList.getInstance().countAllFieldsByFilePath);
-        IComputeAttributeContainer color = QueryList.getInstance().ratioImportDiscussion;
+        IComputeAttributeContainer color = new CountingExternalPackage();
 
 //
 

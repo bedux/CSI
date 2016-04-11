@@ -36,7 +36,7 @@ public class ComputeProportionOfTwoQueryById implements IComputeAttributeContain
             return (long)(resuult);
 
         } catch (Exception e) {
-         throw new CustomException(e);
+            throw new CustomException(e);
         }
 
 
