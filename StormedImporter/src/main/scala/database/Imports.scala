@@ -16,7 +16,7 @@ import ExecutionContext.Implicits.global
   *
   */
 case class ImportDeclaration (id:Option[Long], packageImport: String)
-class ImportDeclarations(tag:Tag) extends  Table[ImportDeclaration](tag,"IMPORT"){
+class ImportDeclarations(tag:Tag) extends  Table[ImportDeclaration](tag,"import"){
 
   import PostgresDriverWithJsonSupport.api._
 

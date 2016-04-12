@@ -224,7 +224,9 @@ class MainScene{
         let info = this.scene.data[pickResult.pickedMesh.id];
 
         Request.getFileContent(info);
-        Request.getFileStatistics(info);
+        //Request.getFileStatistics(info);
+        Request.getDiscussions(info);
+
     }
 
 

@@ -18,15 +18,15 @@ import scala.concurrent.{Await, Future}
  */
 
 case class ImportDiscussion (idD:Option[Long], idI:Option[Long])
-class ImportDiscussions(tag:Tag) extends  Table[ImportDiscussion](tag, "IMPORT_DISCUSSION"){
+class ImportDiscussions(tag:Tag) extends  Table[ImportDiscussion](tag, "import_discussion"){
 
   import PostgresDriverWithJsonSupport.api._
 
-  def idD = column[Long]("idD")
-  def idDiscussion = foreignKey("idD", idD, DiscussionUtils.discussions)(_.id, onUpdate=ForeignKeyAction.Restrict, onDelete=ForeignKeyAction.Cascade)
+  def idD = column[Long]("idd")
+  def idDiscussion = foreignKey("idd", idD, DiscussionUtils.discussions)(_.id, onUpdate=ForeignKeyAction.Restrict, onDelete=ForeignKeyAction.Cascade)
 
-  def idI = column[Long]("idI")
-  def idImport = foreignKey("idI", idI, ImportDeclaration.imports)(_.id, onUpdate=ForeignKeyAction.Restrict, onDelete=ForeignKeyAction.Cascade)
+  def idI = column[Long]("idi")
+  def idImport = foreignKey("idi", idI, ImportDeclaration.imports)(_.id, onUpdate=ForeignKeyAction.Restrict, onDelete=ForeignKeyAction.Cascade)
 
   def id = primaryKey("id", (idI, idD))
 

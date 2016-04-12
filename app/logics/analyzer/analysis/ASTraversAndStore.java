@@ -35,7 +35,7 @@ public class ASTraversAndStore implements Analyser<Integer> {
      */
     @Override
     public Integer analysis(Component value) {
-        value.getComponentList().stream().forEach((x) -> x.applyFunction((new ASTraversAndStore())::analysis));
+        value.getComponentList().parallelStream().forEach((x) -> x.applyFunction((new ASTraversAndStore())::analysis));
         if (value instanceof DataFile) {
             analysisDataFile((DataFile) value);
         }
@@ -166,7 +166,7 @@ class MethodVisitor extends VoidVisitorAdapter<MethodVisitorParameter> {
         info.modifier = getModifierAsString(n.getModifiers());
         info.name =   n.getVariables().get(0).getId().getName();
         JavaField jf = new JavaField();
-        jf.javaSource = o.idFile;
+        jf.javaSource = o.idJavaSource;
         jf.json = info;
         o.idJavaDoc = new SaveClassAsTable().save(jf);
 

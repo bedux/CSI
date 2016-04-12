@@ -26,6 +26,7 @@ case class Utils(jsonFilePath:String) {
   def getFuture = Future {
     println("Starting " + jsonFilePath)
 
+
     val artifact = ArtifactSerializer.deserializeFromFile(jsonFilePath)
 
 

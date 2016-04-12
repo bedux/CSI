@@ -1,15 +1,16 @@
 package controllers;
 
+import com.sun.media.jfxmedia.logging.Logger;
 import exception.CustomException;
 import logics.Definitions;
-import logics.models.db.Repository;
-import logics.models.db.RepositoryVersion;
+import logics.models.db.*;
 import logics.models.query.QueryGetAllRepository;
 import logics.models.query.QueryList;
 import logics.pipeline.analayser.AnalyserHandler;
 import logics.pipeline.analayser.AnalyserHandlerParam;
 import logics.pipeline.storing.StoreHandler;
 import logics.pipeline.storing.StoreHandlerParam;
+import play.libs.Json;
 import play.mvc.Controller;
 import play.mvc.Result;
 import views.html.listRepository;
@@ -130,6 +131,8 @@ public class Application extends Controller {
         } catch (IOException e) {
             return ok();
 
+
+
         }
     }
 
@@ -142,5 +145,22 @@ public class Application extends Controller {
 
     static String generateStringSelect(String old, String add) {
         return old + ", " + add;
+    }
+
+
+
+
+    public static Result getDiscussion()  {
+        try {
+            String path = request().body().asJson().get("path").asText();
+            JavaFile jf = QueryList.getInstance().getJavaFileByPath(path);
+            List<ImportDiscussion> javaImports = QueryList.getInstance().getAllDissussionImport(QueryList.getInstance().getAllNonLocalImport(jf.id, jf.repositoryVersionId));
+            String res = Json.stringify(Json.toJson(QueryList.getInstance().getGitDiscussionFromImportDiscussion(javaImports)));
+            return ok(res);
+        }catch (Exception e){
+            return ok("Error");
+        }
+
+
     }
 }

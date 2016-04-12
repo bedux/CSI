@@ -34,7 +34,7 @@ public class LoadFromDatabase implements Analyser<Integer> {
      */
     @Override
     public Integer analysis(Component component) {
-        component.getComponentList().stream().forEach((x) -> x.applyFunction((new LoadFromDatabase(widthQuery, heightQuery, colorQuery))::analysis));
+        component.getComponentList().parallelStream().forEach((x) -> x.applyFunction((new LoadFromDatabase(widthQuery, heightQuery, colorQuery))::analysis));
 
         if (component instanceof DataFile) {
             computeMetricsOfComponent((DataFile) component);

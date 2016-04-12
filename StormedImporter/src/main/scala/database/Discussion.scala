@@ -16,7 +16,7 @@ import scala.concurrent.{Await, Future}
  */
 
 case class Discussion (id:Option[Long], url:String)
-class Discussions(tag:Tag) extends  Table[Discussion](tag, "DISCUSSION"){
+class Discussions(tag:Tag) extends  Table[Discussion](tag, "discussion"){
 
   import PostgresDriverWithJsonSupport.api._
   import PostgresDriverWithJsonSupport.jsonMethods._

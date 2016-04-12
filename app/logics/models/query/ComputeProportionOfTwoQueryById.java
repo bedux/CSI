@@ -3,11 +3,7 @@ package logics.models.query;
 import exception.CustomException;
 import logics.models.db.JavaFile;
 
-import java.sql.SQLException;
 
-/**
- * Created by bedux on 29/03/16.
- */
 public class ComputeProportionOfTwoQueryById implements IComputeAttributeContainer  {
 
 

@@ -30,3 +30,6 @@ GET /getFilters/:id             controllers.Application.getFilters(id:Integer)
 GET /fileContent/:path          controllers.Application.fileContent(path:String)
 
 GET /getStatistics/:id          controllers.Application.getStatistics(id:String)
+
+
+POST /getDiscussion          controllers.Application.getDiscussion()
