@@ -6,6 +6,7 @@ import logics.Definitions;
 import logics.models.db.*;
 import logics.models.query.QueryGetAllRepository;
 import logics.models.query.QueryList;
+import logics.pipeline.PipelineManager;
 import logics.pipeline.analayser.AnalyserHandler;
 import logics.pipeline.analayser.AnalyserHandlerParam;
 import logics.pipeline.storing.StoreHandler;
@@ -20,9 +21,9 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.sql.SQLException;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
+import java.util.stream.Collector;
+import java.util.stream.Collectors;
 
 public class Application extends Controller {
 
@@ -42,7 +43,7 @@ public class Application extends Controller {
         } catch (InstantiationException e) {
             e.printStackTrace();
         }
-        new AnalyserHandler().process(new AnalyserHandlerParam(new StoreHandler().process(new StoreHandlerParam(repositoryVersion))));
+        new PipelineManager().StoreAndAnalyze(repositoryVersion);
         return ok("Done!");
 
     }
@@ -60,8 +61,8 @@ public class Application extends Controller {
     }
 
     public static Result getRepositories() {
-        List<RepositoryVersion> repositoryVersionList = new QueryGetAllRepository().execute();
-        for(RepositoryVersion v:repositoryVersionList){
+        List<RepositoryRender> repositoryVersionList = new QueryGetAllRepository().execute();
+        for(RepositoryRender v:repositoryVersionList){
             try {
                 v.nameToDisplay = QueryList.getInstance().getProjectName(v.repositoryId);
                 v.numberOfFileToDispaly = QueryList.getInstance().getNumberOfFile(v.repositoryId);
@@ -155,7 +156,15 @@ public class Application extends Controller {
             String path = request().body().asJson().get("path").asText();
             JavaFile jf = QueryList.getInstance().getJavaFileByPath(path);
             List<ImportDiscussion> javaImports = QueryList.getInstance().getAllDissussionImport(QueryList.getInstance().getAllNonLocalImport(jf.id, jf.repositoryVersionId));
-            String res = Json.stringify(Json.toJson(QueryList.getInstance().getGitDiscussionFromImportDiscussion(javaImports)));
+
+            final List<String> allJavaMethods  = QueryList.getInstance().getAllJavaMethodOfRepositoryVersion(jf.repositoryVersionId).stream().map(x -> x.json.signature).collect(Collectors.toList());
+            final List<String> javaMethods = QueryList.getInstance().getAllJavaMethodFormPath(path).stream().map(x -> x.json.variableDeclaration).flatMap(y -> y.stream()).filter(x -> !allJavaMethods.contains(x)).collect(Collectors.toList());
+            final List<StackOFDiscussion> discussionsReleatedToMethodName = QueryList.getInstance().getAllDiscussionHavingMethodName(javaMethods);
+            final List<StackOFDiscussion>result = QueryList.getInstance().getGitDiscussionFromImportDiscussion(javaImports);
+
+
+            result.addAll(discussionsReleatedToMethodName);
+            String res = Json.stringify(Json.toJson(result.stream().map(x->x.packageDiscussion).distinct().collect(Collectors.toList())));
             return ok(res);
         }catch (Exception e){
             return ok("Error");

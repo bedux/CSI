@@ -1,5 +1,7 @@
 package logics.models.query;
 
+import exception.CustomException;
+
 /**
  * Created by bedux on 29/03/16.
  */
@@ -32,9 +34,9 @@ public class ComputeProportionOfTwoQuery implements IComputeAttributeContainer {
         long a2 = q2.executeAndGetResult(path);
         if(a1==0) return  0 ;
         float result = (((float)(a2) / (float)(a1))*100f);
-        if(a1<a2){
-          System.out.println(path);
 
+        if(a1<a2){
+            throw new CustomException("Wrong percentage >"+result+" "+a1 + " "+a2);
          }
 
         return (long)(result);
@@ -53,7 +55,7 @@ public class ComputeProportionOfTwoQuery implements IComputeAttributeContainer {
         if(a1==0) return  0 ;
         float result = (((float)(a2) / (float)(a1))*100f);
         if(a1<a2){
-            System.out.println(id);
+            throw new CustomException("Wrong percentage >"+result+" "+a1 + " "+a2);
         }
 
         return (long)(result);

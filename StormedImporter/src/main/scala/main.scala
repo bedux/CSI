@@ -61,6 +61,25 @@ case class Utils(jsonFilePath:String) {
 //      case Success(x) => x
 //      case Failure(e) => throw e
 //    }
+//
+    val storeMethodInformation: Future[Seq[(Long,Long)]] = discussion.flatMap{ id =>
+      /** *
+        * Getting list of all imports of this discussion
+        */
+      val listVisitor = MethodInvocationNodeVisitor.list()
+      val listMethodsNodes = listVisitor(List(), artifact)
+      val listMethods = listMethodsNodes.map {
+        x=>(x.identifier.name,x.args.arguments.length)
+      }.distinct
+
+
+      /** *
+        * Inserting into the database
+        */
+      val storeImportInformation: Seq[Future[Long]] = listMethods.map { MethodInfo => MethodDeclaration.insert(MethodDeclaration(None, MethodInfo._1, MethodInfo._2)) }
+      val res:  Seq[Future[(Long,Long)]] = storeImportInformation.map(_.flatMap(entryId => MethodDiscussion.insert(MethodDiscussion(Some(id), Some(entryId)))))
+      Future.sequence(res)
+    }
 
 
 
@@ -78,7 +97,7 @@ case class Utils(jsonFilePath:String) {
       */
 //    Await.result(Future.sequence(storeImportInformation.toList),Duration.Inf)
 
-      storeImportInformation
+      Future.sequence(Seq(storeImportInformation,storeMethodInformation))
   }
 
 }
@@ -103,10 +122,13 @@ object main{
   def main (args: Array[String]){
 
 
-    val filesHere = (new java.io.File("/Users/bedux/Downloads/jsons/")).listFiles
+    val filesHere = (new java.io.File("/Users/bedux/Downloads/jsonSubset/")).listFiles
     val futureList = filesHere.map(x=>Utils(x.getAbsolutePath).getFuture)
-    Await.result(Future.sequence(futureList.toList),Duration.Inf)
-
+    val futur = Future.sequence(futureList.toList);
+    futur.onFailure({
+      case e => throw e
+    })
+    Await.result(futur,Duration.Inf)
 
 
   }

@@ -26,7 +26,7 @@ public class ComputeProportionOfTwoQueryById implements IComputeAttributeContain
             if(a1==0) return  0 ;
             float resuult = (((float)(a2) / (float)(a1))*100f);
             if(a1<a2){
-                System.out.println(path);
+                throw new CustomException("Wrong percentage >"+resuult+" "+a1 + " "+a2);
 
             }
             return (long)(resuult);
@@ -45,7 +45,7 @@ public class ComputeProportionOfTwoQueryById implements IComputeAttributeContain
         if(a1==0) return  0 ;
         float resuult = (((float)(a2) / (float)(a1))*100f);
         if(a1<a2){
-            System.out.println(id);
+            throw new CustomException("Wrong percentage >"+resuult+" "+a1 + " "+a2);
 
         }
         return (long)(resuult);

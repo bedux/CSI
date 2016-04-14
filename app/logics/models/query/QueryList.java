@@ -4,6 +4,7 @@ import logics.DatabaseManager;
 import logics.Definitions;
 import logics.databaseUtilities.IDatabaseClass;
 import logics.models.db.*;
+import play.libs.Json;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -288,13 +289,13 @@ public class QueryList {
     }
 
 
-    public List<GitDiscussion> getGitDiscussionFromImportDiscussion(List<ImportDiscussion> importsDiscussions) throws SQLException{
+    public List<StackOFDiscussion> getGitDiscussionFromImportDiscussion(List<ImportDiscussion> importsDiscussions) throws SQLException{
             String query = "select * from discussion where discussion.id in (select import_discussion.idd from import_discussion where import_discussion.idi = ?);";
-            List<GitDiscussion> result  = new ArrayList<>();
+            List<StackOFDiscussion> result  = new ArrayList<>();
             for(ImportDiscussion s:importsDiscussions) {
                 result.addAll(DatabaseManager.getInstance().makeQuery(query, new HashMap<Integer, Object>() {{
                     put(1, s.id);
-                }}, GitDiscussion.class));
+                }}, StackOFDiscussion.class));
 
             }
             return result;
@@ -302,4 +303,58 @@ public class QueryList {
     }
 
 
+
+    public List<JavaMethod> getAllJavaMethodFormPath(String path) throws SQLException {
+            String query = "select * from JavaMethod where javasource in (select id from javaClass where javaFile in (select id from JavaFile where path = ? ))";
+        List<JavaMethod> importDiscussion = DatabaseManager.getInstance().makeQuery(query, new HashMap<Integer, Object>() {{
+            put(1, path);
+        }}, JavaMethod.class);
+        return importDiscussion;
+    }
+
+    public List<StackOFDiscussion> getAllDiscussionHavingMethodName(List<String> methodsName) throws SQLException{
+        if(methodsName.size()==0) return  new ArrayList<>();
+        methodsName = methodsName.stream().distinct().collect(Collectors.toList());
+       String param = "(";
+        for(String r:methodsName){
+              param=param+"'"+r+"',";
+        }
+       final String rparam =  param.substring(0,param.length()-1)+")";
+        String query = "select * from Discussion where id in (select idd from method_discussion where idm in (select id from method where methodname in "+rparam+") )";
+
+        List<StackOFDiscussion> importDiscussion = DatabaseManager.getInstance().makeQuery(query, new HashMap<Integer, Object>()
+        , StackOFDiscussion.class);
+        return importDiscussion;
+
+    }
+
+
+    public List<JavaMethod> getAllJavaMethodOfRepositoryVersion(long id) throws SQLException{
+        String query = "select * from JavaMethod where javasource in (select id from javaClass where javaFile in (select id from JavaFile where repositoryVersionId = ? ));";
+        List<JavaMethod> importDiscussion = DatabaseManager.getInstance().makeQuery(query, new HashMap<Integer, Object>() {{
+            put(1, id);
+        }}, JavaMethod.class);
+        return importDiscussion;
+
+    }
+
+
+    public List<MethodDiscussed> getAllMethodDiscussed(List<String> methodsName) throws SQLException{
+        if(methodsName.size()==0) return  new ArrayList<>();
+        methodsName = methodsName.stream().distinct().collect(Collectors.toList());
+        String param = "(";
+        for(String r:methodsName){
+            param=param+"'"+r+"',";
+        }
+        final String rparam =  param.substring(0,param.length()-1)+")";
+        String query = "select  distinct on (methodname) * from method where methodname in "+rparam+"";
+
+        List<MethodDiscussed> importDiscussion = DatabaseManager.getInstance().makeQuery(query, new HashMap<Integer, Object>()
+                , MethodDiscussed.class);
+        return importDiscussion;
+
+    }
+
+
 }
+

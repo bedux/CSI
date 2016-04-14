@@ -21,6 +21,14 @@ CREATE  TABLE  IF NOT EXISTS RepositoryVersion(
 );
 
 
+CREATE TABLE "public"."RepositoryRender" (
+  "id" serial,
+  "repositoryVersion" Integer,
+  "localPath" text,
+  PRIMARY KEY ("id"),
+  CONSTRAINT "repositoryVersion" FOREIGN KEY ("repositoryVersion") REFERENCES "public"."repositoryversion"("id")
+);
+
 
 
 

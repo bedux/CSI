@@ -1,6 +1,7 @@
 package logics.analyzer.analysis;
 
 import com.github.javaparser.JavaParser;
+import com.github.javaparser.ParseException;
 import com.github.javaparser.ast.CompilationUnit;
 import com.github.javaparser.ast.ImportDeclaration;
 import com.github.javaparser.ast.PackageDeclaration;
@@ -19,9 +20,12 @@ import logics.models.db.*;
 import logics.models.db.information.*;
 import logics.models.query.QueryList;
 
+import java.io.IOException;
 import java.io.InputStream;
 import java.lang.reflect.Modifier;
 import java.nio.file.Files;
+import java.sql.SQLException;
+import java.util.ArrayList;
 
 /**
  * Created by bedux on 25/03/16.
@@ -30,12 +34,13 @@ public class ASTraversAndStore implements Analyser<Integer> {
 
     /***
      * Given a component, run the analysis on his child and, if is a javaFile, it compute all the characteristic using the AST
+     *
      * @param value component to be analyzed
      * @return NOt important!Just a random number
      */
     @Override
     public Integer analysis(Component value) {
-        value.getComponentList().parallelStream().forEach((x) -> x.applyFunction((new ASTraversAndStore())::analysis));
+        value.getComponentList().stream().forEach((x) -> x.applyFunction((new ASTraversAndStore())::analysis));
         if (value instanceof DataFile) {
             analysisDataFile((DataFile) value);
         }
@@ -45,25 +50,26 @@ public class ASTraversAndStore implements Analyser<Integer> {
 
     /***
      * Run the analise overe DataFile component
+     *
      * @param c the data file
      */
     private void analysisDataFile(DataFile c) {
-        ExtensionTool currentPath = new ExtensionTool(c.getFeatures().getFilePath(),c.getFeatures().getPath());
+        ExtensionTool currentPath = new ExtensionTool(c.getFeatures().getFilePath(), c.getFeatures().getPath());
         if (currentPath.isJava()) {
             analyseJavaFile(currentPath);
-        }else{
+        } else {
             try {
                 TextFile analyzedFile = QueryList.getInstance().getTextFileByPath(currentPath.getPath());
                 if (analyzedFile.json == null) {
                     analyzedFile.json = new JavaFileInformation();
                 }
-                Long l =  Files.size(c.getFeatures().getFilePath());
-                if(l!=null) {
+                Long l = Files.size(c.getFeatures().getFilePath());
+                if (l != null) {
                     analyzedFile.json.size = l.intValue();
                     new SaveClassAsTable().update(analyzedFile);
                 }
-            } catch (Exception  e) {
-                 new CustomException(e);
+            } catch (Exception e) {
+                new CustomException(e);
 
             }
 
@@ -76,16 +82,16 @@ public class ASTraversAndStore implements Analyser<Integer> {
     /***
      * @param currentPath the java file to be analyses
      */
-    private void analyseJavaFile(ExtensionTool currentPath){
+    private void analyseJavaFile(ExtensionTool currentPath) {
         JavaFile analyzedFile;
         try {
             analyzedFile = QueryList.getInstance().getJavaFileByPath(currentPath.getPath());
-            Long l =  Files.size(currentPath.getFilePath());
-            if(l!=null) {
+            Long l = Files.size(currentPath.getFilePath());
+            if (l != null) {
                 analyzedFile.json.size = l.intValue();
                 new SaveClassAsTable().update(analyzedFile);
             }
-        } catch (Exception  e) {
+        } catch (Exception e) {
             throw new CustomException(e);
         }
         try (InputStream is = Files.newInputStream(currentPath.getFilePath())) {
@@ -94,14 +100,22 @@ public class ASTraversAndStore implements Analyser<Integer> {
             new SaveClassAsTable().update(analyzedFile);
             MethodVisitorParameter mvh = new MethodVisitorParameter();
             mvh.idFile = analyzedFile.id;
-            new MethodVisitor().visit(p,mvh);
+            new MethodVisitor().visit(p, mvh);
             is.close();
 
-        } catch (Exception e) {
+        } catch (IOException e) {
+            new CustomException(e);
+        } catch (SQLException e) {
+            new CustomException(e);
+        } catch (InstantiationException e) {
+            new CustomException(e);
+        } catch (ParseException e) {
+            new CustomException(e);
+        } catch (IllegalAccessException e) {
             new CustomException(e);
         }
-    }
 
+    }
 }
 
 /***
@@ -111,7 +125,7 @@ class MethodVisitorParameter{
     public long idFile;
     public long idJavaSource;
     public long idJavaDoc;
-    public long javaMethodId;
+    public long javaMethodId=-1;
     public long countJavaMethod= 0;
 }
 
@@ -136,8 +150,28 @@ class MethodVisitor extends VoidVisitorAdapter<MethodVisitorParameter> {
 
     @Override
     public void visit(MethodCallExpr n, MethodVisitorParameter arg) {
+        try {
+            if(arg.javaMethodId==-1){System.out.println(n.getName() + " " + arg.idJavaSource);return;}
+            JavaMethod jm = new SaveClassAsTable().get(arg.javaMethodId,JavaMethod.class);
+            if( jm.json.variableDeclaration==null){
+                jm.json.variableDeclaration=new ArrayList<>();
+            }
+            jm.json.variableDeclaration.add(n.getName());
+            new SaveClassAsTable().update(jm);
+
+        } catch (SQLException e) {
+            throw new CustomException(e);
+        } catch (InstantiationException e) {
+            throw new CustomException(e);
+        } catch (IllegalAccessException e) {
+            throw new CustomException(e);
+        }
+
+
+        //.updateJsonField("JavaMethod", "Information", "{variableDeclaration," + arg.countJavaMethod + "}", n.getName(), arg.javaMethodId);
+        arg.countJavaMethod++;
         super.visit(n, arg);
-        System.out.print(n.getName());
+
     }
 
     @Override
@@ -176,7 +210,6 @@ class MethodVisitor extends VoidVisitorAdapter<MethodVisitorParameter> {
 
     @Override
     public void visit(ImportDeclaration n, MethodVisitorParameter arg) {
-        super.visit(n, arg);
         JavaImport javaImport = new JavaImport();
         javaImport.json = new JavaImportInformation();
         javaImport.json.isAsterisk = n.isAsterisk();
@@ -184,6 +217,7 @@ class MethodVisitor extends VoidVisitorAdapter<MethodVisitorParameter> {
         javaImport.javaFile = arg.idFile;
         javaImport.json.name = n.getName().toString();
         long id = new SaveClassAsTable().save(javaImport);
+        super.visit(n, arg);
 
 
     }
@@ -243,50 +277,57 @@ class MethodVisitor extends VoidVisitorAdapter<MethodVisitorParameter> {
         method.javaSource = arg.idJavaSource;
         method.json = thisInfo;
         arg.idJavaDoc = new SaveClassAsTable().save(method);
+        arg.javaMethodId =  arg.idJavaDoc;
+
         super.visit(n, arg);
     }
 
     @Override
     public void visit(EnumDeclaration n, MethodVisitorParameter arg) {
-        super.visit(n, arg);
 
         JavaEnum javaEnum =  new JavaEnum();
         javaEnum.javaFile = arg.idFile;
         javaEnum.json = new JavaEnumInformation();
         javaEnum.json.name = n.toString();
         new SaveClassAsTable().save(javaEnum);
+        super.visit(n, arg);
 
 
     }
 
     @Override
     public void visit(EnumConstantDeclaration n, MethodVisitorParameter arg) {
-        super.visit(n, arg);
 
         JavaEnum javaEnum =  new JavaEnum();
         javaEnum.javaFile = arg.idFile;
         javaEnum.json = new JavaEnumInformation();
         javaEnum.json.name = n.toString();
         new SaveClassAsTable().save(javaEnum);
+        super.visit(n, arg);
+
 
     }
 
     @Override
     public void visit(PackageDeclaration n, MethodVisitorParameter arg) {
-        super.visit(n, arg);
         JavaPackage javaPackage = new JavaPackage();
         javaPackage.javaFile = arg.idFile;
         javaPackage.json = new JavaPackageInformation();
         javaPackage.json.name = n.getName().toStringWithoutComments();
         new SaveClassAsTable().save(javaPackage);
+        super.visit(n, arg);
+
 
     }
 
     @Override
     public void visit(VariableDeclarationExpr n, MethodVisitorParameter arg) {
         super.visit(n, arg);
-        new SaveClassAsTable().updateJsonField("JavaMethod","Information","{variableDeclaration,"+arg.countJavaMethod+"}",n.getType().toStringWithoutComments(),arg.javaMethodId);
-        arg.countJavaMethod++;
+
     }
+
+
+
+
 }
 

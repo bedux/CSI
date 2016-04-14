@@ -1,5 +1,5 @@
-@import logics.models.db.RepositoryVersion
-@(repository: List[RepositoryVersion])
+@import logics.models.db.RepositoryRender
+@(repository: List[RepositoryRender])
     @main("Repositories") {
         <div class="list-group">
         @for(p <- repository) {

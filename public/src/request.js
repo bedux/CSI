@@ -58,7 +58,7 @@ module.exports = {
                         var tbody = $(' <tbody></tbody>');
                         for(var i in jsonData){
                             var row = $('<tr></tr>');
-                            var current = jsonData[i].packageDiscussion;
+                            var current = jsonData[i];
                             current = current.replace(".json","");
                             current = current.substring(current.lastIndexOf("/")+1);
                             current = "http://stackoverflow.com/questions/"+current;

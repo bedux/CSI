@@ -1,10 +1,12 @@
 package logics.databaseUtilities;
 
+import com.fasterxml.jackson.databind.JsonNode;
 import exception.CustomException;
 import logics.DatabaseManager;
 import org.h2.engine.Database;
 import org.postgresql.util.PGobject;
 import play.libs.Json;
+import scala.util.parsing.json.JSONObject;
 
 import java.lang.reflect.Field;
 import java.sql.SQLException;
@@ -176,16 +178,24 @@ public class SaveClassAsTable {
     }
 
 
-    public <T>  void updateJsonField(String tableName,String columnName,String path,T newObject,Long objectId){
-
-        try {
-            String query = "UPDATE " + tableName + " SET "+columnName+" = jsonb_set(" + columnName + ", '" + path + "', '" + Json.stringify(Json.toJson(newObject)) + "', true) where id = " + objectId;
-            DatabaseManager.getInstance().makeUpdateQuery(query, new HashMap<Integer, Object>());
-        }catch  (SQLException e){
-            System.out.println("Erorororor!!!"+e.getSQLState());
-            throw new CustomException(e);
-        }
-
-    }
+//    public <T>  void updateJsonField(String columnName,String path,T newObject,Long objectId,Class<T> type){
+//
+//        try {
+//            T table = get(objectId,type);
+//            for(Field f:table.getClass().getFields()){
+//                IDatabaseField idat = f.getAnnotation(IDatabaseField.class);
+//                if(idat!=null && idat.columnName() == columnName){
+//                    JsonNode res= Json.toJson(f.get(table));
+//                }
+//            }
+//            String query = "UPDATE " + tableName + " SET "+columnName+" = jsonb_set(" + columnName + ", '" + path + "', '" + Json.stringify(Json.toJson(newObject)) + "', true) where id = " + objectId;
+//            DatabaseManager.getInstance().makeUpdateQuery(query, new HashMap<Integer, Object>());
+//        }catch  (SQLException e){
+//            throw new CustomException(e);
+//        } catch (IllegalAccessException e) {
+//            throw new CustomException(e);
+//        }
+//
+//    }
 
 }

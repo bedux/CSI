@@ -8,6 +8,7 @@ import logics.models.db.JavaFile;
 import logics.models.db.information.JavaFileInformation;
 import logics.models.db.RepositoryVersion;
 import logics.models.db.TextFile;
+import play.Logger;
 
 import java.nio.file.FileSystems;
 import java.nio.file.Files;
@@ -36,7 +37,7 @@ public class StoreHandler implements Handler<StoreHandlerParam, StoreHandlerResu
                     javaFile.repositoryVersionId = param.repositoryVersion.id;
                     try {
                         int id = new SaveClassAsTable().save(javaFile);
-                        System.out.println("Saved as Java File " + id + " "+ s);
+                        Logger.info("Saved as Java File " + id + " " + s);
                     } catch (Exception e) {
 
                         throw new CustomException(e);
@@ -53,7 +54,7 @@ public class StoreHandler implements Handler<StoreHandlerParam, StoreHandlerResu
                     try {
 
                         int id = new SaveClassAsTable().save(textFile);
-                        System.out.println("Saved as Regular file" + id+ " "+ s);
+                        Logger.info("Saved as Regular file" + id + " " + s);
                     } catch (Exception e) {
                         throw new CustomException(e);
                     }

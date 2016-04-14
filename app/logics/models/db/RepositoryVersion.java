@@ -15,7 +15,5 @@ public class RepositoryVersion {
     public Integer repositoryId;
 
 
-    public String nameToDisplay="";
 
-    public Long numberOfFileToDispaly = 0L;
 }

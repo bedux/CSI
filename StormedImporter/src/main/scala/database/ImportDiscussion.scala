@@ -40,6 +40,8 @@ object ImportDiscussion{
   val importDiscussions = TableQuery[ImportDiscussions]
 
   def insert(discussionToAdd: ImportDiscussion):Future[(Long,Long)] = {
+    println("Inserting :",discussionToAdd)
+
     val id = (importDiscussions returning importDiscussions.map(x=>(x.idI,x.idD))) += discussionToAdd
     val future:Future[(Long,Long)] = DatabaseConnection.db.run(id)
     future

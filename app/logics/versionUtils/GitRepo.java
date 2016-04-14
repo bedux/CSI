@@ -10,6 +10,7 @@ import org.eclipse.jgit.api.Git;
 import org.eclipse.jgit.api.errors.GitAPIException;
 import org.eclipse.jgit.revwalk.RevCommit;
 import org.eclipse.jgit.transport.UsernamePasswordCredentialsProvider;
+import play.Logger;
 
 import java.io.File;
 import java.nio.file.Files;
@@ -43,7 +44,7 @@ public class GitRepo implements VersionedSystem {
 
         final CloneCommand clone = Git.cloneRepository();
         clone.setURI(repository.url);
-        System.out.println(repository.usr + " " + repository.pwd);
+        Logger.info(repository.usr + " " + repository.pwd);
 
         //Login require?
         if (repository.usr != null && repository.pwd != null) {
@@ -56,7 +57,7 @@ public class GitRepo implements VersionedSystem {
         try {
             git = clone.call();
         } catch (GitAPIException e) {
-            System.out.print(e.getMessage());
+            Logger.info(e.getMessage());
             throw new CustomException(e);
         }
 

@@ -33,16 +33,8 @@ object ImportDeclaration{
   val imports = TableQuery[ImportDeclarations]
 
   def insert(importDeclarationToAdd: ImportDeclaration):Future[Long] = {
-    val  future:Future[Seq[ImportDeclaration]] = findByName(importDeclarationToAdd.packageImport)
-    val futureLong:Future[Long] = future.flatMap[Long]( x=>x match {
-        case l if(l.size>0) =>Future[Long](l(0).id.get)
-        case _ => {
-           val c = (imports returning imports.map(_.id))+= importDeclarationToAdd
-           val futureResult :Future[Long] = DatabaseConnection.db.run(c)
-           futureResult
-        }
-    })
-    futureLong
+    val c = (imports returning imports.map(_.id))+= importDeclarationToAdd
+    DatabaseConnection.db.run(c)
   }
 
   def getAll:Future[Seq[ImportDeclaration]]= {

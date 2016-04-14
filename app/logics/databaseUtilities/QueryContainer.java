@@ -58,7 +58,6 @@ public class QueryContainer<T> {
         try {
             return DatabaseManager.getInstance().makeQuery(query, params, resultClass).get(0);
         } catch (SQLException e) {
-            System.out.println(e.getSQLState());
             throw new CustomException(e);
         }
     }

@@ -13,5 +13,6 @@ public class MethodInfoJSON {
     public int lineEnd = 0;
     public List<String> variableDeclaration= new ArrayList<>();
 
+
 }
 

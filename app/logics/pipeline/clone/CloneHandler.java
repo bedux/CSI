@@ -8,6 +8,7 @@ import logics.databaseUtilities.SaveClassAsTable;
 import logics.models.db.Repository;
 import logics.models.db.RepositoryVersion;
 import logics.models.query.QueryList;
+import play.Logger;
 
 /**
  * Created by bedux on 07/03/16.
@@ -25,7 +26,7 @@ public class CloneHandler implements Handler<CloneHandlerParam, CloneHandlerResu
         try {
             int id = new SaveClassAsTable().save(repository);
             repository = QueryList.getInstance().getById(id, Repository.class);
-            System.out.println("Save Repository as" + repository.id + "   " + id);
+            Logger.info("Save Repository as" + repository.id + "   " + id);
         } catch (Exception e) {
             e.printStackTrace();
             throw new CustomException(e);
