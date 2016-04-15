@@ -12,6 +12,7 @@ import logics.models.db.RepositoryRender;
 import logics.models.db.RepositoryVersion;
 import logics.models.query.*;
 import logics.models.tools.MaximumMinimumData;
+import play.Logger;
 import play.libs.Json;
 
 import java.io.*;
@@ -114,7 +115,9 @@ public class AnalyserHandler implements Handler<AnalyserHandlerParam, AnalyserHa
     }
 
     private JsonNode computeCity(Package root,IComputeAttributeContainer width,IComputeAttributeContainer height,IComputeAttributeContainer color,String resultName,RepositoryRender repoRender){
-        root.applyFunction(new LoadFromDatabase(width, height, color)::analysis);
+        Logger.info("Load data");
+        root.applyFunction(new LoadFromDatabase(width, height, color)::analysis).join();
+        Logger.info("end load data");
 
 //            root.applyFunction(new WordCountAnalyser()::analysis);
 //            root.applyFunction(new MethodCountAnalyser()::analysis);

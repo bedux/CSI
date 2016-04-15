@@ -16,7 +16,7 @@ public class DepthAnalyser implements Analyser<Integer> {
     @Override
     public Integer analysis(Component component) {
         if (component.getComponentList().size() == 0) return component.getFeatures().getRemoteness();
-        return component.getComponentList().stream().map((x) -> {
+        return component.getComponentList().parallelStream().map((x) -> {
             x.getFeatures().setRemoteness(component.getFeatures().getRemoteness() + 1);
             return x.applyFunction((new DepthAnalyser())::analysis);
         }).max(Integer::compare).get();

@@ -303,19 +303,49 @@ public class QueryList {
     }
 
 
+    /***
+     * Get all gava method from path
+     * @param path
+     * @return
+     * @throws SQLException
+     */
+    public List<String> getAllJavaMethodFormPath(String path) throws SQLException {
 
-    public List<JavaMethod> getAllJavaMethodFormPath(String path) throws SQLException {
-            String query = "select * from JavaMethod where javasource in (select id from javaClass where javaFile in (select id from JavaFile where path = ? ))";
-        List<JavaMethod> importDiscussion = DatabaseManager.getInstance().makeQuery(query, new HashMap<Integer, Object>() {{
+        String query = "select * from JavaMethod where javasource in (select id from javaClass where javaFile in (select id from JavaFile where path = ? ))";
+        List<String> result = DatabaseManager.getInstance().makeQuery(query, new HashMap<Integer, Object>() {{
             put(1, path);
-        }}, JavaMethod.class);
-        return importDiscussion;
+        }}, JavaMethod.class).stream().flatMap(x->x.json.variableDeclaration.stream()).collect(Collectors.toList());
+
+        //Get all method invocation inside a Class declaration
+        String query2 = "select * from javaClass where javaFile in (select id from JavaFile where path = ? )";
+        List<JavaClass> methodClass = DatabaseManager.getInstance().makeQuery(query2, new HashMap<Integer, Object>() {{
+            put(1, path);
+        }}, JavaClass.class);
+        result.addAll(methodClass.stream().flatMap(x->x.json.variableDeclaration.stream()).collect(Collectors.toList()));
+
+        String query3 = "select * from JavaInterface where javaFile in (select id from JavaFile where path = ? )";
+
+        //Get all method invocation inside an Interface
+        List<JavaInterface> interfClass = DatabaseManager.getInstance().makeQuery(query2, new HashMap<Integer, Object>() {{
+            put(1, path);
+        }}, JavaInterface.class);
+        result.addAll(interfClass.stream().flatMap(x->x.json.variableDeclaration.stream()).collect(Collectors.toList()));
+
+
+        return result;
     }
+
+    /***
+     * Get all the discussion that has at least one  method that match with the import list
+     * @param methodsName
+     * @return
+     * @throws SQLException
+     */
 
     public List<StackOFDiscussion> getAllDiscussionHavingMethodName(List<String> methodsName) throws SQLException{
         if(methodsName.size()==0) return  new ArrayList<>();
         methodsName = methodsName.stream().distinct().collect(Collectors.toList());
-       String param = "(";
+        String param = "(";
         for(String r:methodsName){
               param=param+"'"+r+"',";
         }
@@ -325,18 +355,35 @@ public class QueryList {
         List<StackOFDiscussion> importDiscussion = DatabaseManager.getInstance().makeQuery(query, new HashMap<Integer, Object>()
         , StackOFDiscussion.class);
         return importDiscussion;
-
     }
 
 
-    public List<JavaMethod> getAllJavaMethodOfRepositoryVersion(long id) throws SQLException{
+    /***
+     * Get all java method invocation from a repository version id
+     * @param id
+     * @return
+     * @throws SQLException
+     */
+    public List<String> getAllJavaMethodOfRepositoryVersion(long id) throws SQLException{
+        //Get all method invoation inside a method
         String query = "select * from JavaMethod where javasource in (select id from javaClass where javaFile in (select id from JavaFile where repositoryVersionId = ? ));";
         List<JavaMethod> importDiscussion = DatabaseManager.getInstance().makeQuery(query, new HashMap<Integer, Object>() {{
             put(1, id);
         }}, JavaMethod.class);
-        return importDiscussion;
+        List<String> result = importDiscussion.stream().map(x -> x.json.signature).collect(Collectors.toList());
+
+        result = result.stream().collect(Collectors.toList());
+
+        return result;
 
     }
+
+    /***
+     * Given a list of method name, retun the discussions that use this methods
+     * @param methodsName
+     * @return A list of MethodDiscussion
+     * @throws SQLException
+     */
 
 
     public List<MethodDiscussed> getAllMethodDiscussed(List<String> methodsName) throws SQLException{
@@ -348,7 +395,6 @@ public class QueryList {
         }
         final String rparam =  param.substring(0,param.length()-1)+")";
         String query = "select  distinct on (methodname) * from method where methodname in "+rparam+"";
-
         List<MethodDiscussed> importDiscussion = DatabaseManager.getInstance().makeQuery(query, new HashMap<Integer, Object>()
                 , MethodDiscussed.class);
         return importDiscussion;

@@ -17,8 +17,8 @@ public class CountingExternalPackage implements  IComputeAttributeContainer {
             final List<JavaImport> importDsicussions =  QueryList.getInstance().getAllDiscussedJavaImport(nonLocalImport);
             final List<StackOFDiscussion> discussionReleatedToImport = QueryList.getInstance().getGitDiscussionFromImportDiscussion(QueryList.getInstance().getAllDissussionImport(importDsicussions));
 
-            final List<String> allJavaMethods  = QueryList.getInstance().getAllJavaMethodOfRepositoryVersion(jf.repositoryVersionId).stream().map(x -> x.json.signature).distinct().collect(Collectors.toList());
-            final List<String> javaMethods = QueryList.getInstance().getAllJavaMethodFormPath(path).stream().map(x -> x.json.variableDeclaration).flatMap(y -> y.stream()).distinct().filter(x -> !allJavaMethods.contains(x)).collect(Collectors.toList());
+            final List<String> allJavaMethods  = QueryList.getInstance().getAllJavaMethodOfRepositoryVersion(jf.repositoryVersionId);
+            final List<String> javaMethods = QueryList.getInstance().getAllJavaMethodFormPath(path).stream().distinct().filter(x -> !allJavaMethods.contains(x)).collect(Collectors.toList());
             final List<MethodDiscussed> discussedMethod = QueryList.getInstance().getAllMethodDiscussed(javaMethods);
             final List<StackOFDiscussion> discussionsReleatedToMethodName = QueryList.getInstance().getAllDiscussionHavingMethodName(javaMethods);
 

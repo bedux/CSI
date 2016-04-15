@@ -17,7 +17,7 @@ public class MaximumDimensionAnalyser implements Analyser<MaximumMinimumData> {
         if (component.getComponentList().size() == 0) {
             return new MaximumMinimumData(component.getFeatures().getWidthMetrics(), component.getFeatures().getHeightMetrics(), component.getFeatures().getDepthMetrics(), component.getFeatures().getColorMetrics());
         }
-        MaximumMinimumData[] streamResult = component.getComponentList().stream().map((x) ->
+        MaximumMinimumData[] streamResult = component.getComponentList().parallelStream().map((x) ->
                         x.applyFunction((new MaximumDimensionAnalyser())::analysis)
         ).toArray(x -> new MaximumMinimumData[x]);
 

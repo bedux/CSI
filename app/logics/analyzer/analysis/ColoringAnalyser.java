@@ -35,7 +35,7 @@ public class ColoringAnalyser implements Analyser<Integer> {
     @Override
     public Integer analysis(Component component) {
 
-        component.getComponentList().stream().forEach((x) -> x.applyFunction((new ColoringAnalyser(max, maximumMinimumData))::analysis));
+        component.getComponentList().parallelStream().forEach((x) -> x.applyFunction((new ColoringAnalyser(max, maximumMinimumData))::analysis));
 
         if (component instanceof BinaryFile) {
             computeColor((BinaryFile)component);

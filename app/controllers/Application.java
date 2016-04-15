@@ -1,6 +1,5 @@
 package controllers;
 
-import com.sun.media.jfxmedia.logging.Logger;
 import exception.CustomException;
 import logics.Definitions;
 import logics.models.db.*;
@@ -11,6 +10,7 @@ import logics.pipeline.analayser.AnalyserHandler;
 import logics.pipeline.analayser.AnalyserHandlerParam;
 import logics.pipeline.storing.StoreHandler;
 import logics.pipeline.storing.StoreHandlerParam;
+import play.Logger;
 import play.libs.Json;
 import play.mvc.Controller;
 import play.mvc.Result;
@@ -157,16 +157,68 @@ public class Application extends Controller {
             JavaFile jf = QueryList.getInstance().getJavaFileByPath(path);
             List<ImportDiscussion> javaImports = QueryList.getInstance().getAllDissussionImport(QueryList.getInstance().getAllNonLocalImport(jf.id, jf.repositoryVersionId));
 
-            final List<String> allJavaMethods  = QueryList.getInstance().getAllJavaMethodOfRepositoryVersion(jf.repositoryVersionId).stream().map(x -> x.json.signature).collect(Collectors.toList());
-            final List<String> javaMethods = QueryList.getInstance().getAllJavaMethodFormPath(path).stream().map(x -> x.json.variableDeclaration).flatMap(y -> y.stream()).filter(x -> !allJavaMethods.contains(x)).collect(Collectors.toList());
-            final List<StackOFDiscussion> discussionsReleatedToMethodName = QueryList.getInstance().getAllDiscussionHavingMethodName(javaMethods);
-            final List<StackOFDiscussion>result = QueryList.getInstance().getGitDiscussionFromImportDiscussion(javaImports);
+            final List<String> allJavaMethods  = QueryList.getInstance().getAllJavaMethodOfRepositoryVersion(jf.repositoryVersionId);
+            final List<String> currentMethods =  QueryList.getInstance().getAllJavaMethodFormPath(path);
+            final List<String> javaMethods =currentMethods.stream().distinct().filter(x -> !allJavaMethods.contains(x)).collect(Collectors.toList());
+            final HashMap<String,List<String>> resul = new HashMap<>();
 
+            javaMethods.stream().forEach(x -> {
+                   try {
+                       List<StackOFDiscussion> sovfd = QueryList.getInstance().getAllDiscussionHavingMethodName(new ArrayList<String>() {{
+                           add(x);
+                       }});
+                       sovfd.forEach(z->{
+                           if(resul.containsKey(z.packageDiscussion)){
+                             resul.get(z.packageDiscussion).add(x);
+                           }else{
+                               resul.put(z.packageDiscussion,new ArrayList<String>(){{add(x);}});
+                           }
+                       });
 
-            result.addAll(discussionsReleatedToMethodName);
-            String res = Json.stringify(Json.toJson(result.stream().map(x->x.packageDiscussion).distinct().collect(Collectors.toList())));
+                   } catch (SQLException e) {
+                       e.printStackTrace();
+                   }
+            });
+
+            javaImports.stream().forEach(x -> {
+                try {
+                    List<StackOFDiscussion> sovfd = QueryList.getInstance().getGitDiscussionFromImportDiscussion(new ArrayList<ImportDiscussion>() {{
+                        add(x);
+                    }});
+                    sovfd.forEach(z->{
+                        if(resul.containsKey(z.packageDiscussion)){
+                            resul.get(z.packageDiscussion).add(x.packageDiscussion);
+                        }else{
+                            resul.put(z.packageDiscussion,new ArrayList<String>(){{add(x.packageDiscussion);}});
+                        }
+                    });
+
+                } catch (SQLException e) {
+                    e.printStackTrace();
+                }
+            });
+            String res = Json.stringify(Json.toJson(resul));
             return ok(res);
-        }catch (Exception e){
+//            System.out.println(res);
+//
+//
+//
+//            final List<StackOFDiscussion> discussionsReleatedToMethodName = QueryList.getInstance().getAllDiscussionHavingMethodName(javaMethods);
+//
+//
+//            final List<StackOFDiscussion>result = QueryList.getInstance().getGitDiscussionFromImportDiscussion(javaImports);
+//
+//            Logger.info("__________________");
+//
+//            javaImports.stream().map(x->x.packageDiscussion).forEach(Logger::info);
+//
+//            result.addAll(discussionsReleatedToMethodName);
+//            String res1 = Json.stringify(Json.toJson(result.stream().map(x->x.packageDiscussion).distinct().collect(Collectors.toList())));
+//            return ok(res1);
+        }catch (SQLException e){
+            throw new CustomException(e);
+        }
+        catch (Exception e){
             return ok("Error");
         }
 

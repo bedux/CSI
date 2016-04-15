@@ -45,25 +45,33 @@ module.exports = {
             data:JSON.stringify({path:info.id}),
             contentType:"application/json",
             success: function (data) {
+
+                console.log(data);
                var jsonData = (JSON.parse(data));
                 console.log(jsonData);
 
                 $("#discussions").empty();
 
 
-                if (jsonData.length > 1) {
+                if (jsonData != null) {
 
                         var table = $('<table class="table table-inverse"></table>');
                         table.append($('  <thead> <tr> <th>Discussion URL</th></tr> </thead>'));
                         var tbody = $(' <tbody></tbody>');
                         for(var i in jsonData){
                             var row = $('<tr></tr>');
-                            var current = jsonData[i];
+                            var current = i;
                             current = current.replace(".json","");
                             current = current.substring(current.lastIndexOf("/")+1);
                             current = "http://stackoverflow.com/questions/"+current;
                             var column = $('<td></td>').append($('<a  href="'+current+'" target="_blank"></a>').text(current));
                             row.append(column);
+                            var c = $('<td></td>');
+                            for(var o in jsonData[i]){
+                                var column = $('<span></span>').text(jsonData[i][o]+" | ");
+                                c.append(column)
+                            }
+                            row.append(c);
                             tbody.append(row);
                         }
                         table.append(tbody)

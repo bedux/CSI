@@ -22,7 +22,7 @@ public class AdjustSizeAnalyser implements Analyser<Integer> {
 
     @Override
     public Integer analysis(Component c) {
-        c.getComponentList().stream().forEach((x) -> x.applyFunction((new AdjustSizeAnalyser(maximumMinimumData))::analysis));
+        c.getComponentList().parallelStream().forEach((x) -> x.applyFunction((new AdjustSizeAnalyser(maximumMinimumData))::analysis));
 
         if (c instanceof BinaryFile) {
             c.getFeatures().setHeight(unit);

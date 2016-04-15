@@ -21,7 +21,7 @@ public class PackingAnalyzer implements Analyser<Integer> {
     public Integer analysis(Component component) {
         if (component.getComponentList().size() == 0) return 0;
 
-        component.getComponentList().stream().forEach((x) -> x.applyFunction((new PackingAnalyzer())::analysis));
+        component.getComponentList().parallelStream().forEach((x) -> x.applyFunction((new PackingAnalyzer())::analysis));
         BinaryTreePack r;
         Component[] strm = component.getComponentList().stream().sorted((x, y) -> {
             float a = x.getFeatures().getWidth() * x.getFeatures().getDepth();

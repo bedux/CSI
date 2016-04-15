@@ -19,6 +19,7 @@ import logics.databaseUtilities.SaveClassAsTable;
 import logics.models.db.*;
 import logics.models.db.information.*;
 import logics.models.query.QueryList;
+import play.Logger;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -40,7 +41,7 @@ public class ASTraversAndStore implements Analyser<Integer> {
      */
     @Override
     public Integer analysis(Component value) {
-        value.getComponentList().stream().forEach((x) -> x.applyFunction((new ASTraversAndStore())::analysis));
+        value.getComponentList().parallelStream().forEach((x) -> x.applyFunction((new ASTraversAndStore())::analysis));
         if (value instanceof DataFile) {
             analysisDataFile((DataFile) value);
         }
@@ -84,6 +85,7 @@ public class ASTraversAndStore implements Analyser<Integer> {
      */
     private void analyseJavaFile(ExtensionTool currentPath) {
         JavaFile analyzedFile;
+        Logger.info("Analyse "+currentPath.getPath());
         try {
             analyzedFile = QueryList.getInstance().getJavaFileByPath(currentPath.getPath());
             Long l = Files.size(currentPath.getFilePath());
@@ -123,10 +125,11 @@ public class ASTraversAndStore implements Analyser<Integer> {
  */
 class MethodVisitorParameter{
     public long idFile;
-    public long idJavaSource;
+    public long idJavaSource = -1;
     public long idJavaDoc;
     public long javaMethodId=-1;
     public long countJavaMethod= 0;
+    public boolean isInterface  = false;
 }
 
 
@@ -151,13 +154,28 @@ class MethodVisitor extends VoidVisitorAdapter<MethodVisitorParameter> {
     @Override
     public void visit(MethodCallExpr n, MethodVisitorParameter arg) {
         try {
-            if(arg.javaMethodId==-1){System.out.println(n.getName() + " " + arg.idJavaSource);return;}
-            JavaMethod jm = new SaveClassAsTable().get(arg.javaMethodId,JavaMethod.class);
-            if( jm.json.variableDeclaration==null){
-                jm.json.variableDeclaration=new ArrayList<>();
+            if(arg.javaMethodId==-1 ){
+                if(arg.idJavaSource!=-1) {
+                    if (arg.isInterface) {
+                        JavaInterface jm = new SaveClassAsTable().get(arg.idJavaSource, JavaInterface.class);
+                        jm.json.variableDeclaration.add(n.getName());
+                        new SaveClassAsTable().update(jm);
+
+                    } else {
+                        JavaClass jm = new SaveClassAsTable().get(arg.idJavaSource, JavaClass.class);
+                        jm.json.variableDeclaration.add(n.getName());
+                        new SaveClassAsTable().update(jm);
+                    }
+                }
+
+            }else {
+                JavaMethod jm = new SaveClassAsTable().get(arg.javaMethodId, JavaMethod.class);
+                if (jm.json.variableDeclaration == null) {
+                    jm.json.variableDeclaration = new ArrayList<>();
+                }
+                jm.json.variableDeclaration.add(n.getName());
+                new SaveClassAsTable().update(jm);
             }
-            jm.json.variableDeclaration.add(n.getName());
-            new SaveClassAsTable().update(jm);
 
         } catch (SQLException e) {
             throw new CustomException(e);
@@ -254,6 +272,7 @@ class MethodVisitor extends VoidVisitorAdapter<MethodVisitorParameter> {
             method.json = thisInfo;
             newId.idJavaSource = new SaveClassAsTable().save(method);
             newId.idJavaDoc =  newId.idJavaSource;
+            newId.isInterface = true;
         } else {
             JavaClass method = new JavaClass();
             method.javaFile = e.idFile;
