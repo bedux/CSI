@@ -1,6 +1,7 @@
 package controllers;
 
 import exception.CustomException;
+import exception.SQLnoResult;
 import logics.Definitions;
 import logics.models.db.*;
 import logics.models.query.QueryGetAllRepository;
@@ -35,7 +36,7 @@ public class Application extends Controller {
     public static Result indexGet(int id) {
         RepositoryVersion repositoryVersion = null;
         try {
-            repositoryVersion = QueryList.getInstance().getRepositoryVersionById(id);
+            repositoryVersion = QueryList.getInstance().getRepositoryVersionById(id).orElseThrow(()-> new SQLnoResult());
         } catch (IllegalAccessException e) {
             e.printStackTrace();
         } catch (SQLException e) {
@@ -154,7 +155,7 @@ public class Application extends Controller {
     public static Result getDiscussion()  {
         try {
             String path = request().body().asJson().get("path").asText();
-            JavaFile jf = QueryList.getInstance().getJavaFileByPath(path);
+            JavaFile jf = QueryList.getInstance().getJavaFileByPath(path).orElseThrow(() -> new SQLnoResult());
             List<ImportDiscussion> javaImports = QueryList.getInstance().getAllDissussionImport(QueryList.getInstance().getAllNonLocalImport(jf.id, jf.repositoryVersionId));
 
             final List<String> allJavaMethods  = QueryList.getInstance().getAllJavaMethodOfRepositoryVersion(jf.repositoryVersionId);

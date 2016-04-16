@@ -1,6 +1,7 @@
 package logics.models.query;
 
 import exception.CustomException;
+import exception.SQLnoResult;
 import logics.models.db.*;
 
 import java.sql.SQLException;
@@ -12,7 +13,7 @@ public class CountingExternalPackage implements  IComputeAttributeContainer {
     @Override
     public long executeAndGetResult(String path) {
         try {
-            JavaFile jf = QueryList.getInstance().getJavaFileByPath(path);
+            JavaFile jf = QueryList.getInstance().getJavaFileByPath(path).orElseThrow(()->new SQLnoResult());
             final List<JavaImport> nonLocalImport =  QueryList.getInstance().getAllNonLocalImport(jf.id,jf.repositoryVersionId);
             final List<JavaImport> importDsicussions =  QueryList.getInstance().getAllDiscussedJavaImport(nonLocalImport);
             final List<StackOFDiscussion> discussionReleatedToImport = QueryList.getInstance().getGitDiscussionFromImportDiscussion(QueryList.getInstance().getAllDissussionImport(importDsicussions));
@@ -71,7 +72,10 @@ public class CountingExternalPackage implements  IComputeAttributeContainer {
 
     @Override
     public long executeAndGetResult(long id) {
-
         throw new CustomException("Not Implememtded CountingExternalPacking");
+    }
+    @Override
+    public CountingExternalPackage clone() {
+        return new CountingExternalPackage();
     }
 }

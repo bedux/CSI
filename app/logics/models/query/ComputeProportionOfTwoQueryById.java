@@ -1,6 +1,7 @@
 package logics.models.query;
 
 import exception.CustomException;
+import exception.SQLnoResult;
 import logics.models.db.JavaFile;
 
 
@@ -20,13 +21,13 @@ public class ComputeProportionOfTwoQueryById implements IComputeAttributeContain
     public long executeAndGetResult(String path) {
 
         try {
-            JavaFile jf = QueryList.getInstance().getJavaFileByPath(path);
+            JavaFile jf = QueryList.getInstance().getJavaFileByPath(path).orElseThrow(()->new SQLnoResult());
             long a1 = q1.executeAndGetResult(jf.id);
             long a2 = q2.executeAndGetResult(jf.id);
             if(a1==0) return  0 ;
             float resuult = (((float)(a2) / (float)(a1))*100f);
             if(a1<a2){
-                throw new CustomException("Wrong percentage >"+resuult+" "+a1 + " "+a2);
+                System.out.println(path);
 
             }
             return (long)(resuult);
@@ -45,10 +46,14 @@ public class ComputeProportionOfTwoQueryById implements IComputeAttributeContain
         if(a1==0) return  0 ;
         float resuult = (((float)(a2) / (float)(a1))*100f);
         if(a1<a2){
-            throw new CustomException("Wrong percentage >"+resuult+" "+a1 + " "+a2);
+            System.out.println(id);
 
         }
         return (long)(resuult);
+    }
+    @Override
+    public ComputeProportionOfTwoQueryById clone() {
+        return new ComputeProportionOfTwoQueryById(q1.clone(),q2.clone());
     }
 
 

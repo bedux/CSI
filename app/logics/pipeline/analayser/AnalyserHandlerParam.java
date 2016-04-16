@@ -1,15 +1,10 @@
 package logics.pipeline.analayser;
 
 import interfaces.HandlerParam;
-import logics.models.db.RepositoryRender;
 import logics.models.db.RepositoryVersion;
-import logics.models.query.ComputeWithSingleQuery;
-import logics.models.query.CountingExternalPackage;
-import logics.models.query.IComputeAttributeContainer;
-import logics.models.query.QueryList;
-import logics.pipeline.storing.StoreHandlerResult;
+import logics.pipeline.storeASTdata.StoreASTHandlerResult;
+import logics.analyzer.Package;
 
-import javax.validation.constraints.NotNull;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -17,29 +12,33 @@ import java.util.List;
  * Created by bedux on 08/03/16.
  */
 public class AnalyserHandlerParam implements HandlerParam {
-    public RepositoryVersion repositoryVersion;
+    public final RepositoryVersion repositoryVersion;
+    public final Package root;
+    public final MetricsCharacteristics metricsToCompute;
+//
+//    public AnalyserHandlerParam(@NotNull RepositoryVersion repositoryVersion) {
+//        this.repositoryVersion = repositoryVersion;
+//    }
+//
+//    public AnalyserHandlerParam(@NotNull StoreHandlerResult storeHandlerResult) {
+//        this.repositoryVersion = storeHandlerResult.repositoryVersion;
+//    }
 
 
-
-    List<MetricsCharatteristics> metricsToCompute = new ArrayList<>();
-
-    public AnalyserHandlerParam(@NotNull RepositoryVersion repositoryVersion) {
+    public AnalyserHandlerParam(RepositoryVersion repositoryVersion, Package root,MetricsCharacteristics ms) {
         this.repositoryVersion = repositoryVersion;
+        this.root = root;
+        this.metricsToCompute = ms;
+    }
+    public AnalyserHandlerParam(StoreASTHandlerResult dta,MetricsCharacteristics ms) {
+        this.repositoryVersion = dta.repositoryVersion;
+        this.root = dta.root;
+        this.metricsToCompute = ms;
 
     }
 
-    public AnalyserHandlerParam(@NotNull StoreHandlerResult storeHandlerResult) {
-        this.repositoryVersion = storeHandlerResult.repositoryVersion;
-      
 
-    }
 
-    public  void addMetrics(MetricsCharatteristics metricsCharatteristics){
-        metricsToCompute.add(metricsCharatteristics);
-    }
 
-    public List<MetricsCharatteristics> listMetricsToCompute(){
-        return metricsToCompute;
-    }
 
 }

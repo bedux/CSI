@@ -9,10 +9,9 @@ import java.util.List;
 /**
  * Created by bedux on 26/03/16.
  */
-public class QueryWithPath extends QueryContainer<CountQuery> {
+public class QueryWithPath extends QueryContainer<CountQuery>{
 
-   private final List<Integer> pathId = new ArrayList<>();
-    private Object path;
+    private final List<Integer> pathId = new ArrayList<>();
 
     public QueryWithPath(String query, HashMap<Integer, Object> params, int pathId) {
         super(query, params, CountQuery.class);
@@ -37,11 +36,17 @@ public class QueryWithPath extends QueryContainer<CountQuery> {
     }
 
     public void setPath(Object path) {
-        this.path = path;
         for(int p:pathId) {
             params.put(p, path);
         }
     }
+
+    public QueryWithPath clone(){
+        QueryWithPath inst =  new QueryWithPath(query,pathId);
+        return inst;
+    }
+
+
 
 
 }

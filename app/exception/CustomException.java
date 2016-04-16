@@ -53,7 +53,6 @@ public class CustomException extends RuntimeException {
     public CustomException(String message) {
         this.message = message;
         System.err.println("######################");
-
         System.err.println(message);
         System.err.println("######################");
 

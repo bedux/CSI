@@ -28,4 +28,8 @@ public class ComputeSumOfTwoQuery implements IComputeAttributeContainer {
         return a2 + a1;
     }
 
+    @Override
+    public ComputeSumOfTwoQuery clone() {
+        return new ComputeSumOfTwoQuery(q1.clone(),q2.clone());
+    }
 }

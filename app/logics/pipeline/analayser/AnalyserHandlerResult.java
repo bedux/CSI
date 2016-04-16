@@ -9,9 +9,9 @@ import java.util.List;
  * Created by bedux on 08/03/16.
  */
 public class AnalyserHandlerResult implements HandlerResult {
-    public List<JsonNode> json;
+    public JsonNode json;
 
-    public AnalyserHandlerResult(List<JsonNode> json) {
+    public AnalyserHandlerResult(JsonNode json) {
         this.json = json;
     }
 }

@@ -1,6 +1,7 @@
 package logics.analyzer.analysis;
 
 import java.util.concurrent.Executor;
+import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 
@@ -11,8 +12,8 @@ public class ThreadManager {
 
     private static ThreadManager threadManager = new ThreadManager();
 
-    private final ScheduledExecutorService scheduler =
-            Executors.newScheduledThreadPool(8);
+    private final ExecutorService scheduler =
+            Executors.newFixedThreadPool(12);
     private ThreadManager(){
 
     }

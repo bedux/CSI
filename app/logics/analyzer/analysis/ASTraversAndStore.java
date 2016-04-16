@@ -11,6 +11,7 @@ import com.github.javaparser.ast.expr.MethodCallExpr;
 import com.github.javaparser.ast.expr.VariableDeclarationExpr;
 import com.github.javaparser.ast.visitor.VoidVisitorAdapter;
 import exception.CustomException;
+import exception.SQLnoResult;
 import interfaces.Analyser;
 import interfaces.Component;
 import logics.ExtensionTool;
@@ -27,11 +28,13 @@ import java.lang.reflect.Modifier;
 import java.nio.file.Files;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Optional;
+import java.util.concurrent.CompletableFuture;
 
 /**
  * Created by bedux on 25/03/16.
  */
-public class ASTraversAndStore implements Analyser<Integer> {
+public class ASTraversAndStore implements Analyser< CompletableFuture<Integer>> {
 
     /***
      * Given a component, run the analysis on his child and, if is a javaFile, it compute all the characteristic using the AST
@@ -40,12 +43,29 @@ public class ASTraversAndStore implements Analyser<Integer> {
      * @return NOt important!Just a random number
      */
     @Override
-    public Integer analysis(Component value) {
-        value.getComponentList().parallelStream().forEach((x) -> x.applyFunction((new ASTraversAndStore())::analysis));
-        if (value instanceof DataFile) {
-            analysisDataFile((DataFile) value);
-        }
-        return 1;
+    public  CompletableFuture<Integer> analysis(Component value) {
+//        value.getComponentList().stream().forEach((x) -> x.applyFunction((new ASTraversAndStore())::analysis));
+//        if (value instanceof DataFile) {
+//            analysisDataFile((DataFile) value);
+//        }
+//        return 1;
+        CompletableFuture[] res =
+                value.getComponentList().stream().map(
+                        (x) -> CompletableFuture.supplyAsync(() -> x.applyFunction((new ASTraversAndStore())::analysis))
+                ).toArray(CompletableFuture[]::new);
+
+        CompletableFuture<Void> allDoneFuture = CompletableFuture.allOf(res);
+        allDoneFuture.join();
+        return allDoneFuture.thenApply(
+                v -> {
+                    if (value instanceof DataFile) {
+                        analysisDataFile((DataFile) value);
+                        return 1;
+                    } else {
+                        return 1;
+                    }
+                }
+        );
     }
 
 
@@ -60,7 +80,9 @@ public class ASTraversAndStore implements Analyser<Integer> {
             analyseJavaFile(currentPath);
         } else {
             try {
-                TextFile analyzedFile = QueryList.getInstance().getTextFileByPath(currentPath.getPath());
+
+
+                TextFile analyzedFile =  QueryList.getInstance().getTextFileByPath(currentPath.getPath()).orElseThrow(()->new SQLnoResult());
                 if (analyzedFile.json == null) {
                     analyzedFile.json = new JavaFileInformation();
                 }
@@ -87,7 +109,7 @@ public class ASTraversAndStore implements Analyser<Integer> {
         JavaFile analyzedFile;
         Logger.info("Analyse "+currentPath.getPath());
         try {
-            analyzedFile = QueryList.getInstance().getJavaFileByPath(currentPath.getPath());
+            analyzedFile = QueryList.getInstance().getJavaFileByPath(currentPath.getPath()).orElseThrow(() -> new SQLnoResult());
             Long l = Files.size(currentPath.getFilePath());
             if (l != null) {
                 analyzedFile.json.size = l.intValue();
@@ -157,19 +179,19 @@ class MethodVisitor extends VoidVisitorAdapter<MethodVisitorParameter> {
             if(arg.javaMethodId==-1 ){
                 if(arg.idJavaSource!=-1) {
                     if (arg.isInterface) {
-                        JavaInterface jm = new SaveClassAsTable().get(arg.idJavaSource, JavaInterface.class);
+                        JavaInterface jm = new SaveClassAsTable().get(arg.idJavaSource, JavaInterface.class).orElseThrow(() -> new SQLnoResult());
                         jm.json.variableDeclaration.add(n.getName());
                         new SaveClassAsTable().update(jm);
 
                     } else {
-                        JavaClass jm = new SaveClassAsTable().get(arg.idJavaSource, JavaClass.class);
+                        JavaClass jm = new SaveClassAsTable().get(arg.idJavaSource, JavaClass.class).orElseThrow(() -> new SQLnoResult());
                         jm.json.variableDeclaration.add(n.getName());
                         new SaveClassAsTable().update(jm);
                     }
                 }
 
             }else {
-                JavaMethod jm = new SaveClassAsTable().get(arg.javaMethodId, JavaMethod.class);
+                JavaMethod jm = new SaveClassAsTable().get(arg.javaMethodId, JavaMethod.class).orElseThrow(() -> new SQLnoResult());
                 if (jm.json.variableDeclaration == null) {
                     jm.json.variableDeclaration = new ArrayList<>();
                 }

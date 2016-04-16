@@ -10,6 +10,8 @@ import logics.models.db.RepositoryVersion;
 import logics.models.query.QueryList;
 import play.Logger;
 
+import java.util.Optional;
+
 /**
  * Created by bedux on 07/03/16.
  */
@@ -25,7 +27,7 @@ public class CloneHandler implements Handler<CloneHandlerParam, CloneHandlerResu
         repository.subversionType = param.repoForm.type;
         try {
             int id = new SaveClassAsTable().save(repository);
-            repository = QueryList.getInstance().getById(id, Repository.class);
+            repository =QueryList.getInstance().getById(id, Repository.class).orElseThrow(()->new CustomException("No repository found!"));
             Logger.info("Save Repository as" + repository.id + "   " + id);
         } catch (Exception e) {
             e.printStackTrace();
@@ -36,7 +38,7 @@ public class CloneHandler implements Handler<CloneHandlerParam, CloneHandlerResu
         repositoryVersion.repositoryId = repository.id;
         try {
             int id = new SaveClassAsTable().save(repositoryVersion);
-            repositoryVersion = QueryList.getInstance().getById(id, RepositoryVersion.class);
+            repositoryVersion = QueryList.getInstance().getById(id, RepositoryVersion.class).orElseThrow(()->new CustomException("No repository version found"));
         } catch (Exception e) {
             throw new CustomException(e);
         }

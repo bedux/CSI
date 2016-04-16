@@ -11,10 +11,7 @@ import scala.util.parsing.json.JSONObject;
 import java.lang.reflect.Field;
 import java.sql.SQLException;
 import java.text.Normalizer;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
+import java.util.*;
 
 /**
  * Update and Save Table in Database
@@ -58,7 +55,7 @@ public class SaveClassAsTable {
      * @param <T> the class element to be saved and  return
      * @return the saved element
      */
-    public <T> Integer save(T object) {
+    public synchronized <T> Integer save(T object) {
         try {
             IDatabaseClass annotationClass = object.getClass().getAnnotation(IDatabaseClass.class);
             checkIfIsAValidClass(annotationClass);
@@ -114,7 +111,7 @@ public class SaveClassAsTable {
      * @throws SQLException
      * @throws InstantiationException
      */
-    public <T> void update(T object) throws IllegalAccessException, SQLException, InstantiationException {
+    public synchronized <T> void update(T object) throws IllegalAccessException, SQLException, InstantiationException {
         IDatabaseClass annotationClass = object.getClass().getAnnotation(IDatabaseClass.class);
         checkIfIsAValidClass(annotationClass);
 
@@ -168,13 +165,17 @@ public class SaveClassAsTable {
      * @return the element
      * @throws SQLException
      */
-    public <T> T get(long id,Class<T> type) throws SQLException {
+    public synchronized <T> Optional<T> get(long id,Class<T> type) throws SQLException {
         IDatabaseClass annotationClass = type.getAnnotation(IDatabaseClass.class);
         checkIfIsAValidClass(annotationClass);
 
         String getQuery = "SELECT * FROM " + annotationClass.tableName() + " WHERE "+annotationClass.idName()+" = ? LIMIT 1";
-        return  DatabaseManager.getInstance().makeQuery(getQuery, new HashMap<Integer,Object>(){{put(1,id);}},type).get(0);
-
+        List<T> res =   DatabaseManager.getInstance().makeQuery(getQuery, new HashMap<Integer,Object>(){{put(1,id);}},type);
+        if(res.size()>0){
+            return Optional.of(res.get(0));
+        }else{
+            return Optional.empty();
+        }
     }
 
 

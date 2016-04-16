@@ -11,7 +11,7 @@ import java.util.List;
 public class QueryContainer<T> {
     protected Class<T> resultClass;
     protected HashMap<Integer, Object> params = new HashMap<>();
-    private String query;
+    protected String query;
 
     /***
      *
@@ -60,5 +60,10 @@ public class QueryContainer<T> {
         } catch (SQLException e) {
             throw new CustomException(e);
         }
+    }
+
+    public QueryContainer<T> clone(){
+        return new QueryContainer<T>(this.query,params,resultClass);
+
     }
 }

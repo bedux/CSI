@@ -36,7 +36,7 @@ public class ComputeProportionOfTwoQuery implements IComputeAttributeContainer {
         float result = (((float)(a2) / (float)(a1))*100f);
 
         if(a1<a2){
-            throw new CustomException("Wrong percentage >"+result+" "+a1 + " "+path);
+            throw new CustomException("Wrong percentage >"+result+" "+a1 +  " " + a2+" "+path);
          }
 
         return (long)(result);
@@ -59,5 +59,10 @@ public class ComputeProportionOfTwoQuery implements IComputeAttributeContainer {
         }
 
         return (long)(result);
+    }
+
+    @Override
+    public ComputeProportionOfTwoQuery clone() {
+        return new ComputeProportionOfTwoQuery(q1.clone(),q2.clone());
     }
 }

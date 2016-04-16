@@ -16,18 +16,14 @@ import java.util.HashMap;
 
 public class DatabaseManager {
 
-    private static DatabaseManager instance = null;
+    private static   DatabaseManager instance = new DatabaseManager();;
 
     private DatabaseManager() {
 
     }
 
     public static DatabaseManager getInstance() {
-        if (instance == null) {
-            instance = new DatabaseManager();
-        }
         return instance;
-
     }
 
 
@@ -44,7 +40,7 @@ public class DatabaseManager {
      * @throws InstantiationException
      * @throws IllegalAccessException
      */
-    public <T> ArrayList<T> makeQuery(String query, HashMap<Integer, Object> values, Class<T> resultType) throws SQLException {
+    public synchronized <T> ArrayList<T> makeQuery(String query, HashMap<Integer, Object> values, Class<T> resultType) throws SQLException {
 
         Connection connection = DB.getConnection();
         try {
@@ -78,7 +74,7 @@ public class DatabaseManager {
      * @throws InstantiationException
      * @throws IllegalAccessException
      */
-    public boolean makeUpdateQuery(String query, HashMap<Integer, Object> values) throws SQLException {
+    public synchronized boolean makeUpdateQuery(String query, HashMap<Integer, Object> values) throws SQLException {
         Connection connection = DB.getConnection();
         try {
 
@@ -94,7 +90,7 @@ public class DatabaseManager {
         }
     }
 
-    public int makeSaveQuery(String query, HashMap<Integer, Object> values) throws SQLException {
+    public synchronized int makeSaveQuery(String query, HashMap<Integer, Object> values) throws SQLException {
         Connection connection = DB.getConnection();
        try {
            PreparedStatement preparedStatement = buildPreparedStatement(connection, query, values);
@@ -115,7 +111,7 @@ public class DatabaseManager {
 
 
 
-    private PreparedStatement buildPreparedStatement(Connection connection, String query, HashMap<Integer, Object> values) throws SQLException {
+    private synchronized PreparedStatement buildPreparedStatement(Connection connection, String query, HashMap<Integer, Object> values) throws SQLException {
 
         PreparedStatement preparedStatement = connection.prepareStatement(query);
 

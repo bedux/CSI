@@ -10,14 +10,14 @@ import logics.models.query.QueryList;
 /**
  * Created by bedux on 13/04/16.
  */
-public class MetricsCharatteristics {
+public class MetricsCharacteristics {
 
 private final    IComputeAttributeContainer width ;
     private final    IComputeAttributeContainer height ;
     private final IComputeAttributeContainer color ;
     private final String metricType;
 
-    public MetricsCharatteristics(IComputeAttributeContainer width, IComputeAttributeContainer height, IComputeAttributeContainer color,String metricType) {
+    public MetricsCharacteristics(IComputeAttributeContainer width, IComputeAttributeContainer height, IComputeAttributeContainer color, String metricType) {
         this.width = width;
         this.height = height;
         this.color = color;

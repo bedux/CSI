@@ -22,4 +22,9 @@ public class ComputeWithSingleQuery implements IComputeAttributeContainer {
         countQuery.setPath(id);
         return this.countQuery.executeAndGetFirst().getCount();
     }
+
+    @Override
+    public ComputeWithSingleQuery clone() {
+        return new ComputeWithSingleQuery(countQuery.clone());
+    }
 }
