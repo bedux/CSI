@@ -30,6 +30,7 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutionException;
 
 /**
  * Created by bedux on 25/03/16.
@@ -49,15 +50,19 @@ public class ASTraversAndStore implements Analyser< CompletableFuture<Integer>> 
 //            analysisDataFile((DataFile) value);
 //        }
 //        return 1;
-        CompletableFuture[] res =
-                value.getComponentList().stream().map(
-                        (x) -> CompletableFuture.supplyAsync(() -> x.applyFunction((new ASTraversAndStore())::analysis))
-                ).toArray(CompletableFuture[]::new);
+//        CompletableFuture[] res =
+//                value.getComponentList().stream().map(
+//                        (x) -> CompletableFuture.supplyAsync(() -> x.applyFunction((new ASTraversAndStore())::analysis),ThreadManager.instance().getExecutor())
+//                ).toArray(CompletableFuture[]::new);
+//
+//        CompletableFuture<Void> allDoneFuture = CompletableFuture.allOf(res);
+//        allDoneFuture.join();
 
-        CompletableFuture<Void> allDoneFuture = CompletableFuture.allOf(res);
-        allDoneFuture.join();
-        return allDoneFuture.thenApply(
-                v -> {
+        CompletableFuture.allOf(value.getComponentList().stream().map(x -> x.applyFunction((new ASTraversAndStore())::analysis)).toArray(CompletableFuture[]::new));
+
+
+        return CompletableFuture.supplyAsync(
+                () -> {
                     if (value instanceof DataFile) {
                         analysisDataFile((DataFile) value);
                         return 1;
@@ -65,7 +70,7 @@ public class ASTraversAndStore implements Analyser< CompletableFuture<Integer>> 
                         return 1;
                     }
                 }
-        );
+        ,ThreadManager.instance().getExecutor());
     }
 
 
@@ -107,7 +112,7 @@ public class ASTraversAndStore implements Analyser< CompletableFuture<Integer>> 
      */
     private void analyseJavaFile(ExtensionTool currentPath) {
         JavaFile analyzedFile;
-        Logger.info("Analyse "+currentPath.getPath());
+        Logger.info("Analyse "+currentPath.getPath()+" Thread id=>"+Thread.currentThread().getId());
         try {
             analyzedFile = QueryList.getInstance().getJavaFileByPath(currentPath.getPath()).orElseThrow(() -> new SQLnoResult());
             Long l = Files.size(currentPath.getFilePath());

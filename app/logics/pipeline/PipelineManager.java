@@ -31,7 +31,7 @@ public class PipelineManager {
     }
 
     public void StoreAndAnalyze(RepositoryVersion repositoryVersion){
-        
+
 
         StoreHandlerResult shr =  new StoreHandler().process(new StoreHandlerParam(repositoryVersion));
         TreeGeneratorHandlerResult generateTree = new TreeGenerator().process(new TreeGeneratorHandleParam(shr.repositoryVersion));

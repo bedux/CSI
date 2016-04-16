@@ -40,23 +40,24 @@ public class LoadFromDatabase implements Analyser<CompletableFuture<Integer>> {
      */
     @Override
     public CompletableFuture<Integer> analysis(Component component) {
-        CompletableFuture[] res =
-                component.getComponentList().stream().map(
-                        (x) -> CompletableFuture.supplyAsync(() -> x.applyFunction((new LoadFromDatabase(widthQuery.clone(), heightQuery.clone(), colorQuery.clone()))::analysis)
-                        )
-                ).toArray(CompletableFuture[]::new);
+//        CompletableFuture[] res =
+//                component.getComponentList().stream().map(
+//                        (x) -> CompletableFuture.supplyAsync(() -> x.applyFunction((new LoadFromDatabase(widthQuery.clone(), heightQuery.clone(), colorQuery.clone()))::analysis),ThreadManager.instance().getExecutor()
+//                        )
+//                ).toArray(CompletableFuture[]::new);
 
-        CompletableFuture<Void> allDoneFuture = CompletableFuture.allOf(res);
-        allDoneFuture.join();
-        return allDoneFuture.thenApply(
-                v -> {
+        CompletableFuture.allOf(component.getComponentList().stream().map(x-> x.applyFunction((new LoadFromDatabase(widthQuery.clone(), heightQuery.clone(), colorQuery.clone()))::analysis)).toArray(CompletableFuture[]::new));
+//
+
+        return CompletableFuture.supplyAsync(
+                () -> {
                     if (component instanceof DataFile) {
                         return computeMetricsOfComponent((DataFile) component);
                     } else {
                         return 1;
                     }
                 }
-        );
+                ,ThreadManager.instance().getExecutor());
     }
 
 
@@ -65,7 +66,7 @@ public class LoadFromDatabase implements Analyser<CompletableFuture<Integer>> {
      * @param dataFile set the component feature by a given query,Note: set only the matrix value no the actual size
      */
     private int computeMetricsOfComponent(DataFile dataFile) {
-        Logger.info("Load From Data => "+ dataFile.getFeatures().getPath()+" Thread id=>"+Thread.currentThread().getName());
+        Logger.info("Load From Data => "+ dataFile.getFeatures().getPath()+" Thread id=>"+Thread.currentThread().getId());
 
         String fn = dataFile.getFeatures().getPath().substring(dataFile.getFeatures().getPath().lastIndexOf(".") + 1);
 

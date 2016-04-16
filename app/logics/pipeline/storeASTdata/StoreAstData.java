@@ -12,6 +12,7 @@ import logics.models.query.QueryList;
 import play.Logger;
 
 import java.util.List;
+import java.util.concurrent.ExecutionException;
 
 
 public class StoreAstData implements Handler<StoreASTHandleParam, StoreASTHandlerResult> {
@@ -23,7 +24,13 @@ public class StoreAstData implements Handler<StoreASTHandleParam, StoreASTHandle
     @Override
     public StoreASTHandlerResult process(StoreASTHandleParam param) {
         Logger.info("AST of java file ");
-        param.root.applyFunction(new ASTraversAndStore()::analysis).join();
+        try {
+            param.root.applyFunction(new ASTraversAndStore()::analysis).get();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        } catch (ExecutionException e) {
+            e.printStackTrace();
+        }
         Logger.info("END of java file ");
 
         return new StoreASTHandlerResult(param.repositoryVersion,param.root);
