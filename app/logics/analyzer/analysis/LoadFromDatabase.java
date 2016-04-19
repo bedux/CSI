@@ -76,8 +76,8 @@ public class LoadFromDatabase implements Analyser<CompletableFuture<Integer>> {
             int width = (int) widthQuery.clone().executeAndGetResult(currentPath);
             dataFile.getFeatures().setWidthMetrics(width);
             dataFile.getFeatures().setDepthMetrics(width);
-            dataFile.getFeatures().setHeightMetrics(heightQuery.executeAndGetResult(currentPath));
-            long color = colorQuery.executeAndGetResult(currentPath);
+            dataFile.getFeatures().setHeightMetrics(heightQuery.clone().executeAndGetResult(currentPath));
+            long color = colorQuery.clone().executeAndGetResult(currentPath);
             dataFile.getFeatures().setColorMetrics(color);
         }
         return 1;

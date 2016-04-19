@@ -302,9 +302,9 @@ public class QueryList {
         }).collect(Collectors.toList());
     }
 
-    public synchronized  List<ImportDiscussion> getAllDissussionImport(List<JavaImport> javaImport) throws SQLException {
-        List<ImportDiscussion> importDsicussions = QueryList.getInstance().gelAllImportFromDiscussion();
-        return importDsicussions.parallelStream().filter(y -> {
+    public synchronized  List<ImportDiscussion> getAllDiscussionImport(List<JavaImport> javaImport) throws SQLException {
+        List<ImportDiscussion> importDiscussions = QueryList.getInstance().gelAllImportFromDiscussion();
+        return importDiscussions.parallelStream().filter(y -> {
             long s = javaImport.parallelStream().filter(x -> {
                         String sToTest = y.packageDiscussion.replace(".*", "");
                         return x.json.name.indexOf(sToTest) != -1;

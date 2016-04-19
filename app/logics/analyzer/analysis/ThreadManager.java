@@ -13,7 +13,7 @@ public class ThreadManager {
     private static ThreadManager threadManager = new ThreadManager();
 
     private final ExecutorService scheduler =
-            Executors.newFixedThreadPool(1);
+            Executors.newFixedThreadPool(4);
     private ThreadManager(){
 
     }

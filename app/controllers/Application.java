@@ -7,11 +7,6 @@ import logics.models.db.*;
 import logics.models.query.QueryGetAllRepository;
 import logics.models.query.QueryList;
 import logics.pipeline.PipelineManager;
-import logics.pipeline.analayser.AnalyserHandler;
-import logics.pipeline.analayser.AnalyserHandlerParam;
-import logics.pipeline.storing.StoreHandler;
-import logics.pipeline.storing.StoreHandlerParam;
-import play.Logger;
 import play.libs.Json;
 import play.mvc.Controller;
 import play.mvc.Result;
@@ -23,7 +18,6 @@ import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.sql.SQLException;
 import java.util.*;
-import java.util.stream.Collector;
 import java.util.stream.Collectors;
 
 public class Application extends Controller {
@@ -156,7 +150,7 @@ public class Application extends Controller {
         try {
             String path = request().body().asJson().get("path").asText();
             JavaFile jf = QueryList.getInstance().getJavaFileByPath(path).orElseThrow(() -> new SQLnoResult());
-            List<ImportDiscussion> javaImports = QueryList.getInstance().getAllDissussionImport(QueryList.getInstance().getAllNonLocalImport(jf.id, jf.repositoryVersionId));
+            List<ImportDiscussion> javaImports = QueryList.getInstance().getAllDiscussionImport(QueryList.getInstance().getAllNonLocalImport(jf.id, jf.repositoryVersionId));
 
             final List<String> allJavaMethods  = QueryList.getInstance().getAllJavaMethodOfRepositoryVersion(jf.repositoryVersionId);
             final List<String> currentMethods =  QueryList.getInstance().getAllJavaMethodFormPath(path);

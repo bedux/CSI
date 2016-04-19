@@ -11,7 +11,7 @@ import java.util.stream.Collectors;
 
 public class CountingExternalPackage implements  IComputeAttributeContainer {
     @Override
-    public long executeAndGetResult(String path) {
+    public  long executeAndGetResult(String path) {
         try {
             JavaFile jf = QueryList.getInstance().getJavaFileByPath(path).orElseThrow(()->new SQLnoResult());
             final List<JavaImport> nonLocalImport =  QueryList.getInstance().getAllNonLocalImport(jf.id,jf.repositoryVersionId);
