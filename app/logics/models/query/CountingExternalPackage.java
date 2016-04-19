@@ -15,13 +15,11 @@ public class CountingExternalPackage implements  IComputeAttributeContainer {
         try {
             JavaFile jf = QueryList.getInstance().getJavaFileByPath(path).orElseThrow(()->new SQLnoResult());
             final List<JavaImport> nonLocalImport =  QueryList.getInstance().getAllNonLocalImport(jf.id,jf.repositoryVersionId);
-            final List<JavaImport> importDsicussions =  QueryList.getInstance().getAllDiscussedJavaImport(nonLocalImport);
-            final List<StackOFDiscussion> discussionReleatedToImport = QueryList.getInstance().getGitDiscussionFromImportDiscussion(QueryList.getInstance().getAllDissussionImport(importDsicussions));
+            final List<JavaImport> importDiscussions =  QueryList.getInstance().getAllDiscussedJavaImport(nonLocalImport);
 
             final List<String> allJavaMethods  = QueryList.getInstance().getAllJavaMethodOfRepositoryVersion(jf.repositoryVersionId);
-            final List<String> javaMethods = QueryList.getInstance().getAllJavaMethodFormPath(path).stream().distinct().filter(x -> !allJavaMethods.contains(x)).collect(Collectors.toList());
+            final List<String> javaMethods = QueryList.getInstance().getAllJavaMethodFormPath(path).stream().distinct().filter(x -> !allJavaMethods.stream().anyMatch(y -> y.equals(x))).collect(Collectors.toList());
             final List<MethodDiscussed> discussedMethod = QueryList.getInstance().getAllMethodDiscussed(javaMethods);
-            final List<StackOFDiscussion> discussionsReleatedToMethodName = QueryList.getInstance().getAllDiscussionHavingMethodName(javaMethods);
 
 
 
@@ -34,7 +32,7 @@ public class CountingExternalPackage implements  IComputeAttributeContainer {
 
             float percJavaImportCoverage;
             if(nonLocalImport.size()>0){
-                percJavaImportCoverage  =  (((float)(importDsicussions.size()) / (float)(nonLocalImport.size()))*100f);
+                percJavaImportCoverage  =  (((float)(importDiscussions.size()) / (float)(nonLocalImport.size()))*100f);
             }else{
                 percJavaImportCoverage = 100;
             }

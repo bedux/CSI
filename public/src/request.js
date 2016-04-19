@@ -61,14 +61,16 @@ module.exports = {
                         for(var i in jsonData){
                             var row = $('<tr></tr>');
                             var current = i;
-                            current = current.replace(".json","");
-                            current = current.substring(current.lastIndexOf("/")+1);
-                            current = "http://stackoverflow.com/questions/"+current;
-                            var column = $('<td></td>').append($('<a  href="'+current+'" target="_blank"></a>').text(current));
+
+                            var column = $('<td></td>').text(current);
                             row.append(column);
                             var c = $('<td></td>');
                             for(var o in jsonData[i]){
-                                var column = $('<span></span>').text(jsonData[i][o]+" | ");
+                                var c1 = jsonData[i][o];
+                                c1 = c1.replace(".json","");
+                                c1 = c1.substring(c1.lastIndexOf("/")+1);
+                                c1 = "http://stackoverflow.com/questions/"+c1;
+                                var column = $('<span></span>').append($('<a href=" '+c1+' " target="_blank"></a>').text(c1+"  "));
                                 c.append(column)
                             }
                             row.append(c);

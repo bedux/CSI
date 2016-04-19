@@ -160,7 +160,8 @@ public class Application extends Controller {
 
             final List<String> allJavaMethods  = QueryList.getInstance().getAllJavaMethodOfRepositoryVersion(jf.repositoryVersionId);
             final List<String> currentMethods =  QueryList.getInstance().getAllJavaMethodFormPath(path);
-            final List<String> javaMethods =currentMethods.stream().distinct().filter(x -> !allJavaMethods.contains(x)).collect(Collectors.toList());
+            final List<String> javaMethods =currentMethods.stream().distinct().filter(x -> !allJavaMethods.stream().anyMatch(y -> y.equals(x))).collect(Collectors.toList());
+            javaMethods.forEach(System.out::println);
             final HashMap<String,List<String>> resul = new HashMap<>();
 
             javaMethods.stream().forEach(x -> {
@@ -169,10 +170,10 @@ public class Application extends Controller {
                            add(x);
                        }});
                        sovfd.forEach(z->{
-                           if(resul.containsKey(z.packageDiscussion)){
-                             resul.get(z.packageDiscussion).add(x);
+                           if(resul.containsKey(x)){
+                             resul.get(x).add(z.packageDiscussion);
                            }else{
-                               resul.put(z.packageDiscussion,new ArrayList<String>(){{add(x);}});
+                               resul.put(x,new ArrayList<String>(){{add(z.packageDiscussion);}});
                            }
                        });
 
@@ -187,10 +188,10 @@ public class Application extends Controller {
                         add(x);
                     }});
                     sovfd.forEach(z->{
-                        if(resul.containsKey(z.packageDiscussion)){
-                            resul.get(z.packageDiscussion).add(x.packageDiscussion);
+                        if(resul.containsKey(x)){
+                            resul.get(x.packageDiscussion).add(z.packageDiscussion);
                         }else{
-                            resul.put(z.packageDiscussion,new ArrayList<String>(){{add(x.packageDiscussion);}});
+                            resul.put(x.packageDiscussion,new ArrayList<String>(){{add(z.packageDiscussion);}});
                         }
                     });
 
