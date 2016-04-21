@@ -90,6 +90,13 @@ public class DatabaseManager {
         }
     }
 
+    /**
+     * Make a save query
+     * @param query make the current query
+     * @param values apply the following parameters
+     * @return the id of the saved element
+     * @throws SQLException
+     */
     public synchronized int makeSaveQuery(String query, HashMap<Integer, Object> values) throws SQLException {
         Connection connection = DB.getConnection();
        try {
@@ -110,7 +117,14 @@ public class DatabaseManager {
     }
 
 
-
+    /**
+     *
+     * @param connection the current connection
+     * @param query the current query
+     * @param values the current params
+     * @return the PreparedStatement with the new values
+     * @throws SQLException
+     */
     private synchronized PreparedStatement buildPreparedStatement(Connection connection, String query, HashMap<Integer, Object> values) throws SQLException {
 
         PreparedStatement preparedStatement = connection.prepareStatement(query);

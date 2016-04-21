@@ -15,7 +15,7 @@ public interface VersionedSystem {
 
     public List<VersionBranch> getBranch();
 
-    public void checkoutRevison(VersionCommit commitInfo);
+    public void checkoutRevision(VersionCommit commitInfo);
 
     String getCurrentVersion();
 

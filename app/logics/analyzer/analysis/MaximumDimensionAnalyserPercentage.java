@@ -4,7 +4,7 @@ import interfaces.Analyser;
 import interfaces.Component;
 import logics.models.tools.MaximumMinimumData;
 
-public class MaximumDimensionAnalyser implements Analyser<MaximumMinimumData> {
+public class MaximumDimensionAnalyserPercentage implements Analyser<MaximumMinimumData> {
 
     /***
      *
@@ -18,10 +18,8 @@ public class MaximumDimensionAnalyser implements Analyser<MaximumMinimumData> {
             return new MaximumMinimumData(component.getFeatures().getWidthMetrics(), component.getFeatures().getHeightMetrics(), component.getFeatures().getDepthMetrics(), component.getFeatures().getColorMetrics());
         }
         MaximumMinimumData[] streamResult = component.getComponentList().parallelStream().map((x) ->
-                        x.applyFunction((new MaximumDimensionAnalyser())::analysis)
+                        x.applyFunction((new MaximumDimensionAnalyserPercentage())::analysis)
         ).toArray(x -> new MaximumMinimumData[x]);
-
-
 
         MaximumMinimumData myMax = streamResult[0];
         for (int i = 1; i < streamResult.length; i++) {
@@ -31,12 +29,12 @@ public class MaximumDimensionAnalyser implements Analyser<MaximumMinimumData> {
             myMax.setOnlyIfMaxMinDepth(mh.maxDepth);
             myMax.setOnlyIfMaxMinHeight(mh.maxHeight);
             myMax.setOnlyIfMaxMinWidth(mh.maxWidth);
-            myMax.setOnlyIfMaxMinColor(mh.maxColor);
+            myMax.setOnlyIfMaxMinColor(100);
 
             myMax.setOnlyIfMaxMinDepth(mh.minDepth);
             myMax.setOnlyIfMaxMinHeight(mh.minHeight);
             myMax.setOnlyIfMaxMinWidth(mh.minWidth);
-            myMax.setOnlyIfMaxMinColor(mh.minColor);
+            myMax.setOnlyIfMaxMinColor(0);
 
         }
         return myMax;

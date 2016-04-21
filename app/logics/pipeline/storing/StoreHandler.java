@@ -18,6 +18,12 @@ import java.nio.file.Files;
  */
 public class StoreHandler implements Handler<StoreHandlerParam, StoreHandlerResult> {
 
+    /**
+     * This Handler has the goal to store all the file in the repository in the database.
+     * @param param The StoreHandlerParam parameter
+     * @return StoreHandlerResult
+     */
+
     @Override
     public StoreHandlerResult process(StoreHandlerParam param) {
         String path = Definitions.repositoryPath;
@@ -62,17 +68,18 @@ public class StoreHandler implements Handler<StoreHandlerParam, StoreHandlerResu
                 }
             });
         } catch (Exception e1) {
-
             throw new CustomException(e1);
-
-        } finally {
-//            param.repositoryVersion.setnumOfFile(param.nOfFile);
-//            param.repositoryVersion.update();
         }
         return new StoreHandlerResult(param.repositoryVersion);
     }
 
 
+    /**
+     *  given a path return a string that has the correct root
+     * @param s the Path
+     * @param repository    Repository id
+     * @return
+     */
     private String clearPath(String s, RepositoryVersion repository) {
         return s.substring(s.indexOf("repoDownload/" + repository.id) + ("repoDownload/").length());
 

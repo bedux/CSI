@@ -29,11 +29,21 @@ public class GitRepo implements VersionedSystem {
     private List<VersionBranch> branches = null;
     private ArrayList<VersionCommit> commits = null;
 
+    /***
+     *
+     * @param repository Constructor
+     */
     public GitRepo(Repository repository) {
         this.repository = repository;
 
     }
 
+
+    /***
+     *
+     * @param name clone the repository and store whith the current na,e
+     * @return
+     */
 
     @Override
     public Definitions.State clone(String name) {
@@ -66,6 +76,10 @@ public class GitRepo implements VersionedSystem {
     }
 
 
+    /**
+     *
+     * @return get all repository Branch
+     */
     @Override
     public List<VersionBranch> getBranch() {
         if (branches != null) return branches;
@@ -79,6 +93,10 @@ public class GitRepo implements VersionedSystem {
         }
     }
 
+    /**
+     *
+     * @return Get all repository Commits
+     */
     @Override
     public List<VersionCommit> getCommit() {
         if (commits != null) return commits;
@@ -95,7 +113,11 @@ public class GitRepo implements VersionedSystem {
         }
     }
 
-    public void checkoutRevison(VersionCommit obj) {
+    /**
+     *
+     * @param obj
+     */
+    public void checkoutRevision(VersionCommit obj) {
         try {
 
             RevCommit data = (RevCommit) obj.getData();
@@ -108,6 +130,10 @@ public class GitRepo implements VersionedSystem {
 
     }
 
+    /**
+     *
+     * @return Get the current version of the system
+     */
     @Override
     public String getCurrentVersion() {
         return getCommit().get(0).getName();

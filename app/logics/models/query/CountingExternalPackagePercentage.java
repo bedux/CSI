@@ -2,14 +2,16 @@ package logics.models.query;
 
 import exception.CustomException;
 import exception.SQLnoResult;
-import logics.models.db.*;
+import logics.models.db.JavaFile;
+import logics.models.db.JavaImport;
+import logics.models.db.MethodDiscussed;
 
 import java.sql.SQLException;
 import java.util.List;
 import java.util.stream.Collectors;
 
 
-public class CountingExternalPackage implements  IComputeAttributeContainer {
+public class CountingExternalPackagePercentage implements  IComputeAttributeContainer {
     @Override
     public  long executeAndGetResult(String path) {
         try {
@@ -25,38 +27,19 @@ public class CountingExternalPackage implements  IComputeAttributeContainer {
 
             float percJavaMethodCoverage;
             if(javaMethods.size()>0) {
-                percJavaMethodCoverage =  ((float) discussedMethod.size());
+                percJavaMethodCoverage =  (((float) discussedMethod.size())/((float) javaMethods.size()))*100f;
             }else{
-                percJavaMethodCoverage = 0;
+                percJavaMethodCoverage = 100;
             }
 
             float percJavaImportCoverage;
             if(nonLocalImport.size()>0){
-                percJavaImportCoverage  =  ((float)(importDiscussions.size()));
+                percJavaImportCoverage  =  (((float)(importDiscussions.size()))/((float) nonLocalImport.size()))*100f;
             }else{
-                percJavaImportCoverage = 0;
+                percJavaImportCoverage = 100;
             }
-//            if (!(percJavaImportCoverage<=100 && percJavaMethodCoverage <=100)){
-//                System.out.println("**************************************");
-//
-//                System.out.println(jf.path);
-//                System.out.println(allJavaMethods.size());
-//                System.out.println(javaMethods.size());
-//                System.out.println(discussedMethod.size());
-//
-//
-//
-//                System.out.println();
-//                javaMethods.stream().map(x -> x + " | ").forEach(System.out::print);
-//                System.out.println();
-//
-//                discussedMethod.stream().map(x->x.packageDiscussion+" | ").forEach(System.out::print);
-//                System.out.println();
-//
-//            }
 
-//
-            return  (long) ((percJavaMethodCoverage+percJavaImportCoverage));
+            return  (long) ((percJavaMethodCoverage+percJavaImportCoverage)/2.0f);
 
 
         } catch (SQLException e){
@@ -73,7 +56,7 @@ public class CountingExternalPackage implements  IComputeAttributeContainer {
         throw new CustomException("Not Implememtded CountingExternalPacking");
     }
     @Override
-    public CountingExternalPackage clone() {
-        return new CountingExternalPackage();
+    public CountingExternalPackagePercentage clone() {
+        return new CountingExternalPackagePercentage();
     }
 }

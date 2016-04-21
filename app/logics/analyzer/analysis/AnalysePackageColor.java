@@ -10,19 +10,13 @@ import logics.models.tools.MaximumMinimumData;
 /**
  * Created by bedux on 03/03/16.
  */
-public class ColoringAnalyser implements Analyser<Integer> {
+public class AnalysePackageColor implements Analyser<Integer> {
 
-    private int max = 0;
-    private MaximumMinimumData maximumMinimumData;
 
-    /***
-     *
-     * @param max tha max remoteness used to compute the package coloring
-     * @param maximumMinimumData the bounding value of teh metrics of the project
-     */
-    public ColoringAnalyser(int max, MaximumMinimumData maximumMinimumData) {
-        this.max = max;
-        this.maximumMinimumData = maximumMinimumData;
+
+
+    public AnalysePackageColor() {
+
     }
 
 
@@ -35,13 +29,13 @@ public class ColoringAnalyser implements Analyser<Integer> {
     @Override
     public Integer analysis(Component component) {
 
-        component.getComponentList().parallelStream().forEach((x) -> x.applyFunction((new ColoringAnalyser(max, maximumMinimumData))::analysis));
+        component.getComponentList().stream().forEach((x) -> x.applyFunction((new AnalysePackageColor())::analysis));
 
         if (component instanceof BinaryFile) {
             computeColor((BinaryFile)component);
         } else if (component instanceof DataFile) {
             computeColor((DataFile) component);
-        } else if (component instanceof logics.analyzer.Package) {
+        } else if (component instanceof Package) {
             computeColor((Package) component);
         }
         return 0;
@@ -52,16 +46,7 @@ public class ColoringAnalyser implements Analyser<Integer> {
      * @param packages The Component
      */
     private void computeColor(Package packages) {
-
-        if (packages.getFeatures().getRemoteness() == 0) {
-
-            packages.getFeatures().setColor(-1);
-            packages.getFeatures().setBuildingType(4);
-        } else {
-            float color = packages.getFeatures().getRemoteness() / ((float) max);
-            packages.getFeatures().setColor(color + 0.01f);
-
-        }
+            packages.getFeatures().setColorMetrics(packages.getComponentList().stream().map(x->x.getFeatures().getColorMetrics()).reduce(0.0f,(x,y)->x+y) / (float)packages.getComponentList().size());
     }
 
     /**
@@ -70,17 +55,6 @@ public class ColoringAnalyser implements Analyser<Integer> {
      */
     private void computeColor(DataFile dataFile) {
 
-        if (dataFile.getFeatures().getPath().indexOf(".java") != dataFile.getFeatures().getPath().length() - 5) {
-
-            dataFile.getFeatures().setColor(-1);
-            dataFile.getFeatures().setBuildingType(1);
-
-        } else {
-            
-            dataFile.getFeatures().setColor(dataFile.getFeatures().getColorMetrics() / maximumMinimumData.maxColor);
-            dataFile.getFeatures().setBuildingType(2);
-
-        }
 
 
     }

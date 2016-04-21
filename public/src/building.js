@@ -106,6 +106,7 @@ function hsvToRgb(h, s, v) {
 
 function createBuilding(scene, position, data,parent,lp) {
 
+    if(data.buildingType==8) return;
     let cylinder;
 
     scene.data[data.id+ "_model"] = data;
@@ -128,11 +129,18 @@ function createBuilding(scene, position, data,parent,lp) {
 
 
     }else{
-            if(data.buildingType==2){
-                var color = hsvToRgb((data.color)*240,100,100);
-                material.setColor3("color",   new BABYLON.Color3(color[0],color[1],color[2]));
+        console.log(data.buildingType);
+        if(data.buildingType==2){
+                material.setColor3("color",   new BABYLON.Color3(0,0,(data.color)));
 
             }
+        else if(data.buildingType==3){
+            data.color = 1-data.color;
+            var color = hsvToRgb((data.color)*240,100,100);
+            material.setColor3("color",   new BABYLON.Color3(color[0],color[1],color[2]));
+
+        }
+
             else{
                 if(data.color == 0){
                     material.setColor3("color",   new BABYLON.Color3(0.6,0.6,0.6));

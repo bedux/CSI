@@ -47,40 +47,13 @@ public class AnalyserHandler implements Handler<AnalyserHandlerParam, AnalyserHa
 
     @Override
     public AnalyserHandlerResult process(AnalyserHandlerParam param) {
-//        List<logics.models.db.File> components;
-//        try {
-//            components = QueryList.getInstance().getFileByRepositoryVersion(param.repositoryVersion.id);
-//        } catch (Exception e) {
-//            throw new CustomException(e);
-//        }
-//
-//
-//        File fileRoot = new File(Definitions.repositoryPath + param.repositoryVersion.id);
-//        Package root = new Package(new Features("root", param.repositoryVersion.id.toString(), fileRoot.toPath()));
-//        for (logics.models.db.File component : components) {
-//            File helper = new File(Definitions.repositoryPath + component.path);
-//            String s = clearPath(helper.toPath().normalize().toString(), param.repositoryVersion);
-//            String dir = s.substring(0, s.indexOf('/'));
-//            String remainName = s.substring(s.indexOf('/') + 1);
-//            root.add(dir, helper.toPath(), remainName);
-//        }
-//
-//
-//        root.applyFunction(new ASTraversAndStore()::analysis).join();
-
-
-        return  new AnalyserHandlerResult(computeCity(param.root, param.metricsToCompute.getWidth(), param.metricsToCompute.getHeight(), param.metricsToCompute.getColor(), param.metricsToCompute.getMetricType().replaceAll(" ", "_") + param.repositoryVersion.id, param.metricsToCompute.repositoryRender(param.repositoryVersion)));
-
-
-
+        return  new AnalyserHandlerResult(computeCity(param.root, param.metricsToCompute.getWidth(), param.metricsToCompute.getHeight(), param.metricsToCompute.getColor(), param.metricsToCompute.getMetricType().replaceAll(" ", "_") + param.repositoryVersion.id, param.metricsToCompute.repositoryRender(param.repositoryVersion),param));
     }
 
-    private String clearPath(String s, RepositoryVersion rpv) {
-        return s.substring(s.indexOf(Definitions.repositoryPathABS + rpv.id) + (Definitions.repositoryPathABS).length());
 
-    }
 
-    private JsonNode computeCity(Package root,IComputeAttributeContainer width,IComputeAttributeContainer height,IComputeAttributeContainer color,String resultName,RepositoryRender repoRender){
+    private JsonNode computeCity(Package root,IComputeAttributeContainer width,IComputeAttributeContainer height,IComputeAttributeContainer color,String resultName,RepositoryRender repoRender,AnalyserHandlerParam param){
+
         Logger.info("Load data");
         try {
             root.applyFunction(new LoadFromDatabase(width, height, color)::analysis).get();
@@ -90,9 +63,17 @@ public class AnalyserHandler implements Handler<AnalyserHandlerParam, AnalyserHa
             throw new CustomException();
         }
 
+        MaximumMinimumData mmd;
 
-        Logger.info("Maximum minimum ");
-        MaximumMinimumData mmd = root.applyFunction(new MaximumDimensionAnalyser()::analysis);
+
+
+        if(!param.percentage) {
+            Logger.info("Maximum minimum ");
+             mmd = root.applyFunction(new MaximumDimensionAnalyser()::analysis);
+        }else{
+             mmd = root.applyFunction(new MaximumDimensionAnalyserPercentage()::analysis);
+        }
+
 
         Logger.info("Adjusting Size");
         root.applyFunction(new AdjustSizeAnalyser(mmd)::analysis);
@@ -103,12 +84,36 @@ public class AnalyserHandler implements Handler<AnalyserHandlerParam, AnalyserHa
         Logger.info("Depth analysis");
         int max = root.applyFunction(new DepthAnalyser()::analysis);
 
+
+        if(param.isOnlyPackage) {
+            root.applyFunction(new AnalysePackageColor()::analysis);
+        }
+
+
+
         Logger.info("Maximum Minimum remoteness ");
-        mmd = root.applyFunction(new MaximumDimensionAnalyser()::analysis);
+        if(!param.percentage) {
+            mmd = root.applyFunction(new MaximumDimensionAnalyser()::analysis);
+        }else{
+            mmd = root.applyFunction(new MaximumDimensionAnalyserPercentage()::analysis);
+        }
 
-        Logger.info("Coloring");
-        root.applyFunction(new ColoringAnalyser(max, mmd)::analysis);
 
+
+        if(!param.percentage && !param.isOnlyPackage) {
+
+            root.applyFunction(new ColoringAnalyser(max, mmd)::analysis);
+
+        }else if(!param.isOnlyPackage){
+
+            root.applyFunction(new ColoringAnalyserPercentage(max, mmd)::analysis);
+
+        }else{
+            float maxx =   root.applyFunction(new PackageColorAnalyser()::analysis);
+            System.out.println("maximum is >"+maxx);
+            root.applyFunction(new ColoringAnalyserOnlyPackage(maxx, mmd)::analysis);
+
+        }
 
         Logger.info("Save result");
         JsonNode json = Json.toJson(root.getRenderJSON());

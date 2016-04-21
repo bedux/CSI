@@ -15,7 +15,10 @@ public class AnalyserHandlerParam implements HandlerParam {
     public final RepositoryVersion repositoryVersion;
     public final Package root;
     public final MetricsCharacteristics metricsToCompute;
+    public boolean percentage = false;
+    public boolean isOnlyPackage = false;
 //
+
 //    public AnalyserHandlerParam(@NotNull RepositoryVersion repositoryVersion) {
 //        this.repositoryVersion = repositoryVersion;
 //    }

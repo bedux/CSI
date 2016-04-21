@@ -14,35 +14,32 @@ public class BinaryTreePack {
     }
 
 
+    /***
+     *
+     * @param component Insert the component
+     */
     public void insert(Component component) {
         Node toInsert = root.insert(component);
         if (toInsert != null) {
             toInsert = toInsert.split(component);
             toInsert.assign(component);
-//
-//            component.getFeatures().setWidth(toInsert.getBoundingBox().getWidth());
-//            component.getFeatures().setDepth(toInsert.getBoundingBox().getDepth());
-
-
         } else {
             resize(component);
             Node n = root.insert(component);
             if (n != null) {
                 n = n.split(component);
                 n.assign(component);
-
-//                component.getFeatures().setWidth(n.getBoundingBox().getWidth());
-//                component.getFeatures().setDepth(n.getBoundingBox().getDepth());
-
-            } else {
             }
-
-
         }
 
 
     }
 
+    /***
+     *
+     * @param c resize the given component
+     * @return  teh root node
+     */
     public Node resize(Component c) {
         BoundingBox target = c.getFeatures().getBoundingBox();
 
@@ -68,20 +65,25 @@ public class BinaryTreePack {
 
     }
 
-    public Node growBottom(BoundingBox bb) {
+    /**
+     * Grow Bottom by the given size
+     * @param boxSize
+     * @return
+     */
+    public Node growBottom(BoundingBox boxSize) {
         Node helper = root;
         root = new Node(new BoundingBox(
                 0,
                 0,
                 root.getBoundingBox().getWidth(),
-                root.getBoundingBox().getButton() + bb.getDepth()));
+                root.getBoundingBox().getButton() + boxSize.getDepth()));
 
 
         root.setbottom(new Node(new BoundingBox(
                 0,
                 helper.getBoundingBox().getDepth(),
                 helper.getBoundingBox().getWidth(),
-                bb.getDepth(), 1
+                boxSize.getDepth(), 1
         )));
 
         root.setRight(helper);
@@ -90,25 +92,26 @@ public class BinaryTreePack {
         return root;
     }
 
-    public Node growRight(BoundingBox bb) {
+    /**
+     * Grow right by the given size
+     * @param boxSize the box size
+     * @return
+     */
+    public Node growRight(BoundingBox boxSize) {
         Node helper = root;
         root = new Node(new BoundingBox(0,
                 0,
-                root.getBoundingBox().getRight() + bb.getWidth(),
+                root.getBoundingBox().getRight() + boxSize.getWidth(),
                 root.getBoundingBox().getDepth()));
 
         root.setRight(new Node(new BoundingBox(
                 helper.getBoundingBox().getWidth(),
                 0,
-                bb.getWidth(),
+                boxSize.getWidth(),
                 helper.getBoundingBox().getDepth(), 1)));
 
         root.setbottom(helper);
 
-//        System.out.println(bb+ " current 1 ");
-//        System.out.println(root.getBoundingBox()+ " current 1 ");
-//        System.out.println(root.getBottom().getBoundingBox()+ " Button ");
-//        System.out.println(root.getRight().getBoundingBox()+ " Right ");
         root.assign();
         return root;
 
