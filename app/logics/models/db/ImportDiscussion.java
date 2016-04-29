@@ -2,17 +2,35 @@ package logics.models.db;
 
 import logics.databaseUtilities.IDatabaseClass;
 import logics.databaseUtilities.IDatabaseField;
-import logics.models.db.information.MethodInfoJSON;
+import logics.databaseUtilities.ManyToOne;
 
 /**
- * Created by bedux on 10/04/16.
+ * Created by bedux on 29/04/16.
  */
-@IDatabaseClass(tableName = "import")
+@IDatabaseClass(tableName = "import_discussion")
+
 public class ImportDiscussion {
-    @IDatabaseField(columnName = "id", save = false, isID = true)
-    public long id;
+
+    @IDatabaseField(columnName = "idd", save = false, isID = true)
+    public long idd;
+
+    @IDatabaseField(columnName = "idi", save = false, isID = true)
+    public long idi;
 
 
-    @IDatabaseField(columnName = "package")
-    public String packageDiscussion;
+    private StackOFDiscussion discussion;
+    @ManyToOne(columnName = "discussion",columnNameRefTable = "idd")
+    public StackOFDiscussion getDiscussionConcrete() {
+        return discussion;
+    }
+
+
+    private ImportTable importT;
+    @ManyToOne(columnName = "importT",columnNameRefTable = "idi")
+    public ImportTable getImportConcrete() {
+        return importT;
+    }
+
+
 }
+

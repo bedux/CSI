@@ -15,7 +15,7 @@ GET     /getAllRepository                           controllers.Application.getR
 
 
 
-GET     /renderRepo/:id/:version                  controllers.Application.renderRepo(id:String,version:Integer)
+GET     /renderRepo/:id/:version                  controllers.Application.renderRepo(id:String,version:Long)
 
 # Map static resources from the /public folder to the /assets URL path
 GET     /assets/*file               controllers.Assets.at(path="/public", file)

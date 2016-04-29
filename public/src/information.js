@@ -1,6 +1,8 @@
 /**
  * Created by bedux on 21/03/16.
  */
+"use strict"
+
 module.exports = {
 
     idToText : {

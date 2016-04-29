@@ -1,9 +1,6 @@
 package logics.analyzer.analysis;
 
-import java.util.concurrent.Executor;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.*;
 
 /**
  * Created by bedux on 15/04/16.
@@ -13,7 +10,16 @@ public class ThreadManager {
     private static ThreadManager threadManager = new ThreadManager();
 
     private final ExecutorService scheduler =
-            Executors.newFixedThreadPool(8);
+            Executors.newFixedThreadPool(10);
+    private final ExecutorService schedulerSingle =
+            Executors.newFixedThreadPool(10);
+
+    public ForkJoinPool getForkJoinPool() {
+        return forkJoinPool;
+    }
+
+    private final ForkJoinPool forkJoinPool = new ForkJoinPool(2);
+
     private ThreadManager(){
 
     }
@@ -22,9 +28,14 @@ public class ThreadManager {
         return threadManager;
     }
 
-    public Executor getExecutor(){
+    public ExecutorService getExecutor(){
         return scheduler;
     }
+
+    public Executor getExecutorSingle(){
+        return schedulerSingle;
+    }
+
 
 
 }

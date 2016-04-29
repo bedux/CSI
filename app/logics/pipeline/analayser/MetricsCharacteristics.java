@@ -13,14 +13,14 @@ import logics.models.query.QueryList;
 public class MetricsCharacteristics {
 
 private final    IComputeAttributeContainer width ;
-    private final    IComputeAttributeContainer height ;
+    private final  IComputeAttributeContainer height ;
     private final IComputeAttributeContainer color ;
     private final String metricType;
 
     public MetricsCharacteristics(IComputeAttributeContainer width, IComputeAttributeContainer height, IComputeAttributeContainer color, String metricType) {
-        this.width = width;
-        this.height = height;
-        this.color = color;
+        this.width = width.clone();
+        this.height = height.clone();
+        this.color = color.clone();
         this.metricType = metricType;
     }
 
@@ -42,9 +42,9 @@ private final    IComputeAttributeContainer width ;
 
     public RepositoryRender repositoryRender(RepositoryVersion repositoryVersion){
         RepositoryRender repositoryRender = new RepositoryRender();
-        repositoryRender.repositoryId = repositoryVersion.repositoryId;
-        repositoryRender.repositoryVersion = repositoryVersion.id;
-        repositoryRender.metricType = metricType;
+        repositoryRender.setRepositoryVersionConcrete(repositoryVersion);
+        repositoryRender.setrepositoryConcrete(repositoryVersion.getRepository());
+        repositoryRender.setMetricType( metricType);
         return  repositoryRender;
     }
 }

@@ -3,6 +3,7 @@ package logics.models.query;
 /**
  * Created by bedux on 29/03/16.
  */
+@Deprecated
 public class ComputeWithSingleQuery implements IComputeAttributeContainer {
 
     QueryWithPath countQuery;

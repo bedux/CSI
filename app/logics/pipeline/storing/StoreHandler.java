@@ -3,6 +3,7 @@ package logics.pipeline.storing;
 import exception.CustomException;
 import interfaces.Handler;
 import logics.Definitions;
+import logics.databaseCache.DatabaseModels;
 import logics.databaseUtilities.SaveClassAsTable;
 import logics.models.db.JavaFile;
 import logics.models.db.information.JavaFileInformation;
@@ -28,7 +29,7 @@ public class StoreHandler implements Handler<StoreHandlerParam, StoreHandlerResu
     public StoreHandlerResult process(StoreHandlerParam param) {
         String path = Definitions.repositoryPath;
 
-        path += param.repositoryVersion.id;
+        path += param.repositoryVersion.getId();
         try {
             Files.walk(FileSystems.getDefault().getPath(path)).forEach((x) -> {
                 String s = clearPath(x.normalize().toString(), param.repositoryVersion);
@@ -36,14 +37,20 @@ public class StoreHandler implements Handler<StoreHandlerParam, StoreHandlerResu
 
                 if (Files.isRegularFile(x) && fn.indexOf("java") == 0) {
 
-                    JavaFile javaFile = new JavaFile();
-                    javaFile.path = s;
-                    javaFile.name = x.getFileName().toString();
-                    javaFile.json = new JavaFileInformation();
-                    javaFile.repositoryVersionId = param.repositoryVersion.id;
+//                    JavaFile javaFile = new JavaFile();
+
+
+                    JavaFile javaFile = DatabaseModels.getInstance().getEntity(JavaFile.class).get();
+                    javaFile.setPath(s);
+                    javaFile.setName(x.getFileName().toString());
+                    param.repositoryVersion.getListOfFile();
+
+                    javaFile.setJavaFileInformation( new JavaFileInformation());
+
+                    param.repositoryVersion.addFile(javaFile);
                     try {
-                        int id = new SaveClassAsTable().save(javaFile);
-                        Logger.info("Saved as Java File " + id + " " + s);
+                        long id = javaFile.getId();
+                        //Logger.info("Saved as Java File " + id + " " + s);
                     } catch (Exception e) {
 
                         throw new CustomException(e);
@@ -51,16 +58,15 @@ public class StoreHandler implements Handler<StoreHandlerParam, StoreHandlerResu
 
                 } else if (Files.isRegularFile(x)) {
 
-                    TextFile textFile = new TextFile();
-                    textFile.path = s;
-                    textFile.name = x.getFileName().toString();
-                    textFile.repositoryVersionId = param.repositoryVersion.id;
-                    textFile.json = new JavaFileInformation();
-
+                    TextFile textFile = DatabaseModels.getInstance().getEntity(TextFile.class).get();
+                    textFile.setPath( s);
+                    textFile.setName( x.getFileName().toString());
+                    param.repositoryVersion.getListOfFile();
+                    param.repositoryVersion.addFile(textFile);
                     try {
 
-                        int id = new SaveClassAsTable().save(textFile);
-                        Logger.info("Saved as Regular file" + id + " " + s);
+                        long id = textFile.getId();
+                       // Logger.info("Saved as Regular file" + id + " " + s);
                     } catch (Exception e) {
                         throw new CustomException(e);
                     }
@@ -68,6 +74,7 @@ public class StoreHandler implements Handler<StoreHandlerParam, StoreHandlerResu
                 }
             });
         } catch (Exception e1) {
+
             throw new CustomException(e1);
         }
         return new StoreHandlerResult(param.repositoryVersion);
@@ -81,7 +88,7 @@ public class StoreHandler implements Handler<StoreHandlerParam, StoreHandlerResu
      * @return
      */
     private String clearPath(String s, RepositoryVersion repository) {
-        return s.substring(s.indexOf("repoDownload/" + repository.id) + ("repoDownload/").length());
+        return s.substring(s.indexOf("repoDownload/" + repository.getId()) + ("repoDownload/").length());
 
     }
 }

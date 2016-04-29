@@ -1,10 +1,10 @@
 @import logics.models.db.RepositoryRender
 @(repoInfo: RepositoryRender)
-@if(repoInfo.localPath) {
-    <a href="@routes.Application.renderRepo(repoInfo.localPath, repoInfo.repositoryVersion)" class="list-group-item">
-        <span class="badge">@repoInfo.numberOfFileToDispaly</span>
-        @repoInfo.nameToDisplay
-        @repoInfo.metricType
+@if(repoInfo.getLocalPath()) {
+    <a href="@routes.Application.renderRepo(repoInfo.getLocalPath(), repoInfo.getRepositoryVersion().getId)" class="list-group-item">
+        <span class="badge">@repoInfo.getNumberOfFileToDispaly</span>
+        @repoInfo.getNameToDisplay
+        @repoInfo.getMetricType
     </a>
 }
 

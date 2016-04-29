@@ -21,11 +21,6 @@ public class  MethodInfoJSON {
     //TODO
     /*
 
-            Cambiare colori non in scala 1 - 100 ma 1 massimo
-            Cambiare colori non HSV a scala di blu
-            colorare solo package cazzo
-            Cambiare metrica on flu
-
      */
 
 }

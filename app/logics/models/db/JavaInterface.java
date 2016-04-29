@@ -2,6 +2,8 @@ package logics.models.db;
 
 import logics.databaseUtilities.IDatabaseClass;
 import logics.databaseUtilities.IDatabaseField;
+import logics.databaseUtilities.ManyToOne;
+import logics.databaseUtilities.Setter;
 import logics.models.db.information.MethodInfoJSON;
 
 
@@ -10,10 +12,28 @@ public class JavaInterface extends JavaSourceObject {
 
 
     @IDatabaseField(columnName = "id", save = false, isID = true)
-    public long id;
+    private long id;
 
+
+
+    public MethodInfoJSON getJson() {
+        return json;
+    }
+
+    @Setter
+    public void setJson(MethodInfoJSON json) {
+        this.json = json;
+    }
 
     @IDatabaseField(columnName = "information", fromJSON = true)
-    public MethodInfoJSON json;
+    private MethodInfoJSON json;
 
+
+
+  
+
+    @Override
+    public long getId() {
+        return id;
+    }
 }

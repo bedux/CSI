@@ -3,6 +3,7 @@ package logics.databaseUtilities;
 import com.fasterxml.jackson.databind.JsonNode;
 import exception.CustomException;
 import logics.DatabaseManager;
+import logics.models.db.BaseTable;
 import org.h2.engine.Database;
 import org.postgresql.util.PGobject;
 import play.libs.Json;
@@ -55,7 +56,7 @@ public class SaveClassAsTable {
      * @param <T> the class element to be saved and  return
      * @return the saved element
      */
-    public synchronized <T> Integer save(T object) {
+    public synchronized <T> Long save(T object) {
         try {
             IDatabaseClass annotationClass = object.getClass().getAnnotation(IDatabaseClass.class);
             checkIfIsAValidClass(annotationClass);
@@ -64,6 +65,7 @@ public class SaveClassAsTable {
             HashMap<Integer, Object> param = new HashMap<>();
             int i = 1;
             for (Field f : getInheritedFields(object.getClass())) {
+                f.setAccessible(true);
                 IDatabaseField idbc = f.getAnnotation(IDatabaseField.class);
                 if (idbc != null && idbc.save() && f.get(object) != null) {
                     insertQuery += " " + idbc.columnName() + ",";
@@ -112,6 +114,7 @@ public class SaveClassAsTable {
      * @throws InstantiationException
      */
     public synchronized <T> void update(T object) throws IllegalAccessException, SQLException, InstantiationException {
+
         IDatabaseClass annotationClass = object.getClass().getAnnotation(IDatabaseClass.class);
         checkIfIsAValidClass(annotationClass);
 
@@ -121,11 +124,13 @@ public class SaveClassAsTable {
         int i = 1;
 
         for (Field f : getInheritedFields(object.getClass())) {
+            f.setAccessible(true);
+
             IDatabaseField idbc = f.getAnnotation(IDatabaseField.class);
             if (idbc != null && idbc.save()) {
                 insertQuery += " " + idbc.columnName() + " = ";
+                if (idbc.fromJSON() && f.get(object)!=null) {
 
-                if (idbc.fromJSON()) {
                     String json =clear( Json.stringify(Json.toJson(f.get(object))));
                     param.put(i, json);
                     insertQuery += "?::jsonb, ";
@@ -143,7 +148,10 @@ public class SaveClassAsTable {
 
                 }
             } else if (idbc != null && idbc.isID()) {
-                id = f.get(object);
+                if((long)f.get(object)!=0) {
+                    id = f.get(object);
+                }
+
             }
         }
         insertQuery = insertQuery.substring(0, insertQuery.lastIndexOf(","));
@@ -152,6 +160,8 @@ public class SaveClassAsTable {
             insertQuery += " WHERE "+ annotationClass.idName() +" = ?";
             param.put(i, id);
         }
+
+
         DatabaseManager.getInstance().makeUpdateQuery(insertQuery, param);
     }
 

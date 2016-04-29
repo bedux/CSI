@@ -45,8 +45,8 @@ public class QueryContainer<T> {
     public List<T> execute() {
         try {
             return DatabaseManager.getInstance().makeQuery(query, params, resultClass);
-        } catch (Exception e) {
-            throw new CustomException(e);
+        } catch (SQLException e) {
+           throw new CustomException(e);
         }
     }
 

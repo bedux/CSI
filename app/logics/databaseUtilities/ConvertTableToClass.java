@@ -33,10 +33,15 @@ public class ConvertTableToClass {
             IDatabaseField annotation = f.getAnnotation(IDatabaseField.class);
 
             if (annotation!=null && !annotation.fromJSON() && annotation.columnId() == -1) {
+                f.setAccessible(true);
                 f.set(returnValue, getObjectFromColumnIndex(getColumnIndexFromName(annotation.columnName())));
             } else if (annotation!=null && !annotation.fromJSON() && annotation.columnId() != -1) {
+                f.setAccessible(true);
+
                 f.set(returnValue, getObjectFromColumnIndex(annotation.columnId()));
             } else if(annotation!=null ) {
+                f.setAccessible(true);
+
                 PGobject obj = (PGobject) getObjectFromColumnIndex(getColumnIndexFromName(annotation.columnName()));
                 if (obj != null) {
                     f.set(returnValue, Json.fromJson(Json.parse(obj.getValue()), f.getType()));

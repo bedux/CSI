@@ -61,7 +61,6 @@ public class ColoringAnalyserOnlyPackage implements Analyser<Integer> {
 //            packages.getFeatures().setColor(color + 0.01f);
             packages.getFeatures().setBuildingType(2);
 
-        System.out.println(max+" "+packages.getFeatures().getColorMetrics());
         packages.getFeatures().setColor(packages.getFeatures().getColorMetrics()/ max);
 
 //        }
@@ -78,7 +77,6 @@ public class ColoringAnalyserOnlyPackage implements Analyser<Integer> {
             dataFile.getFeatures().setBuildingType(1);
 
         } else {
-            System.out.println(max+" "+dataFile.getFeatures().getColorMetrics());
 
             // dataFile.getFeatures().setColor(dataFile.getFeatures().getColorMetrics()/ maximumMinimumData.maxColor);
             dataFile.getFeatures().setBuildingType(8);

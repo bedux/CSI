@@ -7,11 +7,13 @@ import logics.Definitions;
 import logics.analyzer.Features;
 import logics.analyzer.Package;
 import logics.analyzer.analysis.*;
+import logics.databaseCache.DatabaseModels;
 import logics.databaseUtilities.SaveClassAsTable;
 import logics.models.db.RepositoryRender;
 import logics.models.db.RepositoryVersion;
 import logics.models.query.*;
 import logics.models.tools.MaximumMinimumData;
+import org.h2.engine.Database;
 import play.Logger;
 import play.libs.Json;
 
@@ -47,21 +49,28 @@ public class AnalyserHandler implements Handler<AnalyserHandlerParam, AnalyserHa
 
     @Override
     public AnalyserHandlerResult process(AnalyserHandlerParam param) {
-        return  new AnalyserHandlerResult(computeCity(param.root, param.metricsToCompute.getWidth(), param.metricsToCompute.getHeight(), param.metricsToCompute.getColor(), param.metricsToCompute.getMetricType().replaceAll(" ", "_") + param.repositoryVersion.id, param.metricsToCompute.repositoryRender(param.repositoryVersion),param));
+        DatabaseModels.getInstance().invalidCache();
+        return  new AnalyserHandlerResult(computeCity(param.root, param.metricsToCompute.getWidth(), param.metricsToCompute.getHeight(), param.metricsToCompute.getColor(), param.metricsToCompute.getMetricType().replaceAll(" ", "_") + param.repositoryVersion.getId(), param.metricsToCompute.repositoryRender(param.repositoryVersion),param));
     }
+
+
 
 
 
     private JsonNode computeCity(Package root,IComputeAttributeContainer width,IComputeAttributeContainer height,IComputeAttributeContainer color,String resultName,RepositoryRender repoRender,AnalyserHandlerParam param){
 
         Logger.info("Load data");
+
         try {
             root.applyFunction(new LoadFromDatabase(width, height, color)::analysis).get();
         } catch (InterruptedException e) {
-          throw new CustomException();
+            e.printStackTrace();
         } catch (ExecutionException e) {
-            throw new CustomException();
+            e.printStackTrace();
         }
+
+
+
 
         MaximumMinimumData mmd;
 
@@ -127,7 +136,7 @@ public class AnalyserHandler implements Handler<AnalyserHandlerParam, AnalyserHa
         try (Writer writer = new BufferedWriter(new OutputStreamWriter(
                 new FileOutputStream(Definitions.jsonPath +resultName + ".json"), "utf-8"))) {
             writer.write(Json.stringify(json));
-            repoRender.localPath = ("/assets/data/" + resultName+ ".json");
+            repoRender.setLocalPath( "/assets/data/" + resultName+ ".json");
             new SaveClassAsTable().save(repoRender);
             return  json;
 

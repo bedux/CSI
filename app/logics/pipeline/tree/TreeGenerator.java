@@ -24,16 +24,16 @@ public class TreeGenerator implements Handler<TreeGeneratorHandleParam, TreeGene
     public TreeGeneratorHandlerResult process(TreeGeneratorHandleParam param) {
         List<File> components;
         try {
-            components = QueryList.getInstance().getFileByRepositoryVersion(param.repositoryVersion.id);
+            components = QueryList.getInstance().getFileByRepositoryVersion(param.repositoryVersion.getId());
         } catch (Exception e) {
             throw new CustomException(e);
         }
 
 
-        java.io.File fileRoot = new java.io.File(Definitions.repositoryPath + param.repositoryVersion.id);
-        Package root = new Package(new Features("root", param.repositoryVersion.id.toString(), fileRoot.toPath()));
+        java.io.File fileRoot = new java.io.File(Definitions.repositoryPath + param.repositoryVersion.getId());
+        Package root = new Package(new Features("root", Long.toString(param.repositoryVersion.getId()), fileRoot.toPath()));
         for (logics.models.db.File component : components) {
-            java.io.File helper = new java.io.File(Definitions.repositoryPath + component.path);
+            java.io.File helper = new java.io.File(Definitions.repositoryPath + component.getPath());
             String s = clearPath(helper.toPath().normalize().toString(), param.repositoryVersion);
             String dir = s.substring(0, s.indexOf('/'));
             String remainName = s.substring(s.indexOf('/') + 1);
@@ -50,7 +50,7 @@ public class TreeGenerator implements Handler<TreeGeneratorHandleParam, TreeGene
      * @return remove the absolute path of s
      */
     private String clearPath(String s, RepositoryVersion rpv) {
-        return s.substring(s.indexOf(Definitions.repositoryPathABS + rpv.id) + (Definitions.repositoryPathABS).length());
+        return s.substring(s.indexOf(Definitions.repositoryPathABS + rpv.getId()) + (Definitions.repositoryPathABS).length());
 
     }
 }

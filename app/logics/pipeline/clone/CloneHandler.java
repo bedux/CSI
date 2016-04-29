@@ -3,14 +3,12 @@ package logics.pipeline.clone;
 import exception.CustomException;
 import interfaces.Handler;
 import interfaces.VersionedSystem;
-import logics.DatabaseManager;
+import logics.databaseCache.DatabaseModels;
 import logics.databaseUtilities.SaveClassAsTable;
 import logics.models.db.Repository;
 import logics.models.db.RepositoryVersion;
 import logics.models.query.QueryList;
 import play.Logger;
-
-import java.util.Optional;
 
 /**
  * Created by bedux on 07/03/16.
@@ -21,23 +19,23 @@ public class CloneHandler implements Handler<CloneHandlerParam, CloneHandlerResu
     public CloneHandlerResult process(CloneHandlerParam param) {
 
         Repository repository = new Repository();
-        repository.pwd = param.repoForm.pwd;
-        repository.usr = param.repoForm.user;
-        repository.url = param.repoForm.uri;
-        repository.subversionType = param.repoForm.type;
+        repository.setPwd(param.repoForm.pwd);
+        repository.setUsr(param.repoForm.user);
+        repository.setUrl(param.repoForm.uri);
+        repository.setSubversionType(param.repoForm.type);
         try {
-            int id = new SaveClassAsTable().save(repository);
+            long id = new SaveClassAsTable().save(repository);
             repository =QueryList.getInstance().getById(id, Repository.class).orElseThrow(()->new CustomException("No repository found!"));
-            Logger.info("Save Repository as" + repository.id + "   " + id);
+            Logger.info("Save Repository as" + repository.getId() + "   " + id);
         } catch (Exception e) {
             e.printStackTrace();
             throw new CustomException(e);
         }
 
         RepositoryVersion repositoryVersion = new RepositoryVersion();
-        repositoryVersion.repositoryId = repository.id;
+        repositoryVersion.setRepositoryConcrete(DatabaseModels.getInstance().getEntity(Repository.class,repository.getId()).get());
         try {
-            int id = new SaveClassAsTable().save(repositoryVersion);
+            long id = new SaveClassAsTable().save(repositoryVersion);
             repositoryVersion = QueryList.getInstance().getById(id, RepositoryVersion.class).orElseThrow(()->new CustomException("No repository version found"));
         } catch (Exception e) {
             throw new CustomException(e);
@@ -45,10 +43,9 @@ public class CloneHandler implements Handler<CloneHandlerParam, CloneHandlerResu
 
         VersionedSystem sys = repository.CreateSystem();
         try {
-            sys.clone(Integer.toString(repositoryVersion.id));
+            sys.clone(Long.toString(repositoryVersion.getId()));
         } catch (Exception e) {
 //            repositoryInfo.delete();
-            //TODO
             throw new CustomException(e);
         }
 //        repositoryVersion.setHss(sys.getCurrentVersion());

@@ -54,6 +54,7 @@ public class DatabaseManager {
             while (resultSet.next()) {
                 T result = new ConvertTableToClass(resultSet).convert(resultType);
                 returnedValue.add(result);
+
             }
             preparedStatement.close();
             resultSet.close();
@@ -80,6 +81,7 @@ public class DatabaseManager {
 
             PreparedStatement preparedStatement = buildPreparedStatement(connection, query, values);
             preparedStatement.executeUpdate();
+
             preparedStatement.close();
             connection.close();
 
@@ -97,7 +99,7 @@ public class DatabaseManager {
      * @return the id of the saved element
      * @throws SQLException
      */
-    public synchronized int makeSaveQuery(String query, HashMap<Integer, Object> values) throws SQLException {
+    public synchronized long makeSaveQuery(String query, HashMap<Integer, Object> values) throws SQLException {
         Connection connection = DB.getConnection();
        try {
            PreparedStatement preparedStatement = buildPreparedStatement(connection, query, values);

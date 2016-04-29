@@ -1,6 +1,3 @@
-/**
- * Created by bedux on 26/02/16.
- */
 "use strict"
 var BABYLON = require("babylonjs");
 var materials = {
@@ -118,6 +115,9 @@ function createBuilding(scene, position, data,parent,lp) {
     cylinder.parent = parent;
     updateMaximumPos(position.x+data.width,position.y+data.height,position.z+data.deep);
 
+    if(data.color==NaN){
+        data.color = 0;
+    }
     let material = new BABYLON.ShaderMaterial(data.id+"_texture", scene,"/assets/javascripts/base",
         {
             attributes: ["position","uv","normal"],
@@ -131,22 +131,42 @@ function createBuilding(scene, position, data,parent,lp) {
     }else{
         console.log(data.buildingType);
         if(data.buildingType==2){
-                material.setColor3("color",   new BABYLON.Color3(0,0,(data.color)));
+            var color = hsvToRgb(180+((data.color)*90),100,100);
+
+            material.setColor3("color",   new BABYLON.Color3(color[0],color[1],color[2]));
 
             }
         else if(data.buildingType==3){
-            data.color = 1-data.color;
-            var color = hsvToRgb((data.color)*240,100,100);
+         //   data.color = 1-data.color; //Invert
+            //var color = hsvToRgb((data.color)*90,100,100);
+            var color = hsvToRgb(180+((data.color)*90),100,100);
+
+            //   var color = hsvToRgb(1,(data.color)*90,100); //Saturation
+            //  var color = hsvToRgb(1,1,(data.color)*90); //b/n
+
             material.setColor3("color",   new BABYLON.Color3(color[0],color[1],color[2]));
 
         }
 
             else{
                 if(data.color == 0){
+
                     material.setColor3("color",   new BABYLON.Color3(0.6,0.6,0.6));
 
                 }else{
-                    material.setColor3("color",   new BABYLON.Color3(0,data.color*0.7 + 0.3,data.color*0.7 + 0.3));
+
+
+                    //coloring package
+
+                 //   data.color = 1-data.color;
+                   // var color = hsvToRgb(300+(data.color)*60,100,100);
+                    var color = hsvToRgb(240,(data.color)*60,100);
+                 //   var color = hsvToRgb(1,(data.color)*90,100); //Saturation
+                  //  var color = hsvToRgb(1,1,(data.color)*90); //b/n
+
+                    //material.setColor3("color",   new BABYLON.Color3(0,data.color*0.7 + 0.3,data.color*0.7 + 0.3));
+                    material.setColor3("color",   new BABYLON.Color3(color[0],color[1],color[2]));
+
 
                 }
             }

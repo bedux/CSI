@@ -57,7 +57,7 @@ public class LoadFromDatabase implements Analyser<CompletableFuture<Integer>> {
                         return 1;
                     }
                 }
-                ,ThreadManager.instance().getExecutor());
+                ,ThreadManager.instance().getExecutorSingle());
     }
 
 
@@ -66,12 +66,13 @@ public class LoadFromDatabase implements Analyser<CompletableFuture<Integer>> {
      * @param dataFile set the component feature by a given query,Note: set only the matrix value no the actual size
      */
     private int computeMetricsOfComponent(DataFile dataFile) {
-        Logger.info("Load From Data => "+ dataFile.getFeatures().getPath()+" Thread id=>"+Thread.currentThread().getId());
+       Logger.info("Load From Data => "+ dataFile.getFeatures().getPath()+" Thread id=>"+Thread.currentThread().getId());
 
         String fn = dataFile.getFeatures().getPath().substring(dataFile.getFeatures().getPath().lastIndexOf(".") + 1);
 
 
         if (fn.indexOf("java") == 0) {
+
             String currentPath = dataFile.getFeatures().getPath();
             int width = (int) widthQuery.clone().executeAndGetResult(currentPath);
             dataFile.getFeatures().setWidthMetrics(width);
@@ -79,6 +80,7 @@ public class LoadFromDatabase implements Analyser<CompletableFuture<Integer>> {
             dataFile.getFeatures().setHeightMetrics(heightQuery.clone().executeAndGetResult(currentPath));
             long color = colorQuery.clone().executeAndGetResult(currentPath);
             dataFile.getFeatures().setColorMetrics(color);
+
         }
         return 1;
     }

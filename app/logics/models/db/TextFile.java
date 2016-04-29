@@ -2,17 +2,34 @@ package logics.models.db;
 
 import logics.databaseUtilities.IDatabaseClass;
 import logics.databaseUtilities.IDatabaseField;
+import logics.databaseUtilities.Setter;
 import logics.models.db.information.JavaFileInformation;
+import logics.models.db.information.JavaPackageInformation;
 
 
 @IDatabaseClass(tableName = "TextFile",idName = "id")
 public class TextFile extends File {
 
     @IDatabaseField(columnName = "id", save = false, isID = true)
-    public long id;
+    private long id;
 
 
     @IDatabaseField(columnName = "information", fromJSON = true)
-    public JavaFileInformation json;
+    private JavaFileInformation json;
+
+
+    @Override
+    public long getId() {
+        return id;
+    }
+
+    public JavaFileInformation getJson() {
+        return json;
+    }
+
+    @Setter
+    public void setJson(JavaFileInformation json) {
+        this.json = json;
+    }
 
 }

@@ -43,13 +43,13 @@ class MainScene{
 
 
 
-        this.engine.runRenderLoop((function(){
+        this.engine.runRenderLoop($.proxy(function(){
 
         //    this.pivot.rotate(BABYLON.Axis.Y,  this.angle, BABYLON.Space.WORLD);
           //  this.pivot.translate(BABYLON.Axis.X, this.width, BABYLON.Space.LOCAL);
             this.render();
             this.scene.render();
-        }).bind(this));
+        },this));
 
 
 
@@ -72,7 +72,6 @@ class MainScene{
     }
 
     updateScene(data){
-        console.log(data);
         this.scene.data = {};
         this.width = data.data.width;
         this.deep = data.data.deep;
@@ -172,34 +171,35 @@ class MainScene{
     }
 
     keyPress(e){
+        console.log("asd",e.which);
 
-        if(e.keyCode == 48){
+        if(e.which == 48){
                 var h = Math.cos(this.camera.fov)*(build.maxX>build.maxZ?build.maxX:build.maxZ)
                 h = h+h/2;
                 h = (h>build.maxY)?h:build.maxY+h;
             this.camera.position = new BABYLON.Vector3(build.maxX/2, h, build.maxZ/2);
             this.camera.setTarget(new BABYLON.Vector3(build.maxX/2, 0, build.maxZ/2));
         }else
-        if(e.keyCode == 49){
+        if(e.which == 49){
             var h = Math.cos(this.camera.fov)*(build.maxX>build.maxZ?build.maxX:build.maxZ)
             this.camera.position = new BABYLON.Vector3(build.maxX/2 , h+h/2, build.maxZ+build.maxZ);
             this.camera.setTarget(new BABYLON.Vector3(build.maxX/2, 0, 0));
         }else
-        if(e.keyCode == 50){
+        if(e.which == 50){
             var h = Math.cos(this.camera.fov)*(build.maxX>build.maxZ?build.maxX:build.maxZ)
             this.camera.position = new BABYLON.Vector3(build.maxX/2 , h+h/2, 0-build.maxZ);
             this.camera.setTarget(new BABYLON.Vector3(build.maxX/2, 0, build.maxZ));
         }else
-        if(e.keyCode == 51){
+        if(e.which == 51){
             var h = Math.cos(this.camera.fov)*(build.maxX>build.maxZ?build.maxX:build.maxZ)
             this.camera.position = new BABYLON.Vector3(build.maxX+build.maxX , h+h/2, build.maxZ/2);
             this.camera.setTarget(new BABYLON.Vector3(0, 0, build.maxZ/2 -1));
         }else
-        if(e.keyCode == 52){
+        if(e.which == 52){
             var h = Math.cos(this.camera.fov)*(build.maxX>build.maxZ?build.maxX:build.maxZ)
             this.camera.position = new BABYLON.Vector3(0-build.maxX , h+h/2, build.maxZ/2);
             this.camera.setTarget(new BABYLON.Vector3(build.maxX, 0, build.maxZ/2 -1));
-        }else if(e.keyCode == 53){
+        }else if(e.which == 53){
             var pickResult = this.scene.pick(this.scene.pointerX, this.scene.pointerY);
             if(!pickResult.hit){return;}
             let bbs = pickResult.pickedMesh.getBoundingInfo().boundingSphere;
@@ -277,15 +277,16 @@ class MainScene{
 
 var scn;
 
-window.addEventListener("keypress", (
+window.addEventListener("keypress", $.proxy(
     function(e){
+
             scn.keyPress(e);
     }
-).bind(scn));
+,scn));
 
 window.createScene = function(url) {
     scn = new MainScene();
-    $.get(url, scn.updateScene.bind(scn));
+    $.get(url,  $.proxy(scn.updateScene,scn));
 };
 
 window.addFilter = function(id,obj){

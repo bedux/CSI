@@ -56,7 +56,7 @@ public class CustomException extends RuntimeException {
         System.err.println(message);
         System.err.println("######################");
 
-        System.err.println(Arrays.toString(Thread.currentThread().getStackTrace()));
+//        System.err.println(Arrays.toString(Thread.currentThread().getStackTrace()));
 
     }
 

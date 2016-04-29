@@ -9,7 +9,6 @@ public class RepoForm {
 
     public String user;
 
-    @Constraints.Required
     public String uri;
 
     public String pwd;

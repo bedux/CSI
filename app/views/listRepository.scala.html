@@ -1,11 +1,12 @@
 @import logics.models.db.RepositoryRender
 @(repository: List[RepositoryRender])
     @main("Repositories") {
-        <div class="list-group">
+        <div class="list-group"  id = "listRepo">
         @for(p <- repository) {
             @if(p != null) {
                 @bootstrapComponent.repositoryCard(p)
             }
         }
+
         </div>
     }
