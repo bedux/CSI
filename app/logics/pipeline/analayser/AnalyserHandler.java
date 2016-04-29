@@ -11,6 +11,7 @@ import logics.databaseCache.DatabaseModels;
 import logics.databaseUtilities.SaveClassAsTable;
 import logics.models.db.RepositoryRender;
 import logics.models.db.RepositoryVersion;
+import logics.models.modelQuery.IQuery;
 import logics.models.query.*;
 import logics.models.tools.MaximumMinimumData;
 import org.h2.engine.Database;
@@ -57,17 +58,13 @@ public class AnalyserHandler implements Handler<AnalyserHandlerParam, AnalyserHa
 
 
 
-    private JsonNode computeCity(Package root,IComputeAttributeContainer width,IComputeAttributeContainer height,IComputeAttributeContainer color,String resultName,RepositoryRender repoRender,AnalyserHandlerParam param){
+    private JsonNode computeCity(Package root,IQuery<String,Long> width,IQuery<String,Long> height,IQuery<String,Long> color,String resultName,RepositoryRender repoRender,AnalyserHandlerParam param){
 
         Logger.info("Load data");
 
-        try {
-            root.applyFunction(new LoadFromDatabase(width, height, color)::analysis).get();
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        } catch (ExecutionException e) {
-            e.printStackTrace();
-        }
+
+            root.applyFunction(new LoadFromDatabase(width, height, color)::analysis);
+
 
 
 

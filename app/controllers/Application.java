@@ -4,10 +4,11 @@ import exception.CustomException;
 import exception.SQLnoResult;
 import logics.Definitions;
 import logics.databaseCache.DatabaseModels;
+import logics.databaseUtilities.Pair;
 import logics.models.db.*;
-import logics.models.modelQuery.AllMethodDiscussed;
-import logics.models.modelQuery.CountJavaDocMethodsByPath;
+import logics.models.modelQuery.*;
 import logics.models.query.QueryList;
+import logics.pipeline.PipelineManager;
 import play.Play;
 import play.libs.Json;
 import play.mvc.Controller;
@@ -15,11 +16,12 @@ import play.mvc.Result;
 import views.html.listRepository;
 import views.html.render;
 
+import javax.swing.text.html.Option;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
-import java.sql.SQLException;
 import java.util.*;
+import java.util.stream.Collector;
 import java.util.stream.Collectors;
 
 public class Application extends Controller {
@@ -30,13 +32,15 @@ public class Application extends Controller {
 
 
     public static Result indexGet(int id) {
-        System.out.println(new CountJavaDocMethodsByPath().execute("3/org.eclipse.jgit/src/org/eclipse/jgit/api/errors/AbortedByHookException.java"));
+        Long ids = (long)id;
+      //  System.out.println(new CountJavaDocMethodsByPath().execute("3/org.eclipse.jgit/src/org/eclipse/jgit/api/errors/AbortedByHookException.java"));
 
-//        DatabaseModels.getInstance().invalidCache();
-//        RepositoryVersion repositoryVersion = null;
-//        repositoryVersion = QueryList.getInstance().getRepositoryVersionById(id).orElseThrow(()-> new SQLnoResult());
-//
-//        new PipelineManager().StoreAndAnalyze(repositoryVersion);
+        DatabaseModels.getInstance().invalidCache();
+        Optional<RepositoryVersion> repositoryVersion = new ById<RepositoryVersion>()
+                                                            .execute(new Pair<>(ids, RepositoryVersion.class));
+        repositoryVersion.orElseThrow(()-> new SQLnoResult());
+
+        new PipelineManager().StoreAndAnalyze(repositoryVersion.get());
 
 //        for (JavaFile file : DatabaseModels.getInstance().getAll(JavaFile.class)) {
 //            ModelsQueryCountMethodByPath md = new ModelsQueryCountMethodByPath();
@@ -186,15 +190,12 @@ public class Application extends Controller {
     }
 
     public static Result getRepositories() {
-        List<RepositoryRender> repositoryVersionList = QueryList.getInstance().getRepositoryVersionRender();
+        List<RepositoryRender> repositoryVersionList = new All<RepositoryRender>().execute(RepositoryRender.class);
         for(RepositoryRender v:repositoryVersionList){
-            try {
-                v.setNameToDisplay( QueryList.getInstance().getProjectName(v.getRepositoryVersion().getId()));
-                v.setNumberOfFileToDispaly( QueryList.getInstance().getNumberOfFile(v.getRepositoryVersion().getId()));
-            } catch (SQLException e) {
 
-                e.printStackTrace();
-            }
+                v.setNameToDisplay( new ProjectName().execute(v.getRepositoryVersion().getId()));
+                v.setNumberOfFileToDispaly( new  NumberOfFile().execute(v.getRepositoryVersion().getId()));
+
         }
 
         return ok(listRepository.render(repositoryVersionList));
@@ -204,18 +205,13 @@ public class Application extends Controller {
     public static Result renderRepo(String id, Long version) {
 
         Map<String, String> info = new HashMap<>();
-        try {
-            info.put("size",Long.toString(QueryList.getInstance().getTotalSize(version)));
-            info.put("nol",Long.toString(QueryList.getInstance().getTotalNumberOfCodeLines(version)));
-            info.put("name",(QueryList.getInstance().getProjectName(version)));
-            info.put("nod",Long.toString(QueryList.getInstance().getNumberOfFile(version)));
+
+            info.put("size",Long.toString(new TotalSize().execute(version)));
+            info.put("nol",Long.toString(new TotalNumberOfCodeLines().execute(version)));
+            info.put("name",(new ProjectName().execute(version)));
+            info.put("nod",Long.toString(new NumberOfFile().execute(version)));
 
 
-        } catch (SQLException e) {
-          throw new CustomException(e);
-        } catch (IOException e) {
-            throw new CustomException(e);
-        }
 
         Map<String, String> getMapMethod = new HashMap();
         getMapMethod.put("Method Count Width/Depth","depthMetrics");
@@ -279,52 +275,54 @@ public class Application extends Controller {
 
 
     public static Result getDiscussion()  {
-        try {
-            String path = request().body().asJson().get("path").asText();
-            JavaFile jf = QueryList.getInstance().getJavaFileByPath(path).orElseThrow(() -> new SQLnoResult());
-            List<ImportTable> javaImports = QueryList.getInstance().getAllDiscussionImport(QueryList.getInstance().getAllNonLocalImport(jf.getId(), jf.getRepositoryVersionConcrete().getId()));
 
-            final List<String> allJavaMethods  = QueryList.getInstance().getAllJavaMethodOfRepositoryVersion(jf.getRepositoryVersionConcrete().getId());
-            final List<String> currentMethods =  QueryList.getInstance().getAllJavaMethodFormPath(path);
+            String path = request().body().asJson().get("path").asText();
+            JavaFile jf = new JavaFileByPath().execute(path).orElseThrow(() -> new SQLnoResult());
+
+
+            List<ImportTable> javaImports = new AllDiscussionImport().execute(new AllNonLocalImport().execute(new Pair<>(jf.getId(), jf.getRepositoryVersionConcrete().getId())));
+
+
+            final List<String> allJavaMethods  = new AllJavaMethodOfRepositoryVersion().execute(jf.getRepositoryVersionConcrete().getId());
+
+            final List<String> currentMethods =  new AllJavaMethodCallFormPath().execute(path).stream().collect(Collectors.toList());
+
             final List<String> javaMethods =currentMethods.stream().distinct().filter(x -> !allJavaMethods.stream().anyMatch(y -> y.equals(x))).collect(Collectors.toList());
-            javaMethods.forEach(System.out::println);
-            final HashMap<String,List<String>> resul = new HashMap<>();
+
+
+        final HashMap<String,List<String>> resul = new HashMap<>();
 
             javaMethods.stream().forEach(x -> {
-                   try {
-                       List<StackOFDiscussion> sovfd = QueryList.getInstance().getAllDiscussionHavingMethodName(new ArrayList<String>() {{
+                       List<StackOFDiscussion> sovfd = new AllDiscussionHavingMethodName().execute(new ArrayList<String>() {{
                            add(x);
                        }});
                        sovfd.forEach(z->{
                            if(resul.containsKey(x)){
-                             resul.get(x).add(z.discussionURL);
+                             resul.get(x).add(z.getDiscussionURL());
                            }else{
-                               resul.put(x,new ArrayList<String>(){{add(z.discussionURL);}});
+                               resul.put(x,new ArrayList<String>(){{add(z.getDiscussionURL());}});
                            }
                        });
 
-                   } catch (SQLException e) {
-                       e.printStackTrace();
-                   }
+
             });
 
             javaImports.stream().forEach(x -> {
-                try {
-                    List<StackOFDiscussion> sovfd = QueryList.getInstance().getGitDiscussionFromImportDiscussion(new ArrayList<ImportTable>() {{
+
+                    List<StackOFDiscussion> sovfd = new SOFDiscussionFromImportDiscussion().execute(new ArrayList<ImportTable>() {{
                         add(x);
                     }});
                     sovfd.forEach(z->{
                         if(resul.containsKey(x)){
-                            resul.get(x.packageDiscussion).add(z.discussionURL);
+                            resul.get(x.getPackageDiscussion()).add(z.getDiscussionURL());
                         }else{
-                            resul.put(x.packageDiscussion,new ArrayList<String>(){{add(z.discussionURL);}});
+                            resul.put(x.getPackageDiscussion(),new ArrayList<String>(){{add(z.getDiscussionURL());}});
                         }
                     });
 
-                } catch (SQLException e) {
-                    e.printStackTrace();
-                }
+
             });
+        System.out.println(Json.toJson(resul));
             String res = Json.stringify(Json.toJson(resul));
             return ok(res);
 //            System.out.println(res);
@@ -343,12 +341,8 @@ public class Application extends Controller {
 //            result.addAll(discussionsReleatedToMethodName);
 //            String res1 = Json.stringify(Json.toJson(result.stream().map(x->x.methodName).distinct().collect(Collectors.toList())));
 //            return ok(res1);
-        }catch (SQLException e){
-            throw new CustomException(e);
-        }
-        catch (Exception e){
-            return ok("Error");
-        }
+
+
 
 
     }

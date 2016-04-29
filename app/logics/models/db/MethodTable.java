@@ -36,14 +36,14 @@ public class MethodTable extends BaseTable{
     }
 
     @IDatabaseField(columnName = "id", save = false, isID = true)
-    public long id;
+    private long id;
 
 
     @IDatabaseField(columnName = "methodname")
-    public String methodName;
+    private String methodName;
 
     @IDatabaseField(columnName = "params")
-    public int nOfParam;
+    private int nOfParam;
 
 
     List<MethodDiscussion> listOfMethodDiscussion;

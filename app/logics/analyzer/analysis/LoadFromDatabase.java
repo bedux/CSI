@@ -3,22 +3,20 @@ package logics.analyzer.analysis;
 import interfaces.Analyser;
 import interfaces.Component;
 import logics.analyzer.DataFile;
-import logics.models.query.IComputeAttributeContainer;
+import logics.models.modelQuery.IQuery;
 import play.Logger;
 
-import java.util.List;
 import java.util.concurrent.*;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
+
 
 /**
  * Analyser that retrieve information for each file
  */
-public class LoadFromDatabase implements Analyser<CompletableFuture<Integer>> {
+public class LoadFromDatabase implements Analyser<Integer> {
 
-    private final  IComputeAttributeContainer widthQuery;
-    private final IComputeAttributeContainer heightQuery;
-    private final IComputeAttributeContainer colorQuery;
+    private final IQuery<String,Long> widthQuery;
+    private final IQuery<String,Long> heightQuery;
+    private final IQuery<String,Long> colorQuery;
 
     /***
      *
@@ -26,7 +24,7 @@ public class LoadFromDatabase implements Analyser<CompletableFuture<Integer>> {
      * @param height the with query  used to get the metrics
      * @param color the with query  used to get the metrics
      */
-    public LoadFromDatabase(IComputeAttributeContainer width, IComputeAttributeContainer height, IComputeAttributeContainer color) {
+    public LoadFromDatabase(IQuery<String,Long> width, IQuery<String,Long> height, IQuery<String,Long> color) {
         this.widthQuery = width.clone();
         this.heightQuery = height.clone();
         this.colorQuery = color.clone();
@@ -39,25 +37,22 @@ public class LoadFromDatabase implements Analyser<CompletableFuture<Integer>> {
      * @return random number, NOT USE!
      */
     @Override
-    public CompletableFuture<Integer> analysis(Component component) {
+    public Integer analysis(Component component) {
 //        CompletableFuture[] res =
 //                component.getComponentList().stream().map(
 //                        (x) -> CompletableFuture.supplyAsync(() -> x.applyFunction((new LoadFromDatabase(widthQuery.clone(), heightQuery.clone(), colorQuery.clone()))::analysis),ThreadManager.instance().getExecutor()
 //                        )
 //                ).toArray(CompletableFuture[]::new);
 
-        CompletableFuture.allOf(component.getComponentList().stream().map(x-> x.applyFunction((new LoadFromDatabase(widthQuery.clone(), heightQuery.clone(), colorQuery.clone()))::analysis)).toArray(CompletableFuture[]::new));
+        component.getComponentList().stream().forEach(x -> x.applyFunction((new LoadFromDatabase(widthQuery.clone(), heightQuery.clone(), colorQuery.clone()))::analysis));
 //
 
-        return CompletableFuture.supplyAsync(
-                () -> {
-                    if (component instanceof DataFile) {
-                        return computeMetricsOfComponent((DataFile) component);
-                    } else {
-                        return 1;
-                    }
-                }
-                ,ThreadManager.instance().getExecutorSingle());
+
+        if (component instanceof DataFile) {
+            return computeMetricsOfComponent((DataFile) component);
+        } else {
+            return 1;
+        }
     }
 
 
@@ -74,11 +69,11 @@ public class LoadFromDatabase implements Analyser<CompletableFuture<Integer>> {
         if (fn.indexOf("java") == 0) {
 
             String currentPath = dataFile.getFeatures().getPath();
-            int width = (int) widthQuery.clone().executeAndGetResult(currentPath);
+            int width = (int) widthQuery.clone().execute(currentPath).intValue();
             dataFile.getFeatures().setWidthMetrics(width);
             dataFile.getFeatures().setDepthMetrics(width);
-            dataFile.getFeatures().setHeightMetrics(heightQuery.clone().executeAndGetResult(currentPath));
-            long color = colorQuery.clone().executeAndGetResult(currentPath);
+            dataFile.getFeatures().setHeightMetrics(heightQuery.clone().execute(currentPath).floatValue());
+            long color = colorQuery.clone().execute(currentPath);
             dataFile.getFeatures().setColorMetrics(color);
 
         }

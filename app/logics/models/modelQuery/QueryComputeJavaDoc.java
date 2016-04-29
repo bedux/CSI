@@ -1,7 +1,7 @@
 package logics.models.modelQuery;
 
 import exception.SQLnoResult;
-import javafx.util.Pair;
+import logics.databaseUtilities.Pair;
 import logics.models.db.JavaFile;
 import logics.models.db.JavaImport;
 import logics.models.db.MethodTable;
@@ -19,14 +19,13 @@ public class QueryComputeJavaDoc implements IQuery<String,Long> {
     public Long execute(String path) {
         JavaFile jf =new JavaFileByPath().execute(path).orElseThrow(() -> new SQLnoResult());
 
-        final List<JavaImport> nonLocalImport =  new AllNonLocalImport().execute(new Pair<>(jf.getId(), jf.getRepositoryVersionConcrete().getId()));
+        final List<JavaImport> nonLocalImport =  new AllNonLocalImport().execute(new Pair<Long,Long>((Long)jf.getId(),(Long)jf.getRepositoryVersionConcrete().getId()));
         final List<JavaImport> importDiscussions =  new AllDiscussedJavaImport().execute(nonLocalImport);
 
         final List<String> allJavaMethods  =new AllJavaMethodOfRepositoryVersion().execute(jf.getRepositoryVersionConcrete().getId());
-        final List<String> javaMethods = new AllJavaMethodFormPath().execute(path).stream().distinct().filter(x -> !allJavaMethods.stream().anyMatch(y -> y.equals(x))).collect(Collectors.toList());
+        final List<String> javaMethods = new AllJavaMethodCallFormPath().execute(path).stream().distinct().filter(x -> !allJavaMethods.stream().anyMatch(y -> y.equals(x))).collect(Collectors.toList());
         final List<MethodTable> discussedMethod;
-        try {
-            discussedMethod = QueryList.getInstance().getAllMethodDiscussed(javaMethods);
+            discussedMethod =new AllMethodDiscussed().execute(javaMethods);
 
 
         float percJavaMethodCoverage;
@@ -64,11 +63,8 @@ public class QueryComputeJavaDoc implements IQuery<String,Long> {
 //
         return  (long) ((percJavaMethodCoverage+percJavaImportCoverage));
 
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
 
-        return 1L;
+
 }
 
     @Override

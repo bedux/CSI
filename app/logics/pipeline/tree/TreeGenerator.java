@@ -7,6 +7,7 @@ import logics.analyzer.*;
 import logics.analyzer.Package;
 import logics.models.db.File;
 import logics.models.db.RepositoryVersion;
+import logics.models.modelQuery.FileByRepositoryVersion;
 import logics.models.query.QueryList;
 
 
@@ -24,7 +25,7 @@ public class TreeGenerator implements Handler<TreeGeneratorHandleParam, TreeGene
     public TreeGeneratorHandlerResult process(TreeGeneratorHandleParam param) {
         List<File> components;
         try {
-            components = QueryList.getInstance().getFileByRepositoryVersion(param.repositoryVersion.getId());
+            components = new FileByRepositoryVersion().execute(param.repositoryVersion.getId());
         } catch (Exception e) {
             throw new CustomException(e);
         }

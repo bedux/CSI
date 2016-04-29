@@ -15,8 +15,9 @@ public class AllMethodDiscussed implements IQuery<List<String>,List<MethodTable>
     public List<MethodTable> execute(List<String> param) {
         return DatabaseModels.getInstance().getAll(MethodDiscussion.class)
                 .stream()
-                .filter(x->param.stream().anyMatch(y -> y.contentEquals(x.getMethodConcrete().getMethodName())))
+                .filter(x->param.stream().filter(y -> y.equals(x.getMethodConcrete().getMethodName())).count()>0)
                 .map(x->x.getMethodConcrete())
+                .distinct()
                 .collect(Collectors.toList());
     }
 

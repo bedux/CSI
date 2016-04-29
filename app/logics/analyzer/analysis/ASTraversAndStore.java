@@ -20,6 +20,8 @@ import logics.databaseCache.DatabaseModels;
 import logics.databaseUtilities.SaveClassAsTable;
 import logics.models.db.*;
 import logics.models.db.information.*;
+import logics.models.modelQuery.JavaFileByPath;
+import logics.models.modelQuery.TextFileByPath;
 import logics.models.query.QueryList;
 import play.Logger;
 
@@ -81,7 +83,7 @@ public class ASTraversAndStore implements Analyser< Integer> {
             try {
 
 
-                TextFile analyzedFile =  QueryList.getInstance().getTextFileByPath(currentPath.getPath()).orElseThrow(()->new SQLnoResult());
+                TextFile analyzedFile =  new TextFileByPath().execute(currentPath.getPath()).orElseThrow(()->new SQLnoResult());
                 if (analyzedFile.getJson() == null) {
                     analyzedFile.setJson( new JavaFileInformation());
                 }
@@ -109,7 +111,7 @@ public class ASTraversAndStore implements Analyser< Integer> {
         JavaFile analyzedFile;
         Logger.info("Analyse "+currentPath.getPath()+" Thread id=>"+Thread.currentThread().getId());
         try {
-            analyzedFile = QueryList.getInstance().getJavaFileByPath(currentPath.getPath()).orElseThrow(() -> new SQLnoResult());
+            analyzedFile = new JavaFileByPath().execute(currentPath.getPath()).orElseThrow(() -> new SQLnoResult());
             Long l = Files.size(currentPath.getFilePath());
             if (l != null) {
                 JavaFileInformation jfi =  analyzedFile.getJson();

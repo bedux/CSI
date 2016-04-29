@@ -15,11 +15,11 @@ public class StackOFDiscussion extends BaseTable{
 
 
     @IDatabaseField(columnName = "id", save = false, isID = true)
-    public long id;
+    private long id;
 
 
     @IDatabaseField(columnName = "url")
-    public String discussionURL;
+    private String discussionURL;
 
     public long getId() {
         return id;

@@ -33,11 +33,11 @@ public class ImportTable extends BaseTable {
     }
 
     @IDatabaseField(columnName = "id", save = false, isID = true)
-    public long id;
+    private long id;
 
 
     @IDatabaseField(columnName = "package")
-    public String packageDiscussion;
+    private String packageDiscussion;
 
 
 

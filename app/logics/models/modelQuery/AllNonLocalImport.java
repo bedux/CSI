@@ -1,6 +1,6 @@
 package logics.models.modelQuery;
 
-import javafx.util.Pair;
+import logics.databaseUtilities.Pair;
 import logics.models.db.JavaImport;
 import logics.models.db.JavaPackage;
 import logics.models.query.QueryList;

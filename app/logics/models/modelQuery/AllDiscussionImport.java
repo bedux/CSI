@@ -13,10 +13,10 @@ public class AllDiscussionImport implements IQuery<List<JavaImport>,List<ImportT
     @Override
     public List<ImportTable> execute(List<JavaImport> javaImport) {
         List<ImportTable> importDiscussions = new AllImportFromDiscussion().execute(null);
-        return importDiscussions.parallelStream().filter(y -> {
+        System.out.println(importDiscussions.size());
+        return importDiscussions.stream().filter(y -> {
             long s = javaImport.stream().filter(x -> {
-                        String sToTest = y.packageDiscussion.replace(".*", "");
-                        return x.getJson().name.contains(sToTest);
+                        return x.getJson().name.contains(y.getPackageDiscussion());
                     }
             ).count();
             return s > 0;

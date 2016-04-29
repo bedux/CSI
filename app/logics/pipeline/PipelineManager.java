@@ -1,9 +1,11 @@
 package logics.pipeline;
 
-import logics.databaseCache.DatabaseModels;
 import logics.models.db.RepositoryVersion;
 import logics.models.form.RepoForm;
-import logics.models.query.*;
+import logics.models.modelQuery.CountFieldByPath;
+import logics.models.modelQuery.CountMethodByPath;
+import logics.models.modelQuery.NumberOfDiscussionOverNumberOfMethodsCall;
+import logics.models.modelQuery.IQuery;
 import logics.pipeline.analayser.AnalyserHandler;
 import logics.pipeline.analayser.AnalyserHandlerParam;
 import logics.pipeline.analayser.MetricsCharacteristics;
@@ -42,9 +44,9 @@ public class PipelineManager {
 
 //
         TreeGeneratorHandlerResult treeForA = new TreeGenerator().process(new TreeGeneratorHandleParam(shr.repositoryVersion));
-        IComputeAttributeContainer width = new ModelsQueryCountMethodByPath();
-        IComputeAttributeContainer height = new ModelsQueryCountFieldByPath();
-        IComputeAttributeContainer color = new CountingExternalPackage();
+        IQuery<String,Long> width = new CountMethodByPath();
+        IQuery<String,Long> height = new CountFieldByPath();
+        IQuery<String,Long> color = new NumberOfDiscussionOverNumberOfMethodsCall();
         MetricsCharacteristics ms = new MetricsCharacteristics(width,height,color,"Discussion and import");
         AnalyserHandlerParam result = new AnalyserHandlerParam(storeASTHandlerResult.repositoryVersion,treeForA.root,ms);
         new AnalyserHandler().process(result);

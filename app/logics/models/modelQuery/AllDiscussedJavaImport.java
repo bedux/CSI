@@ -15,8 +15,7 @@ public class AllDiscussedJavaImport implements IQuery<List<JavaImport>,List<Java
         List<ImportTable> importDiscussion = new AllImportFromDiscussion().execute(null);
         return javaImport.parallelStream().filter(x -> {
             long s = importDiscussion.parallelStream().filter(y -> {
-                        String sToTest = y.packageDiscussion.replace(".*", "");
-                        return x.getJson().name.indexOf(sToTest) != -1;
+                        return x.getJson().name.indexOf(y.getPackageDiscussion()) != -1;
                     }
             ).count();
             return s > 0;

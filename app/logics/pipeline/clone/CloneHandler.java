@@ -4,11 +4,15 @@ import exception.CustomException;
 import interfaces.Handler;
 import interfaces.VersionedSystem;
 import logics.databaseCache.DatabaseModels;
+import logics.databaseUtilities.Pair;
 import logics.databaseUtilities.SaveClassAsTable;
 import logics.models.db.Repository;
 import logics.models.db.RepositoryVersion;
+import logics.models.modelQuery.ById;
 import logics.models.query.QueryList;
 import play.Logger;
+
+import java.util.Optional;
 
 /**
  * Created by bedux on 07/03/16.
@@ -16,7 +20,7 @@ import play.Logger;
 public class CloneHandler implements Handler<CloneHandlerParam, CloneHandlerResult> {
 
     @Override
-    public CloneHandlerResult process(CloneHandlerParam param) {
+    public CloneHandlerResult process(CloneHandlerParam param)  {
 
         Repository repository = new Repository();
         repository.setPwd(param.repoForm.pwd);
@@ -25,7 +29,9 @@ public class CloneHandler implements Handler<CloneHandlerParam, CloneHandlerResu
         repository.setSubversionType(param.repoForm.type);
         try {
             long id = new SaveClassAsTable().save(repository);
-            repository =QueryList.getInstance().getById(id, Repository.class).orElseThrow(()->new CustomException("No repository found!"));
+            ById<Repository> repo  =new <Repository>ById();
+            Optional<Repository> repoMayBe = repo.execute(new Pair(id, Repository.class));
+            repository =repoMayBe.orElseThrow(() -> new CustomException("No repository found!"));
             Logger.info("Save Repository as" + repository.getId() + "   " + id);
         } catch (Exception e) {
             e.printStackTrace();
@@ -36,7 +42,10 @@ public class CloneHandler implements Handler<CloneHandlerParam, CloneHandlerResu
         repositoryVersion.setRepositoryConcrete(DatabaseModels.getInstance().getEntity(Repository.class,repository.getId()).get());
         try {
             long id = new SaveClassAsTable().save(repositoryVersion);
-            repositoryVersion = QueryList.getInstance().getById(id, RepositoryVersion.class).orElseThrow(()->new CustomException("No repository version found"));
+            ById<RepositoryVersion> repo  =new <RepositoryVersion>ById();
+            Optional<RepositoryVersion> repoMayBe = repo.execute(new Pair(id, RepositoryVersion.class));
+
+            repositoryVersion =repoMayBe.orElseThrow(() -> new CustomException("No repository version found"));
         } catch (Exception e) {
             throw new CustomException(e);
         }

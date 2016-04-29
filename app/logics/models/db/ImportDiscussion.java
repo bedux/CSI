@@ -12,10 +12,10 @@ import logics.databaseUtilities.ManyToOne;
 public class ImportDiscussion {
 
     @IDatabaseField(columnName = "idd", save = false, isID = true)
-    public long idd;
+    private long idd;
 
     @IDatabaseField(columnName = "idi", save = false, isID = true)
-    public long idi;
+    private long idi;
 
 
     private StackOFDiscussion discussion;
