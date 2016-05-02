@@ -5,28 +5,111 @@
 @components.panelShowHide("MetricsType"){MetricsType} {
 
     <div id="listOfmetrics">
+        <ul>
+            <li><input type="checkbox" name="Discussion_and_import" value="disscussionAndImport">Discussion And Import<br></li>
+            <li><input type="checkbox" name="JavaDoc" value="javaDoc"> Java Doc<br></li>
+            <li><input type="checkbox" name="Discussion_only_Package" value="discussionOnlyPackage">discussion Only Package<br></li>
+            <li><input type="checkbox" name="JavaDoc_only_Package" value="JavaDocPackage"> JavaDoc Only Package<br></li>
+
+        </ul>
+        <hl>
+            <ul>
+                <li><input type="radio" name="percentage" value="percentage" id = "perc">percentage<br></li>
+                <li><input type="radio" name="percentage" value="absolute" id = "abs"> absolute<br></li>
+
+            </ul>
+
+        <button onclick="applyMagic()" value="apply">Apply</button>
+
     </div>
+
+
 
     <script>
 
 
+    function applyMagic(){
+        var arrrOfReqFile = [];
+        var per = false;
+          if($('input[name=percentage]:checked').attr('id')=="perc"){
+             per = true;
+
+          }
+
+
+
+        if($('input[name=Discussion_and_import]:checked').val()){
+            console.log("casdj")
+            if(per){
+                    arrrOfReqFile.push("/assets/data/Discussion_and_import_percentage@repoVersion"+".json");
+            }else{
+                    arrrOfReqFile.push("/assets/data/Discussion_and_import@repoVersion"+".json");
+
+            }
+        }
+        if($('input[name=JavaDoc]:checked').val()){
+            console.log("casdj")
+             if(per){
+                    arrrOfReqFile.push("/assets/data/JavaDoc_over_Method@repoVersion"+".json");
+            }else{
+                    arrrOfReqFile.push("/assets/data/JavaDoc@repoVersion"+".json");
+
+            }
+        }
+        if($('input[name=Discussion_only_Package]:checked').val()){
+            console.log("casdj")
+             if(per){
+                    arrrOfReqFile.push("/assets/data/Discussion_over_Method_and_Import__Package@repoVersion"+".json");
+            }else{
+                    arrrOfReqFile.push("/assets/data/Discussion_only_Package@repoVersion"+".json");
+
+            }
+        }
+        if($('input[name=JavaDoc_only_Package]:checked').val()){
+            console.log("casdj")
+             if(per){
+                    arrrOfReqFile.push("/assets/data/JavaDoc_over_Method_Package@repoVersion" + ".json");
+            }else{
+                    arrrOfReqFile.push("/assets/data/JavaDoc_only_Package@repoVersion" + ".json");
+
+            }
+        }
+
+        console.log(arrrOfReqFile);
+        doItForMe(arrrOfReqFile);
+
+
+    }
 
     $.get("/getRepoRender/" + @repoVersion,
         function(data){
             var jsonData = JSON.parse(data);
-            var table = $('<table class="table table-inverse"></table>');
-                        table.append($('  <thead> <tr> <th>Metrics</th></tr> </thead>'));
-                        var tbody = $(' <tbody></tbody>');
-                        for(var i in jsonData){
-                            var row = $('<tr></tr>');
-                            var c1 = jsonData[i]["url"];
-                            var c2 = jsonData[i]["type"];
-                            var column = $('<td  onclick= "reloadStuff(\''+ c1 +'\',\''+c2+'\') " ></td>').text(jsonData[i]["type"]);
-                            row.append(column);
-                            tbody.append(row);
-                        }
-                        table.append(tbody);
-                        $("#listOfmetrics").append(table)
+
+
+
+//                        for(var i in jsonData){
+//                            var c1 = jsonData[i]["url"];
+//                            var c2 = jsonData[i]["type"];
+//                             var column1 = $('<li></li>')
+//
+//
+//
+//                            var column2 = $('<input>').attr({
+//                                type: 'checkbox',
+//                                id: c1,
+//                                name: c1,
+//                             });
+//                            column1.append(column2);
+//
+//                            column.append(column1);
+//
+//                        }
+//                        table.append(column);
+//                        $("#listOfmetrics").append(table)
+
+
+
+
     })
 </script>
 }

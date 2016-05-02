@@ -321,3 +321,95 @@ window.reloadStuff= function(data,name){
 
 
 }
+
+function mergeInfo(data){
+    for(var i in data){
+
+        if(data[i].data.features.colorMetrics >= 0){
+
+            if(i!=0 &&  (data[i].data.buildingType == 2  )){
+
+                if(data[0].data.buildingType != 2){
+                    data[0].data.features.colorMetrics =  data[i].data.features.colorMetrics;
+                    data[0].data.color =  data[i].data.color;
+
+                }
+
+                if(data[0].data.features.colorMetrics < 0 ){
+                    data[0].data.features.colorMetrics = 0;
+                }
+                if(data[0].data.color<0){
+                    data[0].data.color = 0;
+                }
+
+
+                data[0].data.features.colorMetrics  += data[i].data.features.colorMetrics;
+                data[0].data.color  += data[i].data.color;
+
+            }
+        }
+
+        if((data[i].data.buildingType == 2)) {
+            data[0].data.buildingType = 2
+        }
+
+    }
+    if(data[i].data.buildingType == 2 ){
+
+        data[0].data.features.colorMetrics/=data.length;
+        data[0].data.color /=data.length;
+
+        console.log(data.length)
+    }
+
+
+
+
+    var res = {};
+    for(var i in data){
+
+        var children = data[i].data.children;
+
+        for(var l in children){
+
+            if(!res[children[l].data.id]){
+
+                res[children[l].data.id] = [];
+
+            }
+
+            res[children[l].data.id].push(children[l])
+        }
+
+    }
+
+
+    var realRes = [];
+    for (var key in res) {
+        realRes.push(res[key])
+
+    }
+
+    for(var o in realRes){
+        mergeInfo(realRes[o]);
+    }
+
+
+}
+
+
+window.doItForMe = function(data){
+    $.ajaxSetup({async:false});
+    var c = [];
+    for(var i in data){
+        $.get(data[i],function(dta){
+            c.push(dta);
+        })
+    }
+    mergeInfo(c);
+
+    scn.updateScene(c[0])
+
+    console.log(c);
+
+}
