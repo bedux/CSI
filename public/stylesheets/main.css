@@ -198,13 +198,13 @@ td{
     width: 100px;
     height: 100px;
 
-    /*background: url("http://1.bp.blogspot.com/-IdPZAIYB_38/UAsThCuCjcI/AAAAAAAABK0/wzErRGy13NU/s1600/loading.gif");*/
-    /*background-size: 100px 100px;*/
+    background: url("http://1.bp.blogspot.com/-IdPZAIYB_38/UAsThCuCjcI/AAAAAAAABK0/wzErRGy13NU/s1600/loading.gif");
+    background-size: 100px 100px;
 
-    animation-name: spin;
-    animation-duration: 4000ms;
-    animation-iteration-count: infinite;
-    animation-timing-function: linear;
+    /*animation-name: spin;*/
+    /*animation-duration: 4000ms;*/
+    /*animation-iteration-count: infinite;*/
+    /*animation-timing-function: linear;*/
 }
 @keyframes spin {
     from {
