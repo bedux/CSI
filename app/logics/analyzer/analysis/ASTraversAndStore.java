@@ -17,24 +17,21 @@ import interfaces.Component;
 import logics.ExtensionTool;
 import logics.analyzer.DataFile;
 import logics.databaseCache.DatabaseModels;
-import logics.databaseUtilities.SaveClassAsTable;
 import logics.models.db.*;
 import logics.models.db.information.*;
-import logics.models.modelQuery.JavaFileByPath;
-import logics.models.modelQuery.TextFileByPath;
-import logics.models.query.QueryList;
+import logics.models.modelQuery.Query;
 import play.Logger;
 
 import java.io.IOException;
 import java.io.InputStream;
 import java.lang.reflect.Modifier;
 import java.nio.file.Files;
-import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.TimeUnit;
+import java.util.stream.Collectors;
+
 
 /**
  * Created by bedux on 25/03/16.
@@ -49,24 +46,20 @@ public class ASTraversAndStore implements Analyser< Integer> {
      */
     @Override
     public  Integer analysis(Component value) {
-//        value.getComponentList().stream().forEach((x) -> x.applyFunction((new ASTraversAndStore())::analysis));
-//        if (value instanceof DataFile) {
-//            analysisDataFile((DataFile) value);
-//        }
-//        return 1;
-//        CompletableFuture[] res =
-//                value.getComponentList().stream().map(
-//                        (x) -> CompletableFuture.supplyAsync(() -> x.applyFunction((new ASTraversAndStore())::analysis),ThreadManager.instance().getExecutor())
-//                ).toArray(CompletableFuture[]::new);
-//
-//        CompletableFuture<Void> allDoneFuture = CompletableFuture.allOf(res);
-//        allDoneFuture.join();
 
-        value.getComponentList().stream().forEach(x -> x.applyFunction((new ASTraversAndStore())::analysis));
-        if (value instanceof DataFile) {
-            analysisDataFile((DataFile) value);
-        }
-        return  1;
+        value.getComponentList().stream().map(
+                        (x) -> CompletableFuture.runAsync(()->x.applyFunction((new ASTraversAndStore())::analysis)))
+                        .map(x->x.join())
+                .collect(Collectors.toList());
+
+
+
+
+            if (value instanceof DataFile) {
+                analysisDataFile((DataFile) value);
+            }
+            return 1;
+
     }
 
 
@@ -83,7 +76,7 @@ public class ASTraversAndStore implements Analyser< Integer> {
             try {
 
 
-                TextFile analyzedFile =  new TextFileByPath().execute(currentPath.getPath()).orElseThrow(()->new SQLnoResult());
+                TextFile analyzedFile =   Query.TextFileByPath(currentPath.getPath()).orElseThrow(()->new SQLnoResult());
                 if (analyzedFile.getJson() == null) {
                     analyzedFile.setJson( new JavaFileInformation());
                 }
@@ -111,7 +104,7 @@ public class ASTraversAndStore implements Analyser< Integer> {
         JavaFile analyzedFile;
         Logger.info("Analyse "+currentPath.getPath()+" Thread id=>"+Thread.currentThread().getId());
         try {
-            analyzedFile = new JavaFileByPath().execute(currentPath.getPath()).orElseThrow(() -> new SQLnoResult());
+            analyzedFile = Query.JavaFileByPath(currentPath.getPath()).orElseThrow(() -> new SQLnoResult());
             Long l = Files.size(currentPath.getFilePath());
             if (l != null) {
                 JavaFileInformation jfi =  analyzedFile.getJson();
@@ -245,7 +238,7 @@ class MethodVisitor extends VoidVisitorAdapter<MethodVisitorParameter> {
             jse.get().addlistOfMethod(method);
         }
         else{
-            Logger.error("Cavolicchio di bruxels");
+            Logger.error("Not exhaustive pattern");
 
         }
 
@@ -286,7 +279,7 @@ class MethodVisitor extends VoidVisitorAdapter<MethodVisitorParameter> {
             jse.get().addListOfField(jf);
         }
         else{
-            Logger.error("Cavolicchio di bruxels");
+            Logger.error("Not exhaustive pattern");
 
         }
 //        jsp.getListOfField();
@@ -393,7 +386,7 @@ class MethodVisitor extends VoidVisitorAdapter<MethodVisitorParameter> {
             jse.get().getListOfMethod();
             jse.get().addlistOfMethod(method);
         }else{
-           Logger.error("Cavolicchio di bruxels");
+           Logger.error("Not exhaustive pattern");
         }
 
 

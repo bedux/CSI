@@ -2,24 +2,24 @@ package logics.models.query;
 
 import exception.CustomException;
 import javafx.util.Pair;
-import logics.models.modelQuery.IQuery;
 
 import javax.persistence.Tuple;
+import java.util.function.Function;
 
 /**
  * Created by bedux on 29/03/16.
  */
-public  class ComputeProportionOfTwoQuery <T,T1> implements IQuery<Pair<T,T1>,Long> {
+public  class ComputeProportionOfTwoQuery <T,T1> implements Function<Pair<T,T1>,Long> {
 
-    private final IQuery<T,Long> q1;
-    private final IQuery<T1,Long> q2;
+    private final Function<T,Long> q1;
+    private final Function<T1,Long> q2;
 
     /***
      *
      * @param firstQueryTotal query A
      * @param secondQuery query B
      */
-    public ComputeProportionOfTwoQuery( IQuery<T,Long> firstQueryTotal, IQuery<T1,Long> secondQuery) {
+    public ComputeProportionOfTwoQuery( Function<T,Long> firstQueryTotal, Function<T1,Long> secondQuery) {
         q1 = firstQueryTotal;
         q2 = secondQuery;
     }
@@ -63,16 +63,13 @@ public  class ComputeProportionOfTwoQuery <T,T1> implements IQuery<Pair<T,T1>,Lo
 //        return (long)(result);
 //    }
 
-    @Override
-    public ComputeProportionOfTwoQuery clone() {
-        return new ComputeProportionOfTwoQuery(q1.clone(),q2.clone());
-    }
+
 
 
     @Override
-    public Long execute(Pair<T, T1> param) {
-        long a1 = q1.execute(param.getKey());
-        long a2 = q2.execute(param.getValue());
+    public Long apply(Pair<T, T1> param) {
+        long a1 = q1.apply(param.getKey());
+        long a2 = q2.apply(param.getValue());
         if(a1==0) return  0L ;
         float result = (((float)(a2) / (float)(a1))*100f);
         if(a1<a2){

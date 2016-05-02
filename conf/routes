@@ -31,5 +31,7 @@ GET /fileContent/:path          controllers.Application.fileContent(path:String)
 
 GET /getStatistics/:id          controllers.Application.getStatistics(id:String)
 
+GET /getRepoRender/:id          controllers.Application.getAllRepositoryRender(id:Long)
+
 
 POST /getDiscussion          controllers.Application.getDiscussion()

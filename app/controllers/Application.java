@@ -23,6 +23,7 @@ import java.nio.file.Paths;
 import java.util.*;
 import java.util.stream.Collector;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 public class Application extends Controller {
 
@@ -33,11 +34,9 @@ public class Application extends Controller {
 
     public static Result indexGet(int id) {
         Long ids = (long)id;
-      //  System.out.println(new CountJavaDocMethodsByPath().execute("3/org.eclipse.jgit/src/org/eclipse/jgit/api/errors/AbortedByHookException.java"));
 
         DatabaseModels.getInstance().invalidCache();
-        Optional<RepositoryVersion> repositoryVersion = new ById<RepositoryVersion>()
-                                                            .execute(new Pair<>(ids, RepositoryVersion.class));
+        Optional<RepositoryVersion> repositoryVersion = Query.byId(new Pair<>(ids, RepositoryVersion.class));
         repositoryVersion.orElseThrow(()-> new SQLnoResult());
 
         new PipelineManager().StoreAndAnalyze(repositoryVersion.get());
@@ -190,11 +189,11 @@ public class Application extends Controller {
     }
 
     public static Result getRepositories() {
-        List<RepositoryRender> repositoryVersionList = new All<RepositoryRender>().execute(RepositoryRender.class);
+        List<RepositoryRender> repositoryVersionList = Query.All(RepositoryRender.class);
         for(RepositoryRender v:repositoryVersionList){
 
-                v.setNameToDisplay( new ProjectName().execute(v.getRepositoryVersion().getId()));
-                v.setNumberOfFileToDispaly( new  NumberOfFile().execute(v.getRepositoryVersion().getId()));
+                v.setNameToDisplay(   Query.ProjectName(v.getRepositoryVersion().getId()));
+                v.setNumberOfFileToDispaly(  Query.NumberOfFile(v.getRepositoryVersion().getId()));
 
         }
 
@@ -206,10 +205,10 @@ public class Application extends Controller {
 
         Map<String, String> info = new HashMap<>();
 
-            info.put("size",Long.toString(new TotalSize().execute(version)));
-            info.put("nol",Long.toString(new TotalNumberOfCodeLines().execute(version)));
-            info.put("name",(new ProjectName().execute(version)));
-            info.put("nod",Long.toString(new NumberOfFile().execute(version)));
+            info.put("size",Long.toString(Query.TotalSize(version)));
+            info.put("nol",Long.toString(Query.TotalNumberOfCodeLines(version)));
+            info.put("name",(Query.ProjectName(version)));
+            info.put("nod",Long.toString(Query.NumberOfFile(version)));
 
 
 
@@ -222,6 +221,24 @@ public class Application extends Controller {
 
         return ok(render.render(id, (long) version, null, getMapMethod, info));
 //        return ok();
+    }
+
+    public static Result getAllRepositoryRender(Long repositoryVersion){
+       RepositoryVersion repo =  Query.byId(new Pair<>(repositoryVersion, RepositoryVersion.class)).orElseThrow(()-> new CustomException("T"));
+        List<RepositoryRender> repositoryRenders = repo.getListOfRepositoryRender();
+        System.out.println(repositoryRenders.size());
+        class ResultType{
+            public String url;
+            public String type;
+        }
+        return ok(Json.stringify(Json.toJson(repo.getListOfRepositoryRender().stream()
+                .map(x->{
+            ResultType r = new ResultType();
+            r.type = x.getMetricType();
+            r.url = x.getLocalPath();
+            return r;
+        })
+        .collect(Collectors.toList()))));
     }
 
     public static Result applyFilter() {
@@ -275,56 +292,82 @@ public class Application extends Controller {
 
 
     public static Result getDiscussion()  {
-
-            String path = request().body().asJson().get("path").asText();
-            JavaFile jf = new JavaFileByPath().execute(path).orElseThrow(() -> new SQLnoResult());
+//
 
 
-            List<ImportTable> javaImports = new AllDiscussionImport().execute(new AllNonLocalImport().execute(new Pair<>(jf.getId(), jf.getRepositoryVersionConcrete().getId())));
-
-
-            final List<String> allJavaMethods  = new AllJavaMethodOfRepositoryVersion().execute(jf.getRepositoryVersionConcrete().getId());
-
-            final List<String> currentMethods =  new AllJavaMethodCallFormPath().execute(path).stream().collect(Collectors.toList());
-
-            final List<String> javaMethods =currentMethods.stream().distinct().filter(x -> !allJavaMethods.stream().anyMatch(y -> y.equals(x))).collect(Collectors.toList());
-
-
+        final String path = request().body().asJson().get("path").asText();
         final HashMap<String,List<String>> resul = new HashMap<>();
-
-            javaMethods.stream().forEach(x -> {
-                       List<StackOFDiscussion> sovfd = new AllDiscussionHavingMethodName().execute(new ArrayList<String>() {{
-                           add(x);
-                       }});
-                       sovfd.forEach(z->{
-                           if(resul.containsKey(x)){
-                             resul.get(x).add(z.getDiscussionURL());
-                           }else{
-                               resul.put(x,new ArrayList<String>(){{add(z.getDiscussionURL());}});
-                           }
-                       });
-
-
-            });
-
-            javaImports.stream().forEach(x -> {
-
-                    List<StackOFDiscussion> sovfd = new SOFDiscussionFromImportDiscussion().execute(new ArrayList<ImportTable>() {{
-                        add(x);
-                    }});
-                    sovfd.forEach(z->{
-                        if(resul.containsKey(x)){
-                            resul.get(x.getPackageDiscussion()).add(z.getDiscussionURL());
-                        }else{
-                            resul.put(x.getPackageDiscussion(),new ArrayList<String>(){{add(z.getDiscussionURL());}});
-                        }
-                    });
+        Query.AllDiscussedMethod(path)
+                .stream()
+                .map(x -> new Pair<String,List<String>>(x.getMethodName(), x.getListOfMethodDiscussion().stream().map(y -> y.getDiscussionConcrete().getDiscussionURL()).collect(Collectors.toList())))
+                .forEach(x->{
+                    if(resul.containsKey(x.getKey())){
+                        resul.get(x.getKey()).addAll(x.getValue());
+                    }else{
+                        resul.put(x.getKey(),x.getValue());
+                    }
+                });
+        Query.AllDiscussedImport(path)
+                .stream()
+                .map(x -> new Pair<String,List<String>>(x.getPackageDiscussion(), x.getListOfImportDiscussion().stream().map(y -> y.getDiscussionConcrete().getDiscussionURL()).collect(Collectors.toList())))
+                .forEach(x -> {
+                    if (resul.containsKey(x.getKey())) {
+                        resul.get(x.getKey()).addAll(x.getValue());
+                    } else {
+                        resul.put(x.getKey(), x.getValue());
+                    }
+                });
+                return ok(Json.stringify(Json.toJson(resul)));
 
 
-            });
-        System.out.println(Json.toJson(resul));
-            String res = Json.stringify(Json.toJson(resul));
-            return ok(res);
+
+//            JavaFile jf = new JavaFileByPath().execute(path).orElseThrow(() -> new SQLnoResult());
+//
+//
+//            List<ImportTable> javaImports = new AllDiscussionImport().execute(new AllNonLocalImport().execute(new Pair<>(jf.getId(), jf.getRepositoryVersionConcrete().getId())));
+//
+//
+//            final List<String> allJavaMethods  = new AllJavaMethodOfRepositoryVersion().execute(jf.getRepositoryVersionConcrete().getId());
+//
+//            final List<String> currentMethods =  new AllJavaMethodCallFormPath().execute(path).stream().collect(Collectors.toList());
+//
+//            final List<String> javaMethods =currentMethods.stream().distinct().filter(x -> !allJavaMethods.stream().anyMatch(y -> y.equals(x))).collect(Collectors.toList());
+//
+//
+//        final HashMap<String,List<String>> resul = new HashMap<>();
+//
+//            javaMethods.stream().forEach(x -> {
+//                       List<StackOFDiscussion> sovfd = new AllDiscussionHavingMethodName().execute(new ArrayList<String>() {{
+//                           add(x);
+//                       }});
+//                       sovfd.forEach(z->{
+//                           if(resul.containsKey(x)){
+//                             resul.get(x).add(z.getDiscussionURL());
+//                           }else{
+//                               resul.put(x,new ArrayList<String>(){{add(z.getDiscussionURL());}});
+//                           }
+//                       });
+//
+//
+//            });
+//
+//            javaImports.stream().forEach(x -> {
+//
+//                    List<StackOFDiscussion> sovfd = new SOFDiscussionFromImportDiscussion().execute(new ArrayList<ImportTable>() {{
+//                        add(x);
+//                    }});
+//                    sovfd.forEach(z->{
+//                        if(resul.containsKey(x)){
+//                            resul.get(x.getPackageDiscussion()).add(z.getDiscussionURL());
+//                        }else{
+//                            resul.put(x.getPackageDiscussion(),new ArrayList<String>(){{add(z.getDiscussionURL());}});
+//                        }
+//                    });
+//
+//
+//            });
+//        System.out.println(Json.toJson(resul));
+//            String res = Json.stringify(Json.toJson(resul));
 //            System.out.println(res);
 //
 //

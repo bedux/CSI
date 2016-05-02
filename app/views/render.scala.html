@@ -7,6 +7,9 @@
         @components.infoTab(infoParams)
         @* @components.sideBar(repoVersion,filters*@
         @components.infoTemplateTab(repoVersion)
+        @components.metricsAvailable(repoVersion)
+
+
 
         <canvas id="renderCanvas" tabindex="0"></canvas>
         <script src="@routes.Assets.at("javascripts/hand.minified.js")" type="text/javascript"></script>

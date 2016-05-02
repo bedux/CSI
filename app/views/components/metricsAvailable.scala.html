@@ -1,0 +1,23 @@
+@(repoVersion:Long)
+@components.panelShowHide("MetricsType"){MetricsType} {
+    <div id="listOfmetrics">
+    </div>
+
+    <script>
+    $.get("/getRepoRender/" + @repoVersion,
+        function(data){
+            var jsonData = JSON.parse(data);
+            var table = $('<table class="table table-inverse"></table>');
+                        table.append($('  <thead> <tr> <th>Metrics</th></tr> </thead>'));
+                        var tbody = $(' <tbody></tbody>');
+                        for(var i in jsonData){
+                            var row = $('<tr></tr>');
+                            var column = $('<td></td>').text(jsonData[i]["type"]);
+                            row.append(column);
+                            tbody.append(row);
+                        }
+                        table.append(tbody)
+                        $("#listOfmetrics").append(table)
+    })
+</script>
+}

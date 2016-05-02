@@ -1,5 +1,6 @@
 package logics.models.db;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import logics.databaseUtilities.IDatabaseClass;
 import logics.databaseUtilities.IDatabaseField;
 import logics.databaseUtilities.ManyToOne;
@@ -39,6 +40,7 @@ public class RepositoryRender extends BaseTable {
 
 
     public    RepositoryVersion repositoryVersionConcrete;
+
     @ManyToOne(columnName = "repositoryVersionConcrete",columnNameRefTable = "repositoryversion")
     public RepositoryVersion getRepositoryVersion() {
         return repositoryVersionConcrete;
@@ -46,6 +48,7 @@ public class RepositoryRender extends BaseTable {
 
 
     public    Repository repositoryConcrete;
+    @JsonIgnore
     @ManyToOne(columnName = "repositoryConcrete",columnNameRefTable = "repositoryId")
     public Repository getrepositoryConcrete() {
         return repositoryConcrete;

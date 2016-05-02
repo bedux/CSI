@@ -11,7 +11,6 @@ import logics.databaseCache.DatabaseModels;
 import logics.databaseUtilities.SaveClassAsTable;
 import logics.models.db.RepositoryRender;
 import logics.models.db.RepositoryVersion;
-import logics.models.modelQuery.IQuery;
 import logics.models.query.*;
 import logics.models.tools.MaximumMinimumData;
 import org.h2.engine.Database;
@@ -23,6 +22,7 @@ import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
+import java.util.function.Function;
 
 /**
  * Created by bedux on 08/03/16.
@@ -58,10 +58,9 @@ public class AnalyserHandler implements Handler<AnalyserHandlerParam, AnalyserHa
 
 
 
-    private JsonNode computeCity(Package root,IQuery<String,Long> width,IQuery<String,Long> height,IQuery<String,Long> color,String resultName,RepositoryRender repoRender,AnalyserHandlerParam param){
+    private JsonNode computeCity(Package root,Function<String,Long> width,Function<String,Long> height,Function<String,Long> color,String resultName,RepositoryRender repoRender,AnalyserHandlerParam param){
 
         Logger.info("Load data");
-
 
             root.applyFunction(new LoadFromDatabase(width, height, color)::analysis);
 
@@ -114,7 +113,11 @@ public class AnalyserHandler implements Handler<AnalyserHandlerParam, AnalyserHa
 
             root.applyFunction(new ColoringAnalyserPercentage(max, mmd)::analysis);
 
-        }else{
+        }else if(param.isOnlyPackage && param.percentage){
+            root.applyFunction(new ColoringAnalyserOnlyPackage(100, mmd)::analysis);
+
+        }
+        else {
             float maxx =   root.applyFunction(new PackageColorAnalyser()::analysis);
             System.out.println("maximum is >"+maxx);
             root.applyFunction(new ColoringAnalyserOnlyPackage(maxx, mmd)::analysis);
