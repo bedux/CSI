@@ -72,6 +72,15 @@ class MainScene{
     }
 
     updateScene(data){
+
+        var first = true;
+        if(  Object.keys(this.scene.data).length>0 ){
+            first = false;
+           for(var i in  this.scene.data){
+               this.scene.removeMesh(this.scene.getMeshByID(i))
+           }
+        }
+
         this.scene.data = {};
         this.width = data.data.width;
         this.deep = data.data.deep;
@@ -90,8 +99,12 @@ class MainScene{
         build.recursiveDraw(this.scene,new BABYLON.Vector3(0,0,0),data.data,this.pivot,new BABYLON.Vector3(0,0,0));
 
 
-        this.camera.position = new BABYLON.Vector3(build.maxX, build.maxY, build.maxZ);
-        this.camera.setTarget(new BABYLON.Vector3(build.maxX/2, 0, build.maxZ/2));
+        if(first) {
+            this.camera.position = new BABYLON.Vector3(build.maxX, build.maxY, build.maxZ);
+            this.camera.setTarget(new BABYLON.Vector3(build.maxX / 2, 0, build.maxZ / 2));
+        }
+
+        $("#globalSpinner").hide();
 
 
 
@@ -296,4 +309,15 @@ window.addFilter = function(id,obj){
 
 window.deleteFilter = function(id){
     scn.deleteFilter(id);
+}
+
+window.reloadStuff= function(data,name){
+    if($("#globalSpinner").is(":visible")){
+        return;
+    }
+    $("#TableElemcolorMetrics td" ).text(name);
+
+    (function(){$.get(data,  $.proxy(scn.updateScene,scn))})();
+
+
 }

@@ -13,9 +13,8 @@
         <table class="table tableInfoColor" id="tabInfo" >
             <tr><th> Path </th> <th id="pathIdTab"></th></tr>
             @for((key, value) <- args) {
-                <tr><td> @key </td> <td id="@value"></td></tr>
+                <tr id="TableElem@value" > <td> @key </td> <td id="@value"></td></tr>
             }
-
         </table>
     </div>
 

@@ -9,6 +9,7 @@ import logics.databaseUtilities.SaveClassAsTable;
 import logics.models.db.Repository;
 import logics.models.db.RepositoryVersion;
 import logics.models.modelQuery.Query;
+import logics.versionUtils.GitRepo;
 import play.Logger;
 
 import java.util.Optional;
@@ -22,12 +23,13 @@ public class CloneHandler implements Handler<CloneHandlerParam, CloneHandlerResu
     public CloneHandlerResult process(CloneHandlerParam param)  {
 
         Repository repository = DatabaseModels.getInstance().getEntity(Repository.class).get();
+
         repository.setPwd(param.repoForm.pwd);
         repository.setUsr(param.repoForm.user);
         repository.setUrl(param.repoForm.uri);
         repository.setSubversionType(param.repoForm.type);
         try {
-            long id = new SaveClassAsTable().save(repository);
+            long id =repository.getId();
 
             Optional<Repository> repoMayBe = Query.byId(new Pair(id, Repository.class));
             repository =repoMayBe.orElseThrow(() -> new CustomException("No repository found!"));
@@ -38,9 +40,11 @@ public class CloneHandler implements Handler<CloneHandlerParam, CloneHandlerResu
         }
 
         RepositoryVersion repositoryVersion =  DatabaseModels.getInstance().getEntity(RepositoryVersion.class).get();
-        repositoryVersion.setRepositoryConcrete(DatabaseModels.getInstance().getEntity(Repository.class,repository.getId()).get());
+        System.out.println(repositoryVersion);
+//        repositoryVersion.setRepositoryConcrete(DatabaseModels.getInstance().getEntity(Repository.class,repository.getId()).get());
+       repository.addlistOfRepositoryVersion(repositoryVersion);
         try {
-            long id = new SaveClassAsTable().save(repositoryVersion);
+            long id =repositoryVersion.getId();
             Optional<RepositoryVersion> repoMayBe = Query.byId(new Pair(id, RepositoryVersion.class));
 
             repositoryVersion =repoMayBe.orElseThrow(() -> new CustomException("No repository version found"));
@@ -48,7 +52,8 @@ public class CloneHandler implements Handler<CloneHandlerParam, CloneHandlerResu
             throw new CustomException(e);
         }
 
-        VersionedSystem sys = repository.CreateSystem();
+
+        VersionedSystem sys = new GitRepo(repository);
         try {
             sys.clone(Long.toString(repositoryVersion.getId()));
         } catch (Exception e) {

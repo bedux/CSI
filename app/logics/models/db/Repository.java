@@ -9,25 +9,26 @@ import logics.databaseUtilities.OneToMany;
 import logics.databaseUtilities.Setter;
 import logics.versionUtils.GitRepo;
 
+import java.util.ArrayList;
 import java.util.List;
 
-@IDatabaseClass(tableName = "Repository")
-public class Repository extends BaseTable{
+@IDatabaseClass(tableName = "repository")
+public class Repository {
 
     @IDatabaseField(columnName = "id", save = false, isID = true)
     private long id;
 
     @IDatabaseField(columnName = "url")
-    private String url;
+    private String url="";
 
     @IDatabaseField(columnName = "usr")
-    private String usr;
+    private String usr="";
 
     @IDatabaseField(columnName = "pwd")
-    private String pwd;
+    private String pwd="";
 
     @IDatabaseField(columnName = "subversionType")
-    private String subversionType;
+    private String subversionType="";
 
     public long getId() {
         return id;
@@ -57,13 +58,13 @@ public class Repository extends BaseTable{
     }
 
 
-    public VersionedSystem CreateSystem() {
-
-        if (this.getSubversionType().equalsIgnoreCase("GIT")) {
-            return new GitRepo(this);
-        } else {
-            throw new CustomException("No Compatible Subversion System Found");
+    public void addlistOfRepositoryVersion(RepositoryVersion jf){
+        this.getListOfRepositoryVersion();
+        if(this.getListOfRepositoryVersion()==null){
+            this.listOfRepositoryVersion= new ArrayList<>();
         }
+        listOfRepositoryVersion.add(jf);
+        jf.setRepositoryConcrete(this);
 
     }
 

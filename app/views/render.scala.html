@@ -2,8 +2,9 @@
 
 @(id: String, repoVersion: Long, filters: JsonNode, infoParams: Map[String, String], infoProject: Map[String, String])
     @mainNoMenu("Render", infoProject) {
+    <div id="globalSpinner" >
 
-
+    </div>
         @components.infoTab(infoParams)
         @* @components.sideBar(repoVersion,filters*@
         @components.infoTemplateTab(repoVersion)
@@ -16,6 +17,7 @@
         <script src="@routes.Assets.at("javascripts/main.bundle.js")" type="text/javascript"></script>
         <script type="text/javascript">
         createScene("@id")
+        $("#globalSpinner").hide()
     </script>
 
 

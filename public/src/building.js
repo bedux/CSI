@@ -101,20 +101,7 @@ function hsvToRgb(h, s, v) {
     return [r , g, b];
 }
 
-function createBuilding(scene, position, data,parent,lp) {
-
-    if(data.buildingType==8) return;
-    let cylinder;
-
-    scene.data[data.id+ "_model"] = data;
-    cylinder = BABYLON.Mesh.CreateBox(data.id + "_model", 1, scene, false);
-
-
-    cylinder.scaling = new BABYLON.Vector3(data.width, data.height, data.deep);
-    cylinder.position = new BABYLON.Vector3(position.x+data.width/2,position.y+data.height/2,position.z+data.deep/2);
-    cylinder.parent = parent;
-    updateMaximumPos(position.x+data.width,position.y+data.height,position.z+data.deep);
-
+function colorMesh(data,scene,lp){
     if(data.color==NaN){
         data.color = 0;
     }
@@ -129,15 +116,14 @@ function createBuilding(scene, position, data,parent,lp) {
 
 
     }else{
-        console.log(data.buildingType);
         if(data.buildingType==2){
             var color = hsvToRgb(180+((data.color)*90),100,100);
 
             material.setColor3("color",   new BABYLON.Color3(color[0],color[1],color[2]));
 
-            }
+        }
         else if(data.buildingType==3){
-         //   data.color = 1-data.color; //Invert
+            //   data.color = 1-data.color; //Invert
             //var color = hsvToRgb((data.color)*90,100,100);
             var color = hsvToRgb(180+((data.color)*90),100,100);
 
@@ -148,28 +134,28 @@ function createBuilding(scene, position, data,parent,lp) {
 
         }
 
-            else{
-                if(data.color == 0){
+        else{
+            if(data.color == 0){
 
-                    material.setColor3("color",   new BABYLON.Color3(0.6,0.6,0.6));
+                material.setColor3("color",   new BABYLON.Color3(0.6,0.6,0.6));
 
-                }else{
-
-
-                    //coloring package
-
-                 //   data.color = 1-data.color;
-                   // var color = hsvToRgb(300+(data.color)*60,100,100);
-                    var color = hsvToRgb(240,(data.color)*60,100);
-                 //   var color = hsvToRgb(1,(data.color)*90,100); //Saturation
-                  //  var color = hsvToRgb(1,1,(data.color)*90); //b/n
-
-                    //material.setColor3("color",   new BABYLON.Color3(0,data.color*0.7 + 0.3,data.color*0.7 + 0.3));
-                    material.setColor3("color",   new BABYLON.Color3(color[0],color[1],color[2]));
+            }else{
 
 
-                }
+                //coloring package
+
+                //   data.color = 1-data.color;
+                // var color = hsvToRgb(300+(data.color)*60,100,100);
+                var color = hsvToRgb(240,(data.color)*60,100);
+                //   var color = hsvToRgb(1,(data.color)*90,100); //Saturation
+                //  var color = hsvToRgb(1,1,(data.color)*90); //b/n
+
+                //material.setColor3("color",   new BABYLON.Color3(0,data.color*0.7 + 0.3,data.color*0.7 + 0.3));
+                material.setColor3("color",   new BABYLON.Color3(color[0],color[1],color[2]));
+
+
             }
+        }
 
 
 
@@ -179,8 +165,27 @@ function createBuilding(scene, position, data,parent,lp) {
     material.setVector3("maxSize",new BABYLON.Vector3(data.width,data.height,data.deep));
 
     material.setVector3("LightPosition",lp);
+    return material;
+}
 
-    cylinder.material = material;
+
+function createBuilding(scene, position, data,parent,lp) {
+
+    if(data.buildingType==8) return;
+    let cylinder;
+
+    scene.data[data.id+ "_model"] = data;
+    cylinder = BABYLON.Mesh.CreateBox(data.id + "_model", 1, scene, false);
+
+
+    cylinder.scaling = new BABYLON.Vector3(data.width, data.height, data.deep);
+    cylinder.position = new BABYLON.Vector3(position.x+data.width/2,position.y+data.height/2,position.z+data.deep/2);
+    cylinder.parent = parent;
+    updateMaximumPos(position.x+data.width,position.y+data.height,position.z+data.deep);
+
+
+
+    cylinder.material = colorMesh(data,scene,lp);
 
     scene.models[data.id+ "_model"] = cylinder
     return cylinder;

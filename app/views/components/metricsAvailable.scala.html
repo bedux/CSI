@@ -1,9 +1,16 @@
 @(repoVersion:Long)
+<div  id="contMetricx">
+
+
 @components.panelShowHide("MetricsType"){MetricsType} {
+
     <div id="listOfmetrics">
     </div>
 
     <script>
+
+
+
     $.get("/getRepoRender/" + @repoVersion,
         function(data){
             var jsonData = JSON.parse(data);
@@ -12,7 +19,9 @@
                         var tbody = $(' <tbody></tbody>');
                         for(var i in jsonData){
                             var row = $('<tr></tr>');
-                            var column = $('<td></td>').text(jsonData[i]["type"]);
+                            var c1 = jsonData[i]["url"];
+                            var c2 = jsonData[i]["type"];
+                            var column = $('<td  onclick= "reloadStuff(\''+ c1 +'\',\''+c2+'\') " ></td>').text(jsonData[i]["type"]);
                             row.append(column);
                             tbody.append(row);
                         }
@@ -21,3 +30,9 @@
     })
 </script>
 }
+
+
+
+
+
+</div>
