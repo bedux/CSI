@@ -5,6 +5,7 @@ import interfaces.Component;
 import logics.analyzer.DataFile;
 import play.Logger;
 
+import java.util.List;
 import java.util.concurrent.*;
 import java.util.function.Function;
 import java.util.stream.Collectors;
@@ -13,7 +14,7 @@ import java.util.stream.Collectors;
 /**
  * Analyser that retrieve information for each file
  */
-public class LoadFromDatabase implements Analyser<Integer> {
+public class LoadFromDatabase implements Analyser< CompletableFuture<Integer>> {
 
     private final Function<String,Long> widthQuery;
     private final Function<String,Long> heightQuery;
@@ -38,7 +39,7 @@ public class LoadFromDatabase implements Analyser<Integer> {
      * @return random number, NOT USE!
      */
     @Override
-    public Integer analysis(Component component) {
+    public  CompletableFuture<Integer> analysis(Component component) {
 //        CompletableFuture[] res =
 //                component.getComponentList().stream().map(
 //                        (x) -> CompletableFuture.supplyAsync(() -> x.applyFunction((new LoadFromDatabase(widthQuery.clone(), heightQuery.clone(), colorQuery.clone()))::analysis),ThreadManager.instance().getExecutor()
@@ -55,15 +56,20 @@ public class LoadFromDatabase implements Analyser<Integer> {
 //            return 1;
 //        }
 
-        component.getComponentList().stream().map(
-                (x) -> CompletableFuture.runAsync(()->x.applyFunction((new LoadFromDatabase(widthQuery,heightQuery,colorQuery))::analysis)))
-                .map(x->x.join())
+        List<CompletableFuture> list = component.getComponentList().stream().map(
+                (x) -> x.applyFunction((new LoadFromDatabase(widthQuery, heightQuery, colorQuery))::analysis))
                 .collect(Collectors.toList());
 
-        if (component instanceof DataFile) {
-            computeMetricsOfComponent((DataFile) component);
-        }
-        return 1;
+        return CompletableFuture.allOf(list.toArray(new CompletableFuture[list.size()])).thenApplyAsync(
+                (x)->{
+                    if (component instanceof DataFile) {
+                        computeMetricsOfComponent((DataFile) component);
+                    }
+                    return 1;
+                }
+        );
+
+
 
     }
 

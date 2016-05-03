@@ -50,7 +50,7 @@ public class AnalyserHandler implements Handler<AnalyserHandlerParam, AnalyserHa
 
     @Override
     public AnalyserHandlerResult process(AnalyserHandlerParam param) {
-        DatabaseModels.getInstance().invalidCache();
+      //  DatabaseModels.getInstance().invalidCache();
         return  new AnalyserHandlerResult(computeCity(param.root, param.metricsToCompute.getWidth(), param.metricsToCompute.getHeight(), param.metricsToCompute.getColor(), param.metricsToCompute.getMetricType().replaceAll(" ", "_") + param.repositoryVersion.getId(), param.metricsToCompute.repositoryRender(param.repositoryVersion),param));
     }
 
@@ -62,10 +62,13 @@ public class AnalyserHandler implements Handler<AnalyserHandlerParam, AnalyserHa
 
         Logger.info("Load data");
 
-            root.applyFunction(new LoadFromDatabase(width, height, color)::analysis);
-
-
-
+        try {
+            root.applyFunction(new LoadFromDatabase(width, height, color)::analysis).get();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        } catch (ExecutionException e) {
+            e.printStackTrace();
+        }
 
 
         MaximumMinimumData mmd;

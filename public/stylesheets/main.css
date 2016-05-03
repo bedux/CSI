@@ -219,4 +219,7 @@ input{
     background: red;
 }
 
+ul {
+    list-style-type: none;
+}
 

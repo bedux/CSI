@@ -28,8 +28,13 @@ public class StoreAstData implements Handler<StoreASTHandleParam, StoreASTHandle
     public StoreASTHandlerResult process(StoreASTHandleParam param) {
         Logger.info("AST of java file ");
 
-            param.root.applyFunction(new ASTraversAndStore()::analysis);
-
+        try {
+            param.root.applyFunction(new ASTraversAndStore()::analysis).get();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        } catch (ExecutionException e) {
+            e.printStackTrace();
+        }
 
 
         Logger.info("END of java file ");

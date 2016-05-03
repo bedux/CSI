@@ -12,6 +12,8 @@ import logics.models.tools.MaximumMinimumData;
  */
 public class ColoringAnalyser implements Analyser<Integer> {
 
+    public static enum BuildingType  {COLOR,PACKAGE,BASE_PACKAGE,DATA_FILE,BINARY_FILE,INVISIBLE}
+
     private int max = 0;
     private MaximumMinimumData maximumMinimumData;
 
@@ -56,10 +58,11 @@ public class ColoringAnalyser implements Analyser<Integer> {
         if (packages.getFeatures().getRemoteness() == 0) {
 
             packages.getFeatures().setColor(-1);
-            packages.getFeatures().setBuildingType(4);
+            packages.getFeatures().setBuildingType(BuildingType.BASE_PACKAGE.ordinal());
         } else {
             float color = packages.getFeatures().getRemoteness() / ((float) max);
             packages.getFeatures().setColor(color + 0.01f);
+            packages.getFeatures().setBuildingType(BuildingType.PACKAGE.ordinal());
 
         }
     }
@@ -73,12 +76,12 @@ public class ColoringAnalyser implements Analyser<Integer> {
         if (dataFile.getFeatures().getPath().indexOf(".java") != dataFile.getFeatures().getPath().length() - 5) {
 
             dataFile.getFeatures().setColor(-1);
-            dataFile.getFeatures().setBuildingType(1);
+            dataFile.getFeatures().setBuildingType(BuildingType.DATA_FILE.ordinal());
 
         } else {
             
             dataFile.getFeatures().setColor(dataFile.getFeatures().getColorMetrics() / maximumMinimumData.maxColor);
-            dataFile.getFeatures().setBuildingType(2);
+            dataFile.getFeatures().setBuildingType(BuildingType.COLOR.ordinal());
 
         }
 
@@ -91,7 +94,7 @@ public class ColoringAnalyser implements Analyser<Integer> {
      */
     private void computeColor(BinaryFile binaryFile) {
 
-        binaryFile.getFeatures().setBuildingType(0);
+        binaryFile.getFeatures().setBuildingType(BuildingType.BINARY_FILE.ordinal());
         binaryFile.getFeatures().setColor(-1);
 
 

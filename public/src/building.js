@@ -105,61 +105,86 @@ function colorMesh(data,scene,lp){
     if(data.color==NaN){
         data.color = 0;
     }
+
     let material = new BABYLON.ShaderMaterial(data.id+"_texture", scene,"/assets/javascripts/base",
         {
             attributes: ["position","uv","normal"],
             uniforms: ["worldViewProjection","world","color","LightPosition","maxSize"]
         });
-    if(data.color==-1){
-
-        material.setColor3("color",materials[data.buildingType].diffuseColor);
 
 
-    }else{
-        if(data.buildingType==2){
-            var color = hsvToRgb(180+((data.color)*90),100,100);
-
-            material.setColor3("color",   new BABYLON.Color3(color[0],color[1],color[2]));
-
-        }
-        else if(data.buildingType==3){
-            //   data.color = 1-data.color; //Invert
-            //var color = hsvToRgb((data.color)*90,100,100);
-            var color = hsvToRgb(180+((data.color)*90),100,100);
-
-            //   var color = hsvToRgb(1,(data.color)*90,100); //Saturation
-            //  var color = hsvToRgb(1,1,(data.color)*90); //b/n
-
-            material.setColor3("color",   new BABYLON.Color3(color[0],color[1],color[2]));
-
-        }
-
-        else{
-            if(data.color == 0){
-
-                material.setColor3("color",   new BABYLON.Color3(0.6,0.6,0.6));
-
-            }else{
 
 
-                //coloring package
-
-                //   data.color = 1-data.color;
-                // var color = hsvToRgb(300+(data.color)*60,100,100);
-                var color = hsvToRgb(240,(data.color)*60,100);
-                //   var color = hsvToRgb(1,(data.color)*90,100); //Saturation
-                //  var color = hsvToRgb(1,1,(data.color)*90); //b/n
-
-                //material.setColor3("color",   new BABYLON.Color3(0,data.color*0.7 + 0.3,data.color*0.7 + 0.3));
-                material.setColor3("color",   new BABYLON.Color3(color[0],color[1],color[2]));
-
-
-            }
-        }
-
-
+    //NORMAL COLOR
+    if(data.buildingType==0){
+        var color = hsvToRgb(180+((data.color)*90),100,100);
+        material.setColor3("color",   new BABYLON.Color3(color[0],color[1],color[2]));
+    }
+    //PACKAGE
+    else if(data.buildingType==1){
+        var color = hsvToRgb(240,(data.color)*60,100);
+        material.setColor3("color",   new BABYLON.Color3(color[0],color[1],color[2]));
 
     }
+    //BASE_PACKAGE
+    else if(data.buildingType==2){
+        material.setColor3("color",   new BABYLON.Color3(0.6,0.6,0.6));
+    }
+    //DATA_TYPE
+    else if(data.buildingType==3){
+        material.setColor3("color", new BABYLON.Color3(0.5,0.5,0.5));       
+    }
+    //BINARY FILE
+    else if(data.buildingType==4){
+        material.setColor3("color", new BABYLON.Color3(0.7,0.7,0.7));       
+    }
+
+
+
+    
+    //if(data.color==-1){
+    //
+    //    material.setColor3("color",materials[data.buildingType].diffuseColor);
+    //
+    //
+    //}else{
+    //    if(data.buildingType==2){
+    //        var color = hsvToRgb(180+((data.color)*90),100,100);
+    //
+    //        material.setColor3("color",   new BABYLON.Color3(color[0],color[1],color[2]));
+    //
+    //    }
+    //    else if(data.buildingType==3){
+    //        var color = hsvToRgb(180+((data.color)*90),100,100);
+    //        material.setColor3("color",   new BABYLON.Color3(color[0],color[1],color[2]));
+    //    }
+    //
+    //    else{
+    //        if(data.color == 0){
+    //
+    //            material.setColor3("color",   new BABYLON.Color3(0.6,0.6,0.6));
+    //
+    //        }else{
+    //
+    //
+    //            //coloring package
+    //
+    //            //   data.color = 1-data.color;
+    //            // var color = hsvToRgb(300+(data.color)*60,100,100);
+    //            var color = hsvToRgb(240,(data.color)*60,100);
+    //            //   var color = hsvToRgb(1,(data.color)*90,100); //Saturation
+    //            //  var color = hsvToRgb(1,1,(data.color)*90); //b/n
+    //
+    //            //material.setColor3("color",   new BABYLON.Color3(0,data.color*0.7 + 0.3,data.color*0.7 + 0.3));
+    //            material.setColor3("color",   new BABYLON.Color3(color[0],color[1],color[2]));
+    //
+    //
+    //        }
+    //    }
+    //
+    //
+    //
+    //}
 
 
     material.setVector3("maxSize",new BABYLON.Vector3(data.width,data.height,data.deep));
@@ -171,19 +196,21 @@ function colorMesh(data,scene,lp){
 
 function createBuilding(scene, position, data,parent,lp) {
 
-    if(data.buildingType==8) return;
+    //INVISIBLE ??
+    if(data.buildingType==5) return;
+
+
     let cylinder;
 
     scene.data[data.id+ "_model"] = data;
+
     cylinder = BABYLON.Mesh.CreateBox(data.id + "_model", 1, scene, false);
-
-
+    
     cylinder.scaling = new BABYLON.Vector3(data.width, data.height, data.deep);
     cylinder.position = new BABYLON.Vector3(position.x+data.width/2,position.y+data.height/2,position.z+data.deep/2);
     cylinder.parent = parent;
+
     updateMaximumPos(position.x+data.width,position.y+data.height,position.z+data.deep);
-
-
 
     cylinder.material = colorMesh(data,scene,lp);
 

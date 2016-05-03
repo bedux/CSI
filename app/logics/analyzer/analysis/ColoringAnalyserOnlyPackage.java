@@ -59,7 +59,7 @@ public class ColoringAnalyserOnlyPackage implements Analyser<Integer> {
 //        } else {
 //            float color = packages.getFeatures().getRemoteness() / ((float) max);
 //            packages.getFeatures().setColor(color + 0.01f);
-            packages.getFeatures().setBuildingType(2);
+            packages.getFeatures().setBuildingType(ColoringAnalyser.BuildingType.COLOR.ordinal());
 
         packages.getFeatures().setColor(packages.getFeatures().getColorMetrics()/ max);
 
@@ -74,12 +74,12 @@ public class ColoringAnalyserOnlyPackage implements Analyser<Integer> {
 
         if (dataFile.getFeatures().getPath().indexOf(".java") != dataFile.getFeatures().getPath().length() - 5) {
             dataFile.getFeatures().setColor(0);
-            dataFile.getFeatures().setBuildingType(1);
+            dataFile.getFeatures().setBuildingType(ColoringAnalyser.BuildingType.INVISIBLE.ordinal());
 
         } else {
 
             // dataFile.getFeatures().setColor(dataFile.getFeatures().getColorMetrics()/ maximumMinimumData.maxColor);
-            dataFile.getFeatures().setBuildingType(8);
+            dataFile.getFeatures().setBuildingType(ColoringAnalyser.BuildingType.INVISIBLE.ordinal());
         }
 
 
@@ -91,7 +91,7 @@ public class ColoringAnalyserOnlyPackage implements Analyser<Integer> {
      */
     private void computeColor(BinaryFile binaryFile) {
 
-        binaryFile.getFeatures().setBuildingType(0);
+        binaryFile.getFeatures().setBuildingType(ColoringAnalyser.BuildingType.INVISIBLE.ordinal());
         binaryFile.getFeatures().setColor(-1);
 
 

@@ -4,6 +4,7 @@ var BABYLON = require("babylonjs");
 var build = require("./building.js");
 var mock = require("../mock/templateScene.js");
 var Request = require("./request.js");
+var Enum = require("./types.js");
 
 
 
@@ -322,45 +323,50 @@ window.reloadStuff= function(data,name){
 
 }
 
+
+
 function mergeInfo(data){
+
+    if(data[0].data.features.colorMetrics < 0 ){
+
+        data[0].data.features.colorMetrics = 0;
+    }
+    
+    if(data[0].data.color<0){
+
+        data[0].data.color = 0;
+    }
+
+    var changes = 1;    
     for(var i in data){
 
         if(data[i].data.features.colorMetrics >= 0){
 
-            if(i!=0 &&  (data[i].data.buildingType == 2  )){
+            if(i!=0 &&  (data[i].data.buildingType == Enum.BuildingType.COLOR)){
 
-                if(data[0].data.buildingType != 2){
+                if(data[0].data.buildingType != Enum.BuildingType.COLOR){
                     data[0].data.features.colorMetrics =  data[i].data.features.colorMetrics;
                     data[0].data.color =  data[i].data.color;
-
+                    data[0].data.buildingType = Enum.BuildingType.COLOR;
                 }
 
-                if(data[0].data.features.colorMetrics < 0 ){
-                    data[0].data.features.colorMetrics = 0;
-                }
-                if(data[0].data.color<0){
-                    data[0].data.color = 0;
-                }
-
+                
 
                 data[0].data.features.colorMetrics  += data[i].data.features.colorMetrics;
                 data[0].data.color  += data[i].data.color;
+                changes++;
+
 
             }
         }
 
-        if((data[i].data.buildingType == 2)) {
-            data[0].data.buildingType = 2
-        }
 
     }
-    if(data[i].data.buildingType == 2 ){
 
-        data[0].data.features.colorMetrics/=data.length;
-        data[0].data.color /=data.length;
+    data[0].data.features.colorMetrics/=changes;
+    data[0].data.color /=changes;
 
-        console.log(data.length)
-    }
+    
 
 
 
@@ -375,7 +381,6 @@ function mergeInfo(data){
             if(!res[children[l].data.id]){
 
                 res[children[l].data.id] = [];
-
             }
 
             res[children[l].data.id].push(children[l])
@@ -384,14 +389,8 @@ function mergeInfo(data){
     }
 
 
-    var realRes = [];
     for (var key in res) {
-        realRes.push(res[key])
-
-    }
-
-    for(var o in realRes){
-        mergeInfo(realRes[o]);
+        mergeInfo(res[key])
     }
 
 
@@ -410,6 +409,5 @@ window.doItForMe = function(data){
 
     scn.updateScene(c[0])
 
-    console.log(c);
 
 }

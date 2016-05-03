@@ -36,7 +36,7 @@ import java.util.stream.Collectors;
 /**
  * Created by bedux on 25/03/16.
  */
-public class ASTraversAndStore implements Analyser< Integer> {
+public class ASTraversAndStore implements Analyser< CompletableFuture<Integer>> {
 
     /***
      * Given a component, run the analysis on his child and, if is a javaFile, it compute all the characteristic using the AST
@@ -45,20 +45,24 @@ public class ASTraversAndStore implements Analyser< Integer> {
      * @return NOt important!Just a random number
      */
     @Override
-    public  Integer analysis(Component value) {
+    public  CompletableFuture<Integer> analysis(Component value) {
 
-        value.getComponentList().stream().map(
-                        (x) -> CompletableFuture.runAsync(()->x.applyFunction((new ASTraversAndStore())::analysis)))
-                        .map(x->x.join())
+        List<CompletableFuture> list = value.getComponentList().stream().map(
+                (x -> x.applyFunction((new ASTraversAndStore())::analysis)))
                 .collect(Collectors.toList());
 
 
+        return  CompletableFuture.allOf(list.toArray(new CompletableFuture[list.size()]))
+                .thenApplyAsync((x)->{
+                            if (value instanceof DataFile) {
+                                analysisDataFile((DataFile) value);
+                            }
+                            return 1;
+                        }
+                );
 
 
-            if (value instanceof DataFile) {
-                analysisDataFile((DataFile) value);
-            }
-            return 1;
+
 
     }
 
@@ -74,7 +78,6 @@ public class ASTraversAndStore implements Analyser< Integer> {
             analyseJavaFile(currentPath);
         } else {
             try {
-
 
                 TextFile analyzedFile =   Query.TextFileByPath(currentPath.getPath()).orElseThrow(()->new SQLnoResult());
                 if (analyzedFile.getJson() == null) {
@@ -252,6 +255,30 @@ class MethodVisitor extends VoidVisitorAdapter<MethodVisitorParameter> {
         super.visit(n, arg);
 
     }
+
+
+    @Override
+    public void visit(AnnotationDeclaration n, MethodVisitorParameter e) {
+
+        MethodInfoJSON thisInfo = new MethodInfoJSON();
+        thisInfo.modifier = "PUBLIC";
+        thisInfo.lineEnd = n.getEndLine();
+        thisInfo.lineStart = n.getBeginLine();
+        thisInfo.signature = clear(n.getName());
+
+        JavaInterface method = DatabaseModels.getInstance().getEntity(JavaInterface.class).get();
+        JavaFile jf = DatabaseModels.getInstance().getEntity(JavaFile.class,e.idFile).get();
+        jf.getListOfJavaInterface();
+        jf.addListOfJavaInterface(method);
+        method.setJson(thisInfo);
+
+        MethodVisitorParameter newId = new MethodVisitorParameter();
+        newId.idFile = e.idFile;
+        newId.idJavaSource =method.getId();
+        newId.idJavaDoc =  newId.idJavaSource;
+        newId.isInterface = true;
+    }
+
 
     @Override
     public void visit(FieldDeclaration n, MethodVisitorParameter o) {
