@@ -6,8 +6,8 @@ package logics;
 public class Definitions {
     public static final String repositoryPath = "./repoDownload/";
     public static final String repositoryPathABS = "repoDownload/";
-    public static final String jsonPath = "./public/data/";
-    public static final String jsonPathABS = "public/data/";
+    public static final String jsonPath = "./asset/";
+    public static final String jsonPathABS = "asset/";
 
     public static enum State {COMPLETE, ERROR}
 

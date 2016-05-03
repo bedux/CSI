@@ -8,6 +8,7 @@ import logics.analyzer.Package;
 import logics.models.db.File;
 import logics.models.db.RepositoryVersion;
 import logics.models.modelQuery.Query;
+import play.Play;
 
 
 import java.util.List;
@@ -29,11 +30,12 @@ public class TreeGenerator implements Handler<TreeGeneratorHandleParam, TreeGene
             throw new CustomException(e);
         }
 
+        System.out.println(Play.application().path().getAbsolutePath()+"/" + Definitions.repositoryPathABS + param.repositoryVersion.getId());
 
-        java.io.File fileRoot = new java.io.File(Definitions.repositoryPath + param.repositoryVersion.getId());
+        java.io.File fileRoot = new java.io.File(  Play.application().path().getAbsolutePath()+"/"+Definitions.repositoryPathABS + param.repositoryVersion.getId());
         Package root = new Package(new Features("root", Long.toString(param.repositoryVersion.getId()), fileRoot.toPath()));
         for (logics.models.db.File component : components) {
-            java.io.File helper = new java.io.File(Definitions.repositoryPath + component.getPath());
+            java.io.File helper = new java.io.File(  Play.application().path().getAbsolutePath()+"/"+Definitions.repositoryPathABS + component.getPath());
             String s = clearPath(helper.toPath().normalize().toString(), param.repositoryVersion);
             String dir = s.substring(0, s.indexOf('/'));
             String remainName = s.substring(s.indexOf('/') + 1);

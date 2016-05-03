@@ -15,6 +15,7 @@ import logics.models.query.*;
 import logics.models.tools.MaximumMinimumData;
 import org.h2.engine.Database;
 import play.Logger;
+import play.Play;
 import play.libs.Json;
 
 import java.io.*;
@@ -138,18 +139,20 @@ public class AnalyserHandler implements Handler<AnalyserHandlerParam, AnalyserHa
 
         }
 
-        Logger.info("Save result");
+        Logger.info("Save result as "+ Play.application().path().getAbsolutePath()+"/"+ Definitions.jsonPathABS + resultName + ".json" );
         JsonNode json = Json.toJson(root.getRenderJSON());
-        if (Files.exists(new File(Definitions.jsonPath + resultName + ".json").toPath())) {
+        if (Files.exists(new File(Play.application().path().getAbsolutePath()+"/"+ Definitions.jsonPathABS + resultName + ".json").toPath())) {
             try {
-                Files.delete(new File(Definitions.jsonPath + resultName + ".json").toPath());
+                Files.delete(new File(Play.application().path().getAbsolutePath()+"/"+ Definitions.jsonPathABS + resultName + ".json").toPath());
             } catch (IOException e) {
                 throw new CustomException(e);
             }
         }
-        try (Writer writer = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(Definitions.jsonPath +resultName + ".json"), "utf-8"))) {
+        try (Writer writer = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(new File(Play.application().path().getAbsolutePath()+"/"+ Definitions.jsonPathABS +resultName + ".json", "utf-8"))))) {
             writer.write(Json.stringify(json));
-            repoRender.setLocalPath("/assets/data/" + resultName+ ".json");
+            repoRender.setLocalPath("/asset/" + resultName+ ".json");
+
+            new SaveClassAsTable().save(repoRender);
             writer.close();
             return  json;
 

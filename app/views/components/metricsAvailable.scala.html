@@ -110,15 +110,14 @@
       $("#globalSpinner").show();
         var wt = $( "#widthM option:selected" ).val();
         var ht = $( "#heightM option:selected" ).val();
-
         var ct = $("#colorM option:selected" ).val();
-        console.log(wt,ht,ct);
         applyYourMetrics(wt,ht,ct);
     }
 
 </script>
     @components.panelShowHide("QueryType"){Your Metrics} {
         <div>
+            <p> Width </p>
             <select id="widthM">
                 <option value="FieldCount">FieldCount</option>
                 <option value="MethodsCount">MethodsCount</option>
@@ -126,6 +125,7 @@
                 <option value="JavaDoc">Java Doc</option>
 
             </select>
+            <p> Height </p>
             <select id="heightM">
                 <option value="FieldCount">FieldCount</option>
                 <option value="MethodsCount">MethodsCount</option>
@@ -133,6 +133,7 @@
                 <option value="JavaDoc">Java Doc</option>
 
             </select>
+            <p> Color </p>
             <select id="colorM">
                 <option value="FieldCount">FieldCount</option>
                 <option value="MethodsCount">MethodsCount</option>

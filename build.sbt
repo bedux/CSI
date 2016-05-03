@@ -18,3 +18,4 @@ libraryDependencies += "com.typesafe.akka" %% "akka-actor" % "2.4.2"
 
 libraryDependencies += "javax.inject" % "javax.inject" % "1"
 
+

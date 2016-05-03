@@ -35,6 +35,13 @@ import java.util.stream.Stream;
 
 public class Application extends Controller {
 
+
+    public static Result myAsset(String file){
+        String s = Play.application().path().getAbsolutePath()+"/asset/"+file;
+        return ok(new java.io.File(s));
+
+    }
+
     private static HashMap<String,Function<String,Long>> queryAvailable = new HashMap<String,Function<String,Long>>(){{
         put("FieldCount",Query::CountFieldByPath);
         put("MethodsCount",Query::CountMethodByPath);
