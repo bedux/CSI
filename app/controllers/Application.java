@@ -1,5 +1,6 @@
 package controllers;
 
+import com.fasterxml.jackson.databind.JsonNode;
 import exception.CustomException;
 import exception.SQLnoResult;
 import logics.Definitions;
@@ -9,6 +10,12 @@ import logics.models.db.*;
 import logics.models.modelQuery.*;
 import logics.models.query.QueryList;
 import logics.pipeline.PipelineManager;
+import logics.pipeline.analayser.AnalyserHandler;
+import logics.pipeline.analayser.AnalyserHandlerParam;
+import logics.pipeline.analayser.MetricsCharacteristics;
+import logics.pipeline.tree.TreeGenerator;
+import logics.pipeline.tree.TreeGeneratorHandleParam;
+import logics.pipeline.tree.TreeGeneratorHandlerResult;
 import play.Play;
 import play.libs.Json;
 import play.mvc.Controller;
@@ -21,11 +28,20 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.*;
+import java.util.function.Function;
 import java.util.stream.Collector;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 public class Application extends Controller {
+
+    private static HashMap<String,Function<String,Long>> queryAvailable = new HashMap<String,Function<String,Long>>(){{
+        put("FieldCount",Query::CountFieldByPath);
+        put("MethodsCount",Query::CountMethodByPath);
+        put("DiscussionCount",Query::DiscussedImportMethodCounter);
+        put("JavaDoc",Query::JavaDocForMethodCount);
+
+    }};
 
     public static Result index() {
         return getRepositories();
@@ -188,6 +204,55 @@ public class Application extends Controller {
 
     }
 
+
+    public static Result customComputation(){
+        System.out.println("asd");
+        Long repoId  = request().body().asJson().get("repositoryId").asLong();
+        String widthQ  = request().body().asJson().get("width").asText();
+        String heightQ  =request().body().asJson().get("height").asText();
+        String colorQ  =request().body().asJson().get("color").asText();
+
+
+
+        System.out.println(repoId +" "+widthQ+" "+heightQ+" "+colorQ+" ");
+
+
+
+        //TODO
+        /*
+            Generate string that gives an idea about the kind of metrics to compute, this name should be also use as return value.
+            use a name such that become possible to apply chacing over it.
+
+           like:
+           CUSTOM_ WIDTH Name _ height Name _ color Name
+         */
+        RepositoryVersion repo = Query.byId(new Pair<>(repoId, RepositoryVersion.class)).get();
+        TreeGeneratorHandlerResult treeForG = new TreeGenerator().process(new TreeGeneratorHandleParam(repo));
+        String uuid = UUID.randomUUID().toString();
+
+        if(!queryAvailable.containsKey(widthQ)){
+            System.out.println(widthQ + " Che è??");
+            return ok();
+        }
+        if(!queryAvailable.containsKey(heightQ)){
+            System.out.println(widthQ+" Che è??");
+            return ok();
+        }
+        if(!queryAvailable.containsKey(colorQ)){
+            System.out.println(widthQ+" Che è??");
+            return ok();
+        }
+        MetricsCharacteristics ms6 = new MetricsCharacteristics(queryAvailable.get(widthQ), queryAvailable.get(heightQ),queryAvailable.get(colorQ),uuid);
+        AnalyserHandlerParam result6 = new AnalyserHandlerParam(repo,treeForG.root,ms6);
+//        result6.percentage = false;
+//        result6.isOnlyPackage = true;
+        System.out.println("HEEEEEEERE");
+        JsonNode ca  = new AnalyserHandler().process(result6).json;
+        Result res = ok(Json.stringify(ca));
+        System.out.println("RESULT!");
+        return res;
+    }
+
     public static Result getRepositories() {
         List<RepositoryRender> repositoryVersionList = Query.All(RepositoryRender.class);
         for(RepositoryRender v:repositoryVersionList){
@@ -213,9 +278,9 @@ public class Application extends Controller {
 
 
         Map<String, String> getMapMethod = new HashMap();
-        getMapMethod.put("Method Count Width/Depth","depthMetrics");
-        getMapMethod.put("Fields Count Height","heightMetrics");
-        getMapMethod.put("Java Doc Percentage Color","colorMetrics");
+        getMapMethod.put("Method Count Width/Depth","heightMetrics");
+        getMapMethod.put("Fields Count Height","depthMetrics");
+        getMapMethod.put("Color","colorMetrics");
 
 
 

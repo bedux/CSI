@@ -198,7 +198,7 @@ td{
     width: 100px;
     height: 100px;
 
-    background: url("http://1.bp.blogspot.com/-IdPZAIYB_38/UAsThCuCjcI/AAAAAAAABK0/wzErRGy13NU/s1600/loading.gif");
+    background: url("../images/loading.gif");
     background-size: 100px 100px;
 
     /*animation-name: spin;*/

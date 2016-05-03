@@ -7,6 +7,9 @@ import logics.analyzer.DataFile;
 import logics.analyzer.Package;
 import logics.models.tools.MaximumMinimumData;
 
+import java.util.List;
+import java.util.stream.Collectors;
+
 /**
  * Created by bedux on 03/03/16.
  */
@@ -46,7 +49,27 @@ public class AnalysePackageColor implements Analyser<Integer> {
      * @param packages The Component
      */
     private void computeColor(Package packages) {
-            packages.getFeatures().setColorMetrics(packages.getComponentList().stream().map(x->x.getFeatures().getColorMetrics()).reduce(0.0f,(x,y)->x+y) / (float)packages.getComponentList().size());
+            List<Float > list =
+                    packages.getComponentList().stream()
+                            .map(x->x.getFeatures().getColorMetrics())
+                            .filter(x -> x >= 0)
+                            .collect(Collectors.toList());
+
+        if(list.size()==0){
+            packages.getFeatures().setColorMetrics(-1);
+            packages.getFeatures().setBuildingType(ColoringAnalyser.BuildingType.NO_CARE.ordinal());
+
+
+        }else {
+            packages.getFeatures().setColorMetrics(
+                    list
+                    .stream()
+                    .reduce(0.0f, (x, y) -> x + y)
+                            / (float) packages.getComponentList().size());
+
+            packages.getFeatures().setBuildingType(ColoringAnalyser.BuildingType.COLOR.ordinal());
+
+        }
     }
 
     /**
@@ -54,8 +77,12 @@ public class AnalysePackageColor implements Analyser<Integer> {
      * @param dataFile The Component
      */
     private void computeColor(DataFile dataFile) {
+        if (dataFile.getFeatures().getPath().indexOf(".java") != dataFile.getFeatures().getPath().length() - 5) {
+            dataFile.getFeatures().setColorMetrics(-1);
 
-
+        }
+        dataFile.getFeatures().setBuildingType(ColoringAnalyser.BuildingType.INVISIBLE.ordinal());
+        dataFile.getFeatures().setColor(-1);
 
     }
 
@@ -65,8 +92,10 @@ public class AnalysePackageColor implements Analyser<Integer> {
      */
     private void computeColor(BinaryFile binaryFile) {
 
-        binaryFile.getFeatures().setBuildingType(0);
+        binaryFile.getFeatures().setBuildingType(ColoringAnalyser.BuildingType.INVISIBLE.ordinal());
         binaryFile.getFeatures().setColor(-1);
+        binaryFile.getFeatures().setColorMetrics(-1);
+
 
 
     }

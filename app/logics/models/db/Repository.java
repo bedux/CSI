@@ -68,22 +68,22 @@ public class Repository {
 
     }
 
-@Setter
+    @Setter
     public void setUrl(String url) {
         this.url = url;
     }
-    @Setter
 
+    @Setter
     public void setUsr(String usr) {
         this.usr = usr;
     }
-    @Setter
 
+    @Setter
     public void setPwd(String pwd) {
         this.pwd = pwd;
     }
-    @Setter
 
+    @Setter
     public void setSubversionType(String subversionType) {
         this.subversionType = subversionType;
     }

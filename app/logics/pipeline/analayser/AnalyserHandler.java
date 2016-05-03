@@ -58,13 +58,24 @@ public class AnalyserHandler implements Handler<AnalyserHandlerParam, AnalyserHa
 
 
 
+
+
+
     private JsonNode computeCity(Package root,Function<String,Long> width,Function<String,Long> height,Function<String,Long> color,String resultName,RepositoryRender repoRender,AnalyserHandlerParam param){
 
         Logger.info("Load data");
 
         try {
-            root.applyFunction(new LoadFromDatabase(width, height, color)::analysis).get();
+
+            root.applyFunction(new LoadFromDatabase(width, height, color)::analysis).exceptionally(x->{
+                System.out.println(x.getMessage());
+                        x.printStackTrace();
+
+                        return null;
+            }
+            ).get();
         } catch (InterruptedException e) {
+            System.out.println(e.getCause().getMessage());
             e.printStackTrace();
         } catch (ExecutionException e) {
             e.printStackTrace();
@@ -136,11 +147,10 @@ public class AnalyserHandler implements Handler<AnalyserHandlerParam, AnalyserHa
                 throw new CustomException(e);
             }
         }
-        try (Writer writer = new BufferedWriter(new OutputStreamWriter(
-                new FileOutputStream(Definitions.jsonPath +resultName + ".json"), "utf-8"))) {
+        try (Writer writer = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(Definitions.jsonPath +resultName + ".json"), "utf-8"))) {
             writer.write(Json.stringify(json));
-            repoRender.setLocalPath( "/assets/data/" + resultName+ ".json");
-            new SaveClassAsTable().save(repoRender);
+            repoRender.setLocalPath("/assets/data/" + resultName+ ".json");
+            writer.close();
             return  json;
 
         } catch (Exception e) {

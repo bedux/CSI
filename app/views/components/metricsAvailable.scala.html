@@ -6,29 +6,53 @@
 
     <div id="listOfmetrics">
         <ul>
-            <li><input type="checkbox" name="Discussion_and_import" value="disscussionAndImport" checked="checked" >Discussion And Import<br></li>
-            <li><input type="checkbox" name="JavaDoc" value="javaDoc"> Java Doc<br></li>
-            <li><input type="checkbox" name="Discussion_only_Package" value="discussionOnlyPackage">discussion Only Package<br></li>
-            <li><input type="checkbox" name="JavaDoc_only_Package" value="JavaDocPackage"> JavaDoc Only Package<br></li>
+            <li><input type="checkbox" name="Discussion_and_import" value="disscussionAndImport" checked="checked" >Discussion<br></li>
+            <li><input type="checkbox" name="JavaDoc" value="javaDoc">Java Doc<br></li>
+            <li><input type="checkbox" name="Discussion_only_Package" value="discussionOnlyPackage">Discussion Only Package<br></li>
+            <li><input type="checkbox" name="JavaDoc_only_Package" value="JavaDocPackage">JavaDoc Only Package<br></li>
 
         </ul>
-        <hl>
+        <hl/>
             <ul>
-                <li><input type="radio" name="percentage" value="percentage" id = "perc" checked="checked">percentage<br></li>
-                <li><input type="radio" name="percentage" value="absolute" id = "abs"> absolute<br></li>
-
+                <li><input type="radio" name="percentage" value="percentage" id = "perc" checked="checked">Percentage<br></li>
+                <li><input type="radio" name="percentage" value="absolute" id = "abs">Absolute<br></li>
             </ul>
 
         <button onclick="applyMagic()" value="apply">Apply</button>
+
 
     </div>
 
 
 
-    <script>
+}
 
 
-    function applyMagic(){
+<script>
+
+    function applyYourMetrics(width,heigth,color){
+    $.ajax({
+    type: "POST",
+    url: "@routes.Application.customComputation()",
+    data: JSON.stringify({
+    repositoryId:@repoVersion,
+    width:width,
+    height:heigth,
+    color:color
+
+    }),
+    contentType: 'application/json',
+    dataType: 'text',
+    success: function(json) {
+    createSceneWithData(json);
+    }
+
+    });
+    }
+
+ function applyMagic(){
+      $("#globalSpinner").show();
+
         var arrrOfReqFile = [];
         var per = false;
           if($('input[name=percentage]:checked').attr('id')=="perc"){
@@ -81,41 +105,44 @@
 
     }
 
-    $.get("/getRepoRender/" + @repoVersion,
-        function(data){
-            var jsonData = JSON.parse(data);
 
+    function blackMagic(){
+      $("#globalSpinner").show();
+        var wt = $( "#widthM option:selected" ).val();
+        var ht = $( "#heightM option:selected" ).val();
 
+        var ct = $("#colorM option:selected" ).val();
+        console.log(wt,ht,ct);
+        applyYourMetrics(wt,ht,ct);
+    }
 
-//                        for(var i in jsonData){
-//                            var c1 = jsonData[i]["url"];
-//                            var c2 = jsonData[i]["type"];
-//                             var column1 = $('<li></li>')
-//
-//
-//
-//                            var column2 = $('<input>').attr({
-//                                type: 'checkbox',
-//                                id: c1,
-//                                name: c1,
-//                             });
-//                            column1.append(column2);
-//
-//                            column.append(column1);
-//
-//                        }
-//                        table.append(column);
-//                        $("#listOfmetrics").append(table)
-
-
-
-
-    })
 </script>
-}
+    @components.panelShowHide("QueryType"){Your Metrics} {
+        <div>
+            <select id="widthM">
+                <option value="FieldCount">FieldCount</option>
+                <option value="MethodsCount">MethodsCount</option>
+                <option value="DiscussionCount">DiscussionCount</option>
+                <option value="JavaDoc">Java Doc</option>
 
+            </select>
+            <select id="heightM">
+                <option value="FieldCount">FieldCount</option>
+                <option value="MethodsCount">MethodsCount</option>
+                <option value="DiscussionCount">DiscussionCount</option>
+                <option value="JavaDoc">Java Doc</option>
 
+            </select>
+            <select id="colorM">
+                <option value="FieldCount">FieldCount</option>
+                <option value="MethodsCount">MethodsCount</option>
+                <option value="DiscussionCount">DiscussionCount</option>
+                <option value="JavaDoc">Java Doc</option>
 
+            </select>
+            <button onclick="blackMagic()" value="apply">Apply</button>
 
+        </div>
+    }
 
 </div>

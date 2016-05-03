@@ -67,7 +67,7 @@ public class LoadFromDatabase implements Analyser< CompletableFuture<Integer>> {
                     }
                     return 1;
                 }
-        );
+        ,ThreadManager.instance().getExecutor());
 
 
 
@@ -90,7 +90,13 @@ public class LoadFromDatabase implements Analyser< CompletableFuture<Integer>> {
             int width = (int) widthQuery.apply(currentPath).intValue();
             dataFile.getFeatures().setWidthMetrics(width);
             dataFile.getFeatures().setDepthMetrics(width);
-            dataFile.getFeatures().setHeightMetrics(heightQuery.apply(currentPath).floatValue());
+            Long l = heightQuery.apply(currentPath);
+            if(l!=null){
+                dataFile.getFeatures().setHeightMetrics(heightQuery.apply(currentPath).floatValue());
+            }else{
+                dataFile.getFeatures().setHeightMetrics(0);
+            }
+
             long color = colorQuery.apply(currentPath);
             dataFile.getFeatures().setColorMetrics(color);
 

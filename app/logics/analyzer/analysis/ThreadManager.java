@@ -10,15 +10,11 @@ public class ThreadManager {
     private static ThreadManager threadManager = new ThreadManager();
 
     private final ExecutorService scheduler =
-            Executors.newFixedThreadPool(1);
+            Executors.newFixedThreadPool(8);
     private final ExecutorService schedulerSingle =
-            Executors.newFixedThreadPool(1);
+            Executors.newFixedThreadPool(8);
 
-    public ForkJoinPool getForkJoinPool() {
-        return forkJoinPool;
-    }
 
-    private final ForkJoinPool forkJoinPool = new ForkJoinPool(2);
 
     private ThreadManager(){
 

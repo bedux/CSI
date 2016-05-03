@@ -59,9 +59,9 @@ public class ColoringAnalyserOnlyPackage implements Analyser<Integer> {
 //        } else {
 //            float color = packages.getFeatures().getRemoteness() / ((float) max);
 //            packages.getFeatures().setColor(color + 0.01f);
-            packages.getFeatures().setBuildingType(ColoringAnalyser.BuildingType.COLOR.ordinal());
 
-        packages.getFeatures().setColor(packages.getFeatures().getColorMetrics()/ max);
+         //   packages.getFeatures().setBuildingType(ColoringAnalyser.BuildingType.COLOR.ordinal());
+            packages.getFeatures().setColor(packages.getFeatures().getColorMetrics()/ max);
 
 //        }
     }

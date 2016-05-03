@@ -12,7 +12,7 @@ import logics.models.tools.MaximumMinimumData;
  */
 public class ColoringAnalyser implements Analyser<Integer> {
 
-    public static enum BuildingType  {COLOR,PACKAGE,BASE_PACKAGE,DATA_FILE,BINARY_FILE,INVISIBLE}
+    public static enum BuildingType  {COLOR,PACKAGE,BASE_PACKAGE,DATA_FILE,BINARY_FILE,INVISIBLE,NO_CARE}
 
     private int max = 0;
     private MaximumMinimumData maximumMinimumData;

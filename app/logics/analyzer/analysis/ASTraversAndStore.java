@@ -59,7 +59,7 @@ public class ASTraversAndStore implements Analyser< CompletableFuture<Integer>> 
                             }
                             return 1;
                         }
-                );
+                        ,ThreadManager.instance().getExecutor());
 
 
 

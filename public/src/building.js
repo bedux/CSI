@@ -139,6 +139,10 @@ function colorMesh(data,scene,lp){
         material.setColor3("color", new BABYLON.Color3(0.7,0.7,0.7));       
     }
 
+ //NOCARE FILE
+    else if(data.buildingType==6){
+        material.setColor3("color", new BABYLON.Color3(0.7,0.7,0.7));       
+    }
 
 
     
@@ -205,7 +209,7 @@ function createBuilding(scene, position, data,parent,lp) {
     scene.data[data.id+ "_model"] = data;
 
     cylinder = BABYLON.Mesh.CreateBox(data.id + "_model", 1, scene, false);
-    
+
     cylinder.scaling = new BABYLON.Vector3(data.width, data.height, data.deep);
     cylinder.position = new BABYLON.Vector3(position.x+data.width/2,position.y+data.height/2,position.z+data.deep/2);
     cylinder.parent = parent;

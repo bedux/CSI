@@ -323,6 +323,10 @@ window.reloadStuff= function(data,name){
 
 }
 
+window.createSceneWithData = function(json){
+    console.log(JSON.parse(json))
+    scn.updateScene(JSON.parse(json));
+}
 
 
 function mergeInfo(data){
@@ -340,7 +344,7 @@ function mergeInfo(data){
     var changes = 1;    
     for(var i in data){
 
-        if(data[i].data.features.colorMetrics >= 0){
+     
 
             if(i!=0 &&  (data[i].data.buildingType == Enum.BuildingType.COLOR)){
 
@@ -357,8 +361,11 @@ function mergeInfo(data){
                 changes++;
 
 
+            }else if(data[i].data.buildingType == Enum.BuildingType.NO_CARE){
+                data[0].data.buildingType = Enum.BuildingType.NO_CARE;
+
             }
-        }
+        
 
 
     }
@@ -408,6 +415,8 @@ window.doItForMe = function(data){
     mergeInfo(c);
 
     scn.updateScene(c[0])
+    $.ajaxSetup({async:true});
+
 
 
 }
