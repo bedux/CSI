@@ -333,4 +333,28 @@ public final class Query  {
     }
 
 
+    public static long CountJavaClass(String path){
+        JavaFile jf = JavaFileByPath(path).orElseThrow(() -> new CustomException(""));
+        return jf.getListOfJavaClass().size();
+    }
+
+    public static long CountJavaInterface(String path){
+        JavaFile jf = JavaFileByPath(path).orElseThrow(() -> new CustomException(""));
+        return jf.getListOfJavaInterface().size();
+    }
+
+    public static long CountJavaEnum(String path){
+        JavaFile jf = JavaFileByPath(path).orElseThrow(() -> new CustomException(""));
+        return jf.getListOfJavaEnum().size();
+    }
+
+    public static long CountJavaImport(String path){
+        JavaFile jf = JavaFileByPath(path).orElseThrow(() -> new CustomException(""));
+        return jf.getListOfJavaImport().size();
+    }
+    public static long CountMethodCall(String path){
+        return AllJavaMethodCallFormPath(path).size();
+
+    }
+
 }

@@ -4,12 +4,14 @@ import com.github.javaparser.JavaParser;
 import com.github.javaparser.ParseException;
 import com.github.javaparser.ast.CompilationUnit;
 import com.github.javaparser.ast.ImportDeclaration;
+import com.github.javaparser.ast.Node;
 import com.github.javaparser.ast.PackageDeclaration;
 import com.github.javaparser.ast.body.*;
 import com.github.javaparser.ast.comments.JavadocComment;
 import com.github.javaparser.ast.expr.MethodCallExpr;
 import com.github.javaparser.ast.expr.VariableDeclarationExpr;
 import com.github.javaparser.ast.visitor.VoidVisitorAdapter;
+import com.ning.http.client.websocket.WebSocket;
 import exception.CustomException;
 import exception.SQLnoResult;
 import interfaces.Analyser;
@@ -20,6 +22,7 @@ import logics.databaseCache.DatabaseModels;
 import logics.models.db.*;
 import logics.models.db.information.*;
 import logics.models.modelQuery.Query;
+import logics.versionUtils.WebSocketProgress;
 import play.Logger;
 
 import java.io.IOException;
@@ -37,6 +40,14 @@ import java.util.stream.Collectors;
  * Created by bedux on 25/03/16.
  */
 public class ASTraversAndStore implements Analyser< CompletableFuture<Integer>> {
+
+    WebSocketProgress webSocketProgress= null;
+    public ASTraversAndStore(){
+
+    }
+    public ASTraversAndStore(WebSocketProgress webSocketProgress){
+        this.webSocketProgress = webSocketProgress;
+    }
 
     /***
      * Given a component, run the analysis on his child and, if is a javaFile, it compute all the characteristic using the AST
@@ -106,6 +117,9 @@ public class ASTraversAndStore implements Analyser< CompletableFuture<Integer>> 
     private void analyseJavaFile(ExtensionTool currentPath) {
         JavaFile analyzedFile;
         Logger.info("Analyse "+currentPath.getPath()+" Thread id=>"+Thread.currentThread().getId());
+        if(webSocketProgress!=null){
+            webSocketProgress.beginTask("Analyse "+currentPath.getPath(),1);
+        }
         try {
             analyzedFile = Query.JavaFileByPath(currentPath.getPath()).orElseThrow(() -> new SQLnoResult());
             Long l = Files.size(currentPath.getFilePath());
@@ -132,6 +146,9 @@ public class ASTraversAndStore implements Analyser< CompletableFuture<Integer>> 
             new CustomException(e);
         }  catch (ParseException e) {
             new CustomException(e);
+        }
+        if(webSocketProgress!=null){
+            webSocketProgress.endTask(" Analyse "+currentPath.getPath());
         }
 
     }
@@ -172,7 +189,6 @@ class MethodVisitor extends VoidVisitorAdapter<MethodVisitorParameter> {
 
     @Override
     public void visit(MethodCallExpr n, MethodVisitorParameter arg) {
-
             if(arg.javaMethodId==-1 ){
                 if(arg.idJavaSource!=-1) {
                     if (arg.isInterface) {
@@ -197,6 +213,7 @@ class MethodVisitor extends VoidVisitorAdapter<MethodVisitorParameter> {
                     jm.setJson(mif);
                 }
                 MethodInfoJSON mif = jm.getJson();
+
                 mif.variableDeclaration.add(n.getName());
                 jm.setJson(mif);
             }

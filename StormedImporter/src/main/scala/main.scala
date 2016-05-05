@@ -122,7 +122,7 @@ object main{
   def main (args: Array[String]){
 
 
-    val filesHere = (new java.io.File("/Users/bedux/Downloads/jsonSubset/")).listFiles
+    val filesHere = (new java.io.File("/Users/bedux/Downloads/jsons/")).listFiles
     val futureList = filesHere.map(x=>Utils(x.getAbsolutePath).getFuture)
     val futur = Future.sequence(futureList.toList);
     futur.onFailure({

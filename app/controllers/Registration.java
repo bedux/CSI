@@ -1,11 +1,14 @@
 package controllers;
 
+import logics.analyzer.analysis.ThreadManager;
+import logics.models.db.RepositoryVersion;
 import logics.models.form.RepoForm;
 import logics.pipeline.PipelineManager;
 import play.data.Form;
 import play.libs.F;
 import play.mvc.Controller;
 import play.mvc.Result;
+import views.html.loading;
 import views.html.repoRegistration;
 
 /**
@@ -19,28 +22,13 @@ public class Registration extends Controller {
     }
 
     //Used for the repository registration submit. Save the repo onto the database
-    public static F.Promise<Result> repoRegistrationSubmit() {
+    public static Result repoRegistrationSubmit() {
 
         Form<RepoForm> repoForm = Form.form(RepoForm.class).bindFromRequest();
 
+        Long current = new PipelineManager().runPipeline(repoForm.get());
 
-        if (repoForm.hasErrors()) {
-            return F.Promise.promise(() -> redirect("/addRepo"));
-        } else {
-
-            F.Promise<Result> trs = F.Promise.promise(() ->
-            {
-                //Add to database the repository
-
-                new PipelineManager().runPipeline(repoForm.get());
-
-
-                return redirect("/");
-            });
-
-            return trs;
-
-        }
+        return ok(loading.render(current));
     }
 
 

@@ -65,36 +65,36 @@
         if($('input[name=Discussion_and_import]:checked').val()){
             console.log("casdj")
             if(per){
-                    arrrOfReqFile.push("/assets/data/Discussion_and_import_percentage@repoVersion"+".json");
+                    arrrOfReqFile.push("/asset/Discussion_and_import_percentage@repoVersion"+".json");
             }else{
-                    arrrOfReqFile.push("/assets/data/Discussion_and_import@repoVersion"+".json");
+                    arrrOfReqFile.push("/asset/Discussion_and_import@repoVersion"+".json");
 
             }
         }
         if($('input[name=JavaDoc]:checked').val()){
             console.log("casdj")
              if(per){
-                    arrrOfReqFile.push("/assets/data/JavaDoc_over_Method@repoVersion"+".json");
+                    arrrOfReqFile.push("/asset/JavaDoc_over_Method@repoVersion"+".json");
             }else{
-                    arrrOfReqFile.push("/assets/data/JavaDoc@repoVersion"+".json");
+                    arrrOfReqFile.push("/asset/JavaDoc@repoVersion"+".json");
 
             }
         }
         if($('input[name=Discussion_only_Package]:checked').val()){
             console.log("casdj")
              if(per){
-                    arrrOfReqFile.push("/assets/data/Discussion_over_Method_and_Import__Package@repoVersion"+".json");
+                    arrrOfReqFile.push("/asset/Discussion_over_Method_and_Import__Package@repoVersion"+".json");
             }else{
-                    arrrOfReqFile.push("/assets/data/Discussion_only_Package@repoVersion"+".json");
+                    arrrOfReqFile.push("/asset/Discussion_only_Package@repoVersion"+".json");
 
             }
         }
         if($('input[name=JavaDoc_only_Package]:checked').val()){
             console.log("casdj")
              if(per){
-                    arrrOfReqFile.push("/assets/data/JavaDoc_over_Method_Package@repoVersion" + ".json");
+                    arrrOfReqFile.push("/asset/JavaDoc_over_Method_Package@repoVersion" + ".json");
             }else{
-                    arrrOfReqFile.push("/assets/data/JavaDoc_only_Package@repoVersion" + ".json");
+                    arrrOfReqFile.push("/asset/JavaDoc_only_Package@repoVersion" + ".json");
 
             }
         }
@@ -123,6 +123,9 @@
                 <option value="MethodsCount">MethodsCount</option>
                 <option value="DiscussionCount">DiscussionCount</option>
                 <option value="JavaDoc">Java Doc</option>
+                <option value="ClassCount">N of class</option>
+                <option value="InterfaceCount">N of Interfaces</option>
+
 
             </select>
             <p> Height </p>
@@ -131,6 +134,8 @@
                 <option value="MethodsCount">MethodsCount</option>
                 <option value="DiscussionCount">DiscussionCount</option>
                 <option value="JavaDoc">Java Doc</option>
+                <option value="ClassCount">N of class</option>
+                <option value="InterfaceCount">N of Interfaces</option>
 
             </select>
             <p> Color </p>
@@ -139,6 +144,8 @@
                 <option value="MethodsCount">MethodsCount</option>
                 <option value="DiscussionCount">DiscussionCount</option>
                 <option value="JavaDoc">Java Doc</option>
+                <option value="ClassCount">N of class</option>
+                <option value="InterfaceCount">N of Interfaces</option>
 
             </select>
             <button onclick="blackMagic()" value="apply">Apply</button>

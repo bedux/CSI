@@ -1,8 +1,8 @@
 package logics.pipeline.analayser;
 
+import logics.databaseCache.DatabaseModels;
 import logics.models.db.RepositoryRender;
 import logics.models.db.RepositoryVersion;
-import logics.models.modelQuery.IQuery;
 
 import java.util.function.Function;
 
@@ -40,8 +40,9 @@ private final Function<String,Long> width ;
     }
 
     public RepositoryRender repositoryRender(RepositoryVersion repositoryVersion){
-        RepositoryRender repositoryRender = new RepositoryRender();
-        repositoryRender.setRepositoryVersionConcrete(repositoryVersion);
+        RepositoryRender repositoryRender = DatabaseModels.getInstance().getEntity(RepositoryRender.class).get();
+        //repositoryRender.setRepositoryVersionConcrete(repositoryVersion);
+        repositoryVersion.addRepositoryRender(repositoryRender);
         repositoryRender.setrepositoryConcrete(repositoryVersion.getRepository());
         repositoryRender.setMetricType( metricType);
         return  repositoryRender;

@@ -1,0 +1,27 @@
+@(id : Long)
+@main(""){
+
+
+    <div>
+        <ul id="greeting">
+
+            </ul>
+    </div>
+
+    <a  href="/">List of Repository</a>
+
+    <script type="text/javascript" charset="utf-8">
+    
+        $(function() {
+            var WS = window['MozWebSocket'] ? MozWebSocket : WebSocket
+            var sock = new WS("@routes.WebSocketConnection.sockHandler(id).webSocketURL(request)")
+            
+            sock.onmessage = function(event) {
+                $('#greeting').append($("<li>"+event.data+"</li>"))
+            }
+
+        })
+    
+    </script>
+
+}

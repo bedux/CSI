@@ -1,5 +1,6 @@
 package logics.versionUtils;
 
+import controllers.WebSocketConnection;
 import exception.CustomException;
 import interfaces.VersionedSystem;
 import logics.Definitions;
@@ -7,13 +8,17 @@ import logics.models.db.Repository;
 import org.eclipse.jgit.api.CheckoutCommand;
 import org.eclipse.jgit.api.CloneCommand;
 import org.eclipse.jgit.api.Git;
+import org.eclipse.jgit.api.ResetCommand;
 import org.eclipse.jgit.api.errors.GitAPIException;
 import org.eclipse.jgit.revwalk.RevCommit;
 import org.eclipse.jgit.transport.UsernamePasswordCredentialsProvider;
 import play.Logger;
 import play.Play;
 
+import java.io.BufferedReader;
 import java.io.File;
+import java.io.IOException;
+import java.io.InputStreamReader;
 import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.List;
@@ -40,15 +45,25 @@ public class GitRepo implements VersionedSystem {
     }
 
 
+    public  GitRepo(Repository repo,String s){
+        try {
+            git = Git.open( new File( Play.application().path().getAbsolutePath()+"/"+Definitions.repositoryPathABS+repo.getId()));
+            System.out.println("CREATEEEEE");
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+    }
     /***
      *
-     * @param name clone the repository and store whith the current na,e
+     * @param name clone the repository and store with the current na,e
      * @return
      */
 
     @Override
     public Definitions.State clone(String name) {
         repoFile = new File( Play.application().path().getAbsolutePath()+"/"+Definitions.repositoryPathABS + name);
+
         if (Files.exists(repoFile.toPath())) {
             throw new CustomException("Id already exist. Please clear the directory of GIT projects");
         }
@@ -64,7 +79,7 @@ public class GitRepo implements VersionedSystem {
 
 
         clone.setDirectory(repoFile);
-        clone.setProgressMonitor(new SimpleProgressMonitor());
+        clone.setProgressMonitor((WebSocketProgress)WebSocketConnection.availableWebSocket.get(repository.getId()));
         try {
             git = clone.call();
         } catch (GitAPIException e) {
@@ -94,6 +109,11 @@ public class GitRepo implements VersionedSystem {
         }
     }
 
+    @Override
+    public void checkoutRevision(VersionCommit commitInfo) {
+
+    }
+
     /**
      *
      * @return Get all repository Commits
@@ -118,17 +138,35 @@ public class GitRepo implements VersionedSystem {
      *
      * @param obj
      */
-    public void checkoutRevision(VersionCommit obj) {
+    public void checkoutRevision(VersionCommit obj,String id) {
+//        try {
+//            RevCommit data = (RevCommit) obj.getData();
+//            ResetCommand checkoutCommand = git.reset();
+//
+//            checkoutCommand.setRef("HEAD").setMode(ResetCommand.ResetType.HARD).call();
+//            commits = null;
+//        } catch (GitAPIException e) {
+//            throw new CustomException(e);
+//        }
+
+        Runtime rt = Runtime.getRuntime();
+
         try {
+            Process pr = rt.exec("git -C " + Play.application().path().getAbsolutePath() + "/" + Definitions.repositoryPathABS + id + " reset --hard "+obj.getName());
+            pr.waitFor();
 
-            RevCommit data = (RevCommit) obj.getData();
-            CheckoutCommand checkoutCommand = git.checkout();
-            checkoutCommand.setAllPaths(true).setForce(true).setName(data.getId().getName()).call();
-            commits = null;
-        } catch (GitAPIException e) {
-            throw new CustomException(e);
+            BufferedReader reader =
+                    new BufferedReader(new InputStreamReader(pr.getInputStream()));
+
+            String line = "";
+            while ((line = reader.readLine())!= null) {
+                System.out.println(line + "\n");
+            }
+        } catch (IOException e1) {
+            e1.printStackTrace();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
         }
-
     }
 
     /**

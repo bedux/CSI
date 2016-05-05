@@ -1,5 +1,10 @@
 package logics.pipeline;
 
+import controllers.WebSocketConnection;
+import exception.CustomException;
+import logics.analyzer.analysis.ThreadManager;
+import logics.databaseCache.DatabaseModels;
+import logics.models.db.Repository;
 import logics.models.db.RepositoryVersion;
 import logics.models.form.RepoForm;
 import logics.models.modelQuery.*;
@@ -18,96 +23,153 @@ import logics.pipeline.storing.StoreHandlerResult;
 import logics.pipeline.tree.TreeGenerator;
 import logics.pipeline.tree.TreeGeneratorHandleParam;
 import logics.pipeline.tree.TreeGeneratorHandlerResult;
+import logics.versionUtils.WebSocketProgress;
 
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
+import java.util.function.Function;
 
 
 public class PipelineManager {
 
-    public void runPipeline(RepoForm repoForm) {
-        CloneHandlerResult shr =  new CloneHandler().process(new CloneHandlerParam(repoForm));
-        StoreAndAnalyze(shr);
+    public Long runPipeline(RepoForm repoForm) {
+
+        Repository repository = DatabaseModels.getInstance().getEntity(Repository.class).get();
+        repository.setPwd(repoForm.pwd);
+        repository.setUsr(repoForm.user);
+        repository.setUrl(repoForm.uri);
+        repository.setSubversionType(repoForm.type);
+
+        new WebSocketProgress(repository.getId());
+
+//        RepositoryVersion repositoryVersion =  DatabaseModels.getInstance().getEntity(RepositoryVersion.class).get();
+//        repository.addlistOfRepositoryVersion(repositoryVersion);
+
+        Runnable task = (()-> {
+            CloneHandlerResult shr =  new CloneHandler().process(new CloneHandlerParam(repository));
+            StoreAndAnalyze(shr.repositoryVersion);
+        });
+        ThreadManager.instance().getExecutor().execute(task);
+        return repository.getId();
+
     }
 
-    public void StoreAndAnalyze(CloneHandlerResult repositoryVersion){
-        StoreAndAnalyze(repositoryVersion.repositoryVersion);
+    private  CompletableFuture<Void> runTask(Function<String,Long> q1,Function<String,Long> q2,Function<String,Long> q3,String name,RepositoryVersion reooV,boolean per , boolean onPack){
+        return   CompletableFuture.runAsync(()-> {
+
+            WebSocketProgress currentProgress =(WebSocketProgress)WebSocketConnection.availableWebSocket.get(reooV.getRepository().getId());
+            currentProgress.beginTask(name,100);
+
+            TreeGeneratorHandlerResult treeForA = new TreeGenerator().process(new TreeGeneratorHandleParam(reooV));
+            MetricsCharacteristics ms = new MetricsCharacteristics(q1, q2, q3, name);
+            AnalyserHandlerParam result = new AnalyserHandlerParam(reooV, treeForA.root, ms);
+            result.percentage = per;
+            result.isOnlyPackage = onPack;
+            new AnalyserHandler().process(result);
+            currentProgress.endTask(name);
+
+        });
     }
 
-    public void StoreAndAnalyze(RepositoryVersion repositoryVersion){
 
+    public Long StoreAndAnalyze(RepositoryVersion repositoryVersion){
 
-        StoreHandlerResult shr =  new StoreHandler().process(new StoreHandlerParam(repositoryVersion));
-        TreeGeneratorHandlerResult generateTree = new TreeGenerator().process(new TreeGeneratorHandleParam(shr.repositoryVersion));
-        StoreASTHandlerResult  storeASTHandlerResult = new StoreAstData().process(new StoreASTHandleParam(generateTree));
+        DatabaseModels.getInstance().invalidCache();
+        new WebSocketProgress(repositoryVersion.getRepository().getId());
+        WebSocketProgress currentProgress =(WebSocketProgress)WebSocketConnection.availableWebSocket.get(repositoryVersion.getRepository().getId());
+
+        Runnable r =  ()-> {
+            StoreHandlerResult shr = new StoreHandler().process(new StoreHandlerParam(repositoryVersion));
+            TreeGeneratorHandlerResult generateTree = new TreeGenerator().process(new TreeGeneratorHandleParam(shr.repositoryVersion));
+            currentProgress.beginTask("AST over Files",1);
+            new StoreAstData().process(new StoreASTHandleParam(generateTree,currentProgress));
+            currentProgress.endTask("AST over Files");
+
 //
 
+            CompletableFuture.allOf(
+                    runTask(Query::CountFieldByPath, Query::CountMethodByPath, Query::DiscussedImportMethodCounter, "Discussion and import", repositoryVersion,false,false),
+                    runTask(Query::CountFieldByPath, Query::CountMethodByPath, Query::DiscussedImportMethodCounterOverTotal, "Discussion and import percentage", repositoryVersion,true,false),
+                    runTask(Query::CountFieldByPath, Query::CountMethodByPath, Query::JavaDocForMethodCount, "JavaDoc", repositoryVersion,false,false),
+                    runTask(Query::CountFieldByPath, Query::CountMethodByPath, Query::JavaDocOverTotalMethods, "JavaDoc over Method", repositoryVersion,true,false),
+                    runTask(Query::CountFieldByPath, Query::CountMethodByPath, Query::JavaDocForMethodCount, "JavaDoc only Package", repositoryVersion,false,true),
+                    runTask(Query::CountFieldByPath, Query::CountMethodByPath, Query::JavaDocOverTotalMethods, "JavaDoc over Method Package", repositoryVersion,true,true),
+                    runTask(Query::CountFieldByPath, Query::CountMethodByPath, Query::DiscussedImportMethodCounter, "Discussion only Package", repositoryVersion,false,true),
+                    runTask(Query::CountFieldByPath, Query::CountMethodByPath, Query::DiscussedImportMethodCounterOverTotal, "Discussion over Method and Import  Package", repositoryVersion,true,true)
+            );
+        };
+        ThreadManager.instance().getExecutor().execute(r);
+        return repositoryVersion.getRepository().getId();
+
+
+
+
 //
-        try {
-            CompletableFuture.runAsync(()-> {
-                        TreeGeneratorHandlerResult treeForA = new TreeGenerator().process(new TreeGeneratorHandleParam(shr.repositoryVersion));
-                        MetricsCharacteristics ms = new MetricsCharacteristics(Query::CountFieldByPath, Query::CountMethodByPath, Query::DiscussedImportMethodCounter, "Discussion and import");
-                        AnalyserHandlerParam result = new AnalyserHandlerParam(storeASTHandlerResult.repositoryVersion, treeForA.root, ms);
-                        new AnalyserHandler().process(result);
-                    }).thenAcceptAsync((x) -> {
-
-                TreeGeneratorHandlerResult treeForB = new TreeGenerator().process(new TreeGeneratorHandleParam(shr.repositoryVersion));
-                MetricsCharacteristics ms1 = new MetricsCharacteristics(Query::CountFieldByPath, Query::CountMethodByPath, Query::DiscussedImportMethodCounterOverTotal, "Discussion and import percentage");
-                AnalyserHandlerParam result1 = new AnalyserHandlerParam(storeASTHandlerResult.repositoryVersion, treeForB.root, ms1);
-                result1.percentage = true;
-                new AnalyserHandler().process(result1);
-            }).thenAcceptAsync((x) -> {
-
-                        TreeGeneratorHandlerResult treeForC = new TreeGenerator().process(new TreeGeneratorHandleParam(shr.repositoryVersion));
-                        MetricsCharacteristics ms2 = new MetricsCharacteristics(Query::CountFieldByPath, Query::CountMethodByPath, Query::JavaDocForMethodCount, "JavaDoc");
-                        AnalyserHandlerParam result2 = new AnalyserHandlerParam(storeASTHandlerResult.repositoryVersion, treeForC.root, ms2);
-                        new AnalyserHandler().process(result2);
-                    }).thenAcceptAsync((x) -> {
-
-                        TreeGeneratorHandlerResult treeForD = new TreeGenerator().process(new TreeGeneratorHandleParam(shr.repositoryVersion));
-                        MetricsCharacteristics ms3 = new MetricsCharacteristics(Query::CountFieldByPath, Query::CountMethodByPath, Query::JavaDocOverTotalMethods, "JavaDoc over Method");
-                        AnalyserHandlerParam result3 = new AnalyserHandlerParam(storeASTHandlerResult.repositoryVersion, treeForD.root, ms3);
-                        result3.percentage = true;
-                        new AnalyserHandler().process(result3);
-                    }).thenAcceptAsync((x) -> {
-
-            TreeGeneratorHandlerResult treeForE = new TreeGenerator().process(new TreeGeneratorHandleParam(shr.repositoryVersion));
-            MetricsCharacteristics ms4 = new MetricsCharacteristics(Query::CountFieldByPath, Query::CountMethodByPath,Query::JavaDocForMethodCount,"JavaDoc only Package");
-            AnalyserHandlerParam result4 = new AnalyserHandlerParam(storeASTHandlerResult.repositoryVersion,treeForE.root,ms4);
-            result4.percentage = false;
-            result4.isOnlyPackage = true;
-            new AnalyserHandler().process(result4);
-            }).thenAcceptAsync((x) -> {
-
-            TreeGeneratorHandlerResult treeForF = new TreeGenerator().process(new TreeGeneratorHandleParam(shr.repositoryVersion));
-            MetricsCharacteristics ms5 = new MetricsCharacteristics(Query::CountFieldByPath, Query::CountMethodByPath,Query::JavaDocOverTotalMethods,"JavaDoc over Method Package");
-            AnalyserHandlerParam result5 = new AnalyserHandlerParam(storeASTHandlerResult.repositoryVersion,treeForF.root,ms5);
-            result5.percentage = true;
-            result5.isOnlyPackage = true;
-            new AnalyserHandler().process(result5);
-            }).thenAcceptAsync((x) -> {
-
-
-            TreeGeneratorHandlerResult treeForG = new TreeGenerator().process(new TreeGeneratorHandleParam(shr.repositoryVersion));
-            MetricsCharacteristics ms6 = new MetricsCharacteristics(Query::CountFieldByPath, Query::CountMethodByPath,Query::DiscussedImportMethodCounter,"Discussion only Package");
-            AnalyserHandlerParam result6 = new AnalyserHandlerParam(storeASTHandlerResult.repositoryVersion,treeForG.root,ms6);
-            result6.percentage = false;
-            result6.isOnlyPackage = true;
-            new AnalyserHandler().process(result6);
-            }).thenAcceptAsync((x) -> {
-
-            TreeGeneratorHandlerResult treeForH = new TreeGenerator().process(new TreeGeneratorHandleParam(shr.repositoryVersion));
-            MetricsCharacteristics ms7 = new MetricsCharacteristics(Query::CountFieldByPath, Query::CountMethodByPath,Query::DiscussedImportMethodCounterOverTotal,"Discussion over Method and Import  Package");
-            AnalyserHandlerParam result7 = new AnalyserHandlerParam(storeASTHandlerResult.repositoryVersion,treeForH.root,ms7);
-            result7.percentage = true;
-            result7.isOnlyPackage = true;
-            new AnalyserHandler().process(result7);
-            }).get();
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        } catch (ExecutionException e) {
-            e.printStackTrace();
-        }
+//        try {
+//            CompletableFuture.runAsync(()-> {
+//                        TreeGeneratorHandlerResult treeForA = new TreeGenerator().process(new TreeGeneratorHandleParam(shr.repositoryVersion));
+//                        MetricsCharacteristics ms = new MetricsCharacteristics(Query::CountFieldByPath, Query::CountMethodByPath, Query::DiscussedImportMethodCounter, "Discussion and import");
+//                        AnalyserHandlerParam result = new AnalyserHandlerParam(storeASTHandlerResult.repositoryVersion, treeForA.root, ms);
+//                        new AnalyserHandler().process(result);
+//                    }).thenAcceptAsync((x) -> {
+//
+//                TreeGeneratorHandlerResult treeForB = new TreeGenerator().process(new TreeGeneratorHandleParam(shr.repositoryVersion));
+//                MetricsCharacteristics ms1 = new MetricsCharacteristics(Query::CountFieldByPath, Query::CountMethodByPath, Query::DiscussedImportMethodCounterOverTotal, "Discussion and import percentage");
+//                AnalyserHandlerParam result1 = new AnalyserHandlerParam(storeASTHandlerResult.repositoryVersion, treeForB.root, ms1);
+//                result1.percentage = true;
+//                new AnalyserHandler().process(result1);
+//            }).thenAcceptAsync((x) -> {
+//
+//                        TreeGeneratorHandlerResult treeForC = new TreeGenerator().process(new TreeGeneratorHandleParam(shr.repositoryVersion));
+//                        MetricsCharacteristics ms2 = new MetricsCharacteristics(Query::CountFieldByPath, Query::CountMethodByPath, Query::JavaDocForMethodCount, "JavaDoc");
+//                        AnalyserHandlerParam result2 = new AnalyserHandlerParam(storeASTHandlerResult.repositoryVersion, treeForC.root, ms2);
+//                        new AnalyserHandler().process(result2);
+//                    }).thenAcceptAsync((x) -> {
+//
+//                        TreeGeneratorHandlerResult treeForD = new TreeGenerator().process(new TreeGeneratorHandleParam(shr.repositoryVersion));
+//                        MetricsCharacteristics ms3 = new MetricsCharacteristics(Query::CountFieldByPath, Query::CountMethodByPath, Query::JavaDocOverTotalMethods, "JavaDoc over Method");
+//                        AnalyserHandlerParam result3 = new AnalyserHandlerParam(storeASTHandlerResult.repositoryVersion, treeForD.root, ms3);
+//                        result3.percentage = true;
+//                        new AnalyserHandler().process(result3);
+//                    }).thenAcceptAsync((x) -> {
+//
+//            TreeGeneratorHandlerResult treeForE = new TreeGenerator().process(new TreeGeneratorHandleParam(shr.repositoryVersion));
+//            MetricsCharacteristics ms4 = new MetricsCharacteristics(Query::CountFieldByPath, Query::CountMethodByPath,Query::JavaDocForMethodCount,"JavaDoc only Package");
+//            AnalyserHandlerParam result4 = new AnalyserHandlerParam(storeASTHandlerResult.repositoryVersion,treeForE.root,ms4);
+//            result4.percentage = false;
+//            result4.isOnlyPackage = true;
+//            new AnalyserHandler().process(result4);
+//            }).thenAcceptAsync((x) -> {
+//
+//            TreeGeneratorHandlerResult treeForF = new TreeGenerator().process(new TreeGeneratorHandleParam(shr.repositoryVersion));
+//            MetricsCharacteristics ms5 = new MetricsCharacteristics(Query::CountFieldByPath, Query::CountMethodByPath,Query::JavaDocOverTotalMethods,"JavaDoc over Method Package");
+//            AnalyserHandlerParam result5 = new AnalyserHandlerParam(storeASTHandlerResult.repositoryVersion,treeForF.root,ms5);
+//            result5.percentage = true;
+//            result5.isOnlyPackage = true;
+//            new AnalyserHandler().process(result5);
+//            }).thenAcceptAsync((x) -> {
+//
+//
+//            TreeGeneratorHandlerResult treeForG = new TreeGenerator().process(new TreeGeneratorHandleParam(shr.repositoryVersion));
+//            MetricsCharacteristics ms6 = new MetricsCharacteristics(Query::CountFieldByPath, Query::CountMethodByPath,Query::DiscussedImportMethodCounter,"Discussion only Package");
+//            AnalyserHandlerParam result6 = new AnalyserHandlerParam(storeASTHandlerResult.repositoryVersion,treeForG.root,ms6);
+//            result6.percentage = false;
+//            result6.isOnlyPackage = true;
+//            new AnalyserHandler().process(result6);
+//            }).thenAcceptAsync((x) -> {
+//
+//            TreeGeneratorHandlerResult treeForH = new TreeGenerator().process(new TreeGeneratorHandleParam(shr.repositoryVersion));
+//            MetricsCharacteristics ms7 = new MetricsCharacteristics(Query::CountFieldByPath, Query::CountMethodByPath,Query::DiscussedImportMethodCounterOverTotal,"Discussion over Method and Import  Package");
+//            AnalyserHandlerParam result7 = new AnalyserHandlerParam(storeASTHandlerResult.repositoryVersion,treeForH.root,ms7);
+//            result7.percentage = true;
+//            result7.isOnlyPackage = true;
+//            new AnalyserHandler().process(result7);
+//            }).exceptionally((x)-> { x.printStackTrace();throw new CustomException(x.getMessage());}).get();
+//        } catch (InterruptedException e) {
+//            e.printStackTrace();
+//        } catch (ExecutionException e) {
+//            e.printStackTrace();
+//        }
 //
 //
 

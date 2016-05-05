@@ -52,7 +52,13 @@ public class AnalyserHandler implements Handler<AnalyserHandlerParam, AnalyserHa
     @Override
     public AnalyserHandlerResult process(AnalyserHandlerParam param) {
       //  DatabaseModels.getInstance().invalidCache();
-        return  new AnalyserHandlerResult(computeCity(param.root, param.metricsToCompute.getWidth(), param.metricsToCompute.getHeight(), param.metricsToCompute.getColor(), param.metricsToCompute.getMetricType().replaceAll(" ", "_") + param.repositoryVersion.getId(), param.metricsToCompute.repositoryRender(param.repositoryVersion),param));
+        return  new AnalyserHandlerResult
+                (computeCity(param.root, param.metricsToCompute.getWidth(),
+                        param.metricsToCompute.getHeight(),
+                        param.metricsToCompute.getColor(),
+                        param.metricsToCompute.getMetricType().replaceAll(" ", "_") + param.repositoryVersion.getId(),
+                        param.metricsToCompute.repositoryRender(param.repositoryVersion),
+                        param));
     }
 
 
@@ -148,11 +154,11 @@ public class AnalyserHandler implements Handler<AnalyserHandlerParam, AnalyserHa
                 throw new CustomException(e);
             }
         }
-        try (Writer writer = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(new File(Play.application().path().getAbsolutePath()+"/"+ Definitions.jsonPathABS +resultName + ".json", "utf-8"))))) {
+        try (Writer writer = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(new File(Play.application().path().getAbsolutePath()+"/"+ Definitions.jsonPathABS +resultName + ".json"))))) {
             writer.write(Json.stringify(json));
             repoRender.setLocalPath("/asset/" + resultName+ ".json");
 
-            new SaveClassAsTable().save(repoRender);
+//            new SaveClassAsTable().save(repoRender);
             writer.close();
             return  json;
 

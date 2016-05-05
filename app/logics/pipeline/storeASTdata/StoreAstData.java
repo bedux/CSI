@@ -27,9 +27,9 @@ public class StoreAstData implements Handler<StoreASTHandleParam, StoreASTHandle
     @Override
     public StoreASTHandlerResult process(StoreASTHandleParam param) {
         Logger.info("AST of java file ");
-
+        System.out.println(param.wsp);
         try {
-            param.root.applyFunction(new ASTraversAndStore()::analysis).get();
+            param.root.applyFunction(new ASTraversAndStore(param.wsp)::analysis).get();
         } catch (InterruptedException e) {
             e.printStackTrace();
         } catch (ExecutionException e) {

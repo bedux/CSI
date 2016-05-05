@@ -2,6 +2,7 @@ package logics.models.db;
 
 import logics.databaseUtilities.*;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @IDatabaseClass(tableName = "RepositoryVersion")
@@ -56,6 +57,9 @@ public class RepositoryVersion extends BaseTable{
 
     @Setter
     public void addRepositoryRender(RepositoryRender repositoryRender){
+        if(getListOfRepositoryRender()==null){
+            listOfRepositoryRender = new ArrayList<>();
+        }
         listOfRepositoryRender.add(repositoryRender);
         repositoryRender.setRepositoryVersionConcrete(this);
 

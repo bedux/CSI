@@ -40,3 +40,7 @@ GET /getRepoRender/:id          controllers.Application.getAllRepositoryRender(i
 
 
 POST /getDiscussion          controllers.Application.getDiscussion()
+
+GET     /greeter/:id                    controllers.WebSocketConnection.sockHandler(id:Long)
+
+

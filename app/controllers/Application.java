@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 import exception.CustomException;
 import exception.SQLnoResult;
 import logics.Definitions;
+import logics.analyzer.analysis.ThreadManager;
 import logics.databaseCache.DatabaseModels;
 import logics.databaseUtilities.Pair;
 import logics.models.db.*;
@@ -16,11 +17,14 @@ import logics.pipeline.analayser.MetricsCharacteristics;
 import logics.pipeline.tree.TreeGenerator;
 import logics.pipeline.tree.TreeGeneratorHandleParam;
 import logics.pipeline.tree.TreeGeneratorHandlerResult;
+import logics.versionUtils.GitRepo;
+import logics.versionUtils.VersionCommit;
 import play.Play;
 import play.libs.Json;
 import play.mvc.Controller;
 import play.mvc.Result;
 import views.html.listRepository;
+import views.html.loading;
 import views.html.render;
 
 import javax.swing.text.html.Option;
@@ -47,6 +51,8 @@ public class Application extends Controller {
         put("MethodsCount",Query::CountMethodByPath);
         put("DiscussionCount",Query::DiscussedImportMethodCounter);
         put("JavaDoc",Query::JavaDocForMethodCount);
+        put("ClassCount",Query::CountJavaClass);
+        put("InterfaceCount",Query::CountJavaInterface);
 
     }};
 
@@ -57,12 +63,18 @@ public class Application extends Controller {
 
     public static Result indexGet(int id) {
         Long ids = (long)id;
-
-        DatabaseModels.getInstance().invalidCache();
         Optional<RepositoryVersion> repositoryVersion = Query.byId(new Pair<>(ids, RepositoryVersion.class));
+
+//        System.out.println(repositoryVersion.get().getRepository());
+//        GitRepo gt = new GitRepo(repositoryVersion.get().getRepository(),"");
+//        List<VersionCommit> vc = gt.getCommit();
+//        System.out.println(vc.get(vc.size()-3));
+//        gt.checkoutRevision( vc.get(vc.size()-1));
+//        return ok();
         repositoryVersion.orElseThrow(()-> new SQLnoResult());
 
-        new PipelineManager().StoreAndAnalyze(repositoryVersion.get());
+        Long idRun = new PipelineManager().StoreAndAnalyze(repositoryVersion.get());
+        return ok(loading.render(idRun));
 
 //        for (JavaFile file : DatabaseModels.getInstance().getAll(JavaFile.class)) {
 //            ModelsQueryCountMethodByPath md = new ModelsQueryCountMethodByPath();
@@ -195,7 +207,7 @@ public class Application extends Controller {
 //        jf.get().addListOfJavaInterface(ji.get());
 //        System.out.println(jf.get().getListOfJavaInterface().size());
 
-        return ok("Done!");
+
 
     }
 
@@ -213,30 +225,19 @@ public class Application extends Controller {
 
 
     public static Result customComputation(){
-        System.out.println("asd");
         Long repoId  = request().body().asJson().get("repositoryId").asLong();
         String widthQ  = request().body().asJson().get("width").asText();
         String heightQ  =request().body().asJson().get("height").asText();
         String colorQ  =request().body().asJson().get("color").asText();
 
 
-
-        System.out.println(repoId +" "+widthQ+" "+heightQ+" "+colorQ+" ");
-
-
-
-        //TODO
-        /*
-            Generate string that gives an idea about the kind of metrics to compute, this name should be also use as return value.
-            use a name such that become possible to apply chacing over it.
-
-           like:
-           CUSTOM_ WIDTH Name _ height Name _ color Name
-         */
         RepositoryVersion repo = Query.byId(new Pair<>(repoId, RepositoryVersion.class)).get();
         TreeGeneratorHandlerResult treeForG = new TreeGenerator().process(new TreeGeneratorHandleParam(repo));
-        String uuid = UUID.randomUUID().toString();
-
+        String uuid = repoId +widthQ + heightQ +colorQ;
+        Optional<RepositoryRender> repoRender = Query.All(RepositoryRender.class).stream().filter(x->x.getMetricType().equals(uuid)).findAny();
+        if(repoRender.isPresent()){
+            return  ok(new java.io.File( Play.application().path().getAbsolutePath()+repoRender.get().getLocalPath()));
+        }
         if(!queryAvailable.containsKey(widthQ)){
             System.out.println(widthQ + " Che è??");
             return ok();
@@ -253,21 +254,24 @@ public class Application extends Controller {
         AnalyserHandlerParam result6 = new AnalyserHandlerParam(repo,treeForG.root,ms6);
 //        result6.percentage = false;
 //        result6.isOnlyPackage = true;
-        System.out.println("HEEEEEEERE");
         JsonNode ca  = new AnalyserHandler().process(result6).json;
         Result res = ok(Json.stringify(ca));
-        System.out.println("RESULT!");
         return res;
     }
 
     public static Result getRepositories() {
         List<RepositoryRender> repositoryVersionList = Query.All(RepositoryRender.class);
+        System.out.println(repositoryVersionList.size());
+        if(repositoryVersionList.size()<=1){
+            return ok(listRepository.render(new ArrayList<>()));
+        }
         for(RepositoryRender v:repositoryVersionList){
 
                 v.setNameToDisplay(   Query.ProjectName(v.getRepositoryVersion().getId()));
                 v.setNumberOfFileToDispaly(  Query.NumberOfFile(v.getRepositoryVersion().getId()));
 
         }
+
 
         return ok(listRepository.render(repositoryVersionList));
     }

@@ -22,48 +22,19 @@ public class CloneHandler implements Handler<CloneHandlerParam, CloneHandlerResu
     @Override
     public CloneHandlerResult process(CloneHandlerParam param)  {
 
-        Repository repository = DatabaseModels.getInstance().getEntity(Repository.class).get();
-
-        repository.setPwd(param.repoForm.pwd);
-        repository.setUsr(param.repoForm.user);
-        repository.setUrl(param.repoForm.uri);
-        repository.setSubversionType(param.repoForm.type);
+        VersionedSystem sys = new GitRepo(param.repoForm);
+        RepositoryVersion newerRepoVersion = DatabaseModels.getInstance().getEntity(RepositoryVersion.class).get();
+        param.repoForm.addlistOfRepositoryVersion(newerRepoVersion);
         try {
-            long id =repository.getId();
-
-            Optional<Repository> repoMayBe = Query.byId(new Pair(id, Repository.class));
-            repository =repoMayBe.orElseThrow(() -> new CustomException("No repository found!"));
-            Logger.info("Save Repository as" + repository.getId() + "   " + id);
-        } catch (Exception e) {
-            e.printStackTrace();
-            throw new CustomException(e);
-        }
-
-        RepositoryVersion repositoryVersion =  DatabaseModels.getInstance().getEntity(RepositoryVersion.class).get();
-        System.out.println(repositoryVersion);
-//        repositoryVersion.setRepositoryConcrete(DatabaseModels.getInstance().getEntity(Repository.class,repository.getId()).get());
-       repository.addlistOfRepositoryVersion(repositoryVersion);
-        try {
-            long id =repositoryVersion.getId();
-            Optional<RepositoryVersion> repoMayBe = Query.byId(new Pair(id, RepositoryVersion.class));
-
-            repositoryVersion =repoMayBe.orElseThrow(() -> new CustomException("No repository version found"));
+            sys.clone(Long.toString(newerRepoVersion.getId()));
         } catch (Exception e) {
             throw new CustomException(e);
         }
 
 
-        VersionedSystem sys = new GitRepo(repository);
-        try {
-            sys.clone(Long.toString(repositoryVersion.getId()));
-        } catch (Exception e) {
-//            repositoryInfo.delete();
-            throw new CustomException(e);
-        }
-//        repositoryVersion.setHss(sys.getCurrentVersion());
-//        repositoryVersion.update(repositoryVersion.id);
 
-        return new CloneHandlerResult(repositoryVersion);
+
+        return new CloneHandlerResult(param.repoForm.getListOfRepositoryVersion().get(0));
     }
 }
 
