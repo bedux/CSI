@@ -41,7 +41,6 @@ public class TreeGenerator implements Handler<TreeGeneratorHandleParam, TreeGene
             String dir = s.substring(0, s.indexOf('/'));
             String remainName = s.substring(s.indexOf('/') + 1);
             root.add(dir, helper.toPath(), remainName);
-            Logger.info(s);
         }
         return new TreeGeneratorHandlerResult(root,param.repositoryVersion);
     }

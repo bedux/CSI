@@ -1,4 +1,6 @@
 import _root_.sbt.Keys._
+import sbtassembly.MergeStrategy
+
 
 name := "StormedImporter"
 
@@ -16,3 +18,12 @@ libraryDependencies  += "com.github.tminglei" 	%% "slick-pg_json4s" 		% 	"0.12.0
 libraryDependencies +=   "org.slf4j" % "slf4j-nop" % "1.6.4"
 
 
+mainClass in assembly := Some("database.main")
+
+
+assemblyMergeStrategy in assembly := {
+  case PathList("META-INF", "MANIFEST.MF") => MergeStrategy.discard
+  case _ => MergeStrategy.first
+
+
+}

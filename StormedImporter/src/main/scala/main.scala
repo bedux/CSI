@@ -1,6 +1,7 @@
 /**
  * Created by bedux on 02/04/16.
  */
+package database
 import ch.usi.inf.reveal.parsing.artifact._
 import ch.usi.inf.reveal.parsing.model.CommentNode
 import ch.usi.inf.reveal.parsing.model.java.{TypeNode, PrimitiveTypeNode, ImportDeclarationNode, IdentifierNode}
@@ -118,18 +119,17 @@ object HASTNodeImplicits {
 }
 
 
-object main{
-  def main (args: Array[String]){
+object main extends App{
 
 
-    val filesHere = (new java.io.File("/Users/bedux/Downloads/jsons/")).listFiles
+    val filesHere = (new java.io.File(args(0))).listFiles
     val futureList = filesHere.map(x=>Utils(x.getAbsolutePath).getFuture)
-    val futur = Future.sequence(futureList.toList);
+    val futur: Future[List[Future[Seq[Seq[(Long, Long)]]]]] = Future.sequence(futureList.toList);
     futur.onFailure({
       case e => throw e
     })
     Await.result(futur,Duration.Inf)
 
 
-  }
+
 }
