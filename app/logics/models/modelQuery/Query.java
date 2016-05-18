@@ -6,18 +6,26 @@ import logics.Definitions;
 import logics.databaseCache.DatabaseModels;
 import logics.databaseUtilities.Pair;
 import logics.models.db.*;
+import logics.models.db.information.JavaImportInformation;
 import play.Logger;
 
 import java.io.IOException;
 import java.nio.file.Files;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Optional;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
-/**
- * Created by bedux on 01/05/16.
- */
+
+
 public final class Query  {
+
+    private static HashMap<String,Object> cache = new HashMap<>();
+
+    private static String computeHash(String param,String call){
+        return param+"#"+call;
+    }
 
     /**
      *
@@ -27,7 +35,10 @@ public final class Query  {
      */
     public static <T> List<T> All(Class<T> param) {
         return DatabaseModels.getInstance().getAll(param);
+
     }
+
+
 
     public static <T> Optional<T> byId(Pair<Long,Class<T> > param) {
         return DatabaseModels.getInstance().getEntity(param.getValue(),param.getKey());
@@ -219,8 +230,9 @@ public final class Query  {
 
     public static Long DiscussedImportMethodCounter(String path) {
 
-        final long numberOfMethodDiscussed = AllDiscussedMethod(path).stream().map(x -> x.getMethodName()).distinct().count();
-        final long numberOfImportDiscussed = AllDiscussedImport(path).stream().map(x->x.getPackageDiscussion()).distinct().count();
+        final long numberOfMethodDiscussed = FastCountDiscussion(path);
+        final long numberOfImportDiscussed = FastCountImport(path);
+
         return numberOfMethodDiscussed + numberOfImportDiscussed;
 
     }
@@ -232,8 +244,8 @@ public final class Query  {
         final float numberOfImport = AllNonLocalImport(new Pair(jf.getId(), jf.getRepositoryVersionConcrete().getId())).size();
 
 
-        final float numberOfMethodDiscussed = AllDiscussedMethod(path).stream().map(x -> x.getMethodName()).distinct().count();
-        final float numberOfImportDiscussed = AllDiscussedImport(path).stream().map(x->x.getPackageDiscussion()).distinct().count();
+        final float numberOfMethodDiscussed = FastCountDiscussion(path);
+        final float numberOfImportDiscussed = FastCountImport(path);
 
         float t1 = 100;
         if(numberOfMethod!=0){
@@ -356,5 +368,39 @@ public final class Query  {
         return AllJavaMethodCallFormPath(path).size();
 
     }
+
+    private static boolean listCOntains(List<String> list,String s){
+        for(String s1:list){
+            if(s1.contentEquals(s)){
+                return true;
+            }
+        }
+        return false;
+    }
+
+    public static  long FastCountDiscussion(String path) {
+        List<String> method = NonProjectMethodCall(path);
+
+        return All(MethodCountView.class).stream()
+                .filter(x->{return listCOntains(method,x.getMethodName());})
+                .count();
+
+    }
+
+    @SuppressWarnings("unchecked")
+    public static  long FastCountImport(String path) {
+        JavaFile jf = JavaFileByPath(path).orElseThrow(() -> new CustomException(""));
+
+               List<String> method =( List<String>) AllNonLocalImport(new Pair(jf.getId(), jf.getRepositoryVersionConcrete().getId()))
+                        .stream()
+                        .map(x->(String)(((JavaImportInformation)((JavaImport)x).getJson()).name))
+                        .collect(Collectors.toList());
+//        return 0;
+        return All(ImportCountView.class).stream()
+                .filter(x-> listCOntains(method,x.getImportz()))
+                .count();
+
+    }
+
 
 }

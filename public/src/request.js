@@ -41,6 +41,10 @@ module.exports = {
 
     getDiscussions: function (info) {
         console.log(info.id)
+        $("#globalSpinner").show();
+        $("#discussions").empty();
+
+
         $.ajax({ type: "POST",
             url: "/getDiscussion",
             data:JSON.stringify({path:info.id}),
@@ -51,8 +55,8 @@ module.exports = {
                var jsonData = (JSON.parse(data));
                 console.log(jsonData);
 
-                $("#discussions").empty();
 
+                $("#globalSpinner").hide();
 
                 if (jsonData != null) {
 

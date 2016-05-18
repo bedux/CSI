@@ -46,9 +46,22 @@ CREATE TABLE IF NOT EXISTS TransverseInformation(
 );
 
 
+DROP VIEW methodCountView;
+CREATE VIEW methodCountView AS
+  select methodName AS methodName,count(*) AS number,row_number() OVER() AS id
+  from method
+    join method_discussion
+      on method.id = method_discussion.idm
+  group by methodName;
 
 
-
+DROP VIEW importCountView;
+CREATE VIEW importCountView AS
+  select package AS package,count(*) AS number,row_number() OVER() AS id
+  from import
+    join import_discussion
+      on import.id = import_discussion.idi
+  group by package;
 
 
 DROP TABLE IF EXISTS File CASCADE;
