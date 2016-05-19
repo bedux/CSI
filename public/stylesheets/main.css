@@ -213,11 +213,11 @@ td{
     bottom: 0;
     margin-top: auto;
     margin-bottom: auto;
-    width: 100px;
-    height: 100px;
+    width: 60px;
+    height: 64px;
 
     background: url("../images/loading.gif");
-    background-size: 100px 100px;
+    background-size: 60px 64px;
 
     /*animation-name: spin;*/
     /*animation-duration: 4000ms;*/
