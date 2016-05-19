@@ -1,8 +1,11 @@
 package logics.filters;
 
+import com.avaje.ebean.Expr;
+import com.avaje.ebean.ExpressionList;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import interfaces.Filter;
+import logics.models.newDatabase.JavaFile;
 import logics.models.tools.Data;
 import play.libs.Json;
 
@@ -17,10 +20,8 @@ public class QueryBuilder {
 
     public static ArrayList<Filter> filters =new ArrayList<Filter>()
                         {{
-//                            add(new PathName());
-                         //   add(new NumberOfMethods());
-//                            add(new NumberOfWords());
-//                            add(new NumberOfLine());
+                           add(new PathName());
+
                         }};
 
 //
@@ -50,37 +51,36 @@ public class QueryBuilder {
                 element[1]=element[1].replace("%23","#");
                 d.color= element[1];
             }else{
-//                for(Filter<ComponentInfo> filter:filters){
-//                    if(filter.handleRequest(element,d)){
-//                        break;
-//                    }
-//                }
+                for(Filter filter:filters){
+                    if(filter.handleRequest(element,d)){
+                        break;
+                    }
+                }
             }
         }
         return d;
     }
 //
     public static JsonNode query(Data d){
-//        ExpressionList l = ComponentInfo.find.where().eq("repository.id", d.id);
-////        com.avaje.ebean.Expression expression = Expr.eq("repository.id", d.id);
-//        for(Filter l1: filters){
-//            //Expr.a.add(l1.getExpressionFromData(d));
-//            expression = Expr.and(expression,l1.getExpressionFromData(d));
-//        }
-//
-//
-//        if(d.actionList== Data.ActionList.HIDEOTHER || d.actionList== Data.ActionList.SHOWOTHER){
-//            expression = Expr.not(expression);
-//        }
-//        l.add(expression);
-//
-//        ObjectNode result = Json.newObject();
-//        result.put("data",Json.toJson(l.findList()));
-//        result.put("action",d.actionList.getValue());
-//        result.put("color",d.color);
-//
-//        return result;
-        return null;
+        ExpressionList l = JavaFile.find.where().eq("repo_version", d.id);
+       com.avaje.ebean.Expression expression = Expr.eq("repo_version", d.id);
+        for(Filter l1: filters){
+            //Expr.a.add(l1.getExpressionFromData(d));
+            expression = Expr.and(expression,l1.getExpressionFromData(d));
+        }
+
+
+        if(d.actionList== Data.ActionList.HIDEOTHER || d.actionList== Data.ActionList.SHOWOTHER){
+            expression = Expr.not(expression);
+        }
+        l.add(expression);
+
+        ObjectNode result = Json.newObject();
+        result.put("data",Json.toJson(l.findList()));
+        result.put("action",d.actionList.getValue());
+        result.put("color",d.color);
+
+        return result;
 
     }
 //

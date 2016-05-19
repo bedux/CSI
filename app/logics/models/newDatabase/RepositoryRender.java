@@ -2,6 +2,7 @@ package logics.models.newDatabase;
 
 
 import com.avaje.ebean.annotation.CacheStrategy;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import play.db.ebean.Model;
 
 import javax.persistence.*;
@@ -19,11 +20,12 @@ public class RepositoryRender extends Model {
     public long id;
 
 
+    @JsonIgnore
     @ManyToOne(cascade=CascadeType.ALL)
     @JoinColumn(name = "repository", columnDefinition = "id")
     public Repository repository;
 
-
+    @JsonIgnore
     @ManyToOne(cascade=CascadeType.ALL)
     @JoinColumn(name = "repositoryversion", columnDefinition = "id")
     public RepositoryVersion repositoryversion;

@@ -1,6 +1,7 @@
 package logics.models.newDatabase;
 
 import com.avaje.ebean.annotation.CacheStrategy;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import play.db.ebean.Model;
 
 import javax.persistence.*;
@@ -23,10 +24,10 @@ public class JavaImport  extends Model {
     public String packageName;
 
 
-
+    @JsonIgnore
     @OneToMany(mappedBy="javaImport")
     public  List<ImportDiscussion> importDiscussionList;
-
+    @JsonIgnore
     @OneToMany(mappedBy="javaImport",cascade = CascadeType.ALL)
     public List<ImportFile> importFileList;
 

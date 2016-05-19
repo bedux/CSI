@@ -1,151 +1,177 @@
-CREATE SEQUENCE id_counter;
 
 
-DROP TABLE IF EXISTS Repository CASCADE;
-CREATE  TABLE  IF NOT EXISTS Repository(
-  id SERIAL PRIMARY KEY UNIQUE,
-  url varchar(255),
-  usr varchar(255),
-  pwd varchar(255),
-  localPath varchar(255),
-  subversiontype varchar(255)
-);
 
 
-DROP TABLE IF EXISTS RepositoryVersion CASCADE;
-CREATE  TABLE  IF NOT EXISTS RepositoryVersion(
-  id SERIAL PRIMARY KEY UNIQUE,
-  localPath varchar(255),
-  repositoryId Integer REFERENCES Repository(id)
+CREATE SEQUENCE repository_id_seq
+START WITH 600000
+INCREMENT BY 1
+  NO MINVALUE
+NO MAXVALUE
+CACHE 1;
 
-);
-
-
-CREATE TABLE "public"."RepositoryRender" (
-  "id" serial,
-  "repositoryVersion" Integer,
-  "localPath" text,
-  PRIMARY KEY ("id"),
-  CONSTRAINT "repositoryVersion" FOREIGN KEY ("repositoryVersion") REFERENCES "public"."repositoryversion"("id")
+CREATE TABLE discussion (
+  id integer DEFAULT nextval('repository_id_seq'::regclass) NOT NULL,
+  url text
 );
 
 
 
+CREATE TABLE import (
+  id integer DEFAULT nextval('repository_id_seq'::regclass) NOT NULL,
+  package text
+);
 
-DROP TABLE IF EXISTS ContainsTransverseInformation CASCADE;
-CREATE TABLE IF NOT EXISTS ContainsTransverseInformation(
-  id  SERIAL PRIMARY KEY UNIQUE
+CREATE TABLE import_discussion (
+  idd integer NOT NULL,
+  idi integer NOT NULL,
+  id integer DEFAULT nextval('repository_id_seq'::regclass)
 );
 
 
-
-DROP TABLE IF EXISTS TransverseInformation CASCADE;
-CREATE TABLE IF NOT EXISTS TransverseInformation(
-  id  SERIAL PRIMARY KEY UNIQUE,
-  containsTransverseInformation Integer REFERENCES ContainsTransverseInformation(id)
+CREATE TABLE method (
+  id integer DEFAULT nextval('repository_id_seq'::regclass) NOT NULL,
+  methodname text,
+  params integer
 );
 
 
-DROP VIEW methodCountView;
-CREATE VIEW methodCountView AS
-  select methodName AS methodName,count(*) AS number,row_number() OVER() AS id
-  from method
-    join method_discussion
-      on method.id = method_discussion.idm
-  group by methodName;
+CREATE TABLE method_discussion (
+  idm integer NOT NULL,
+  idd integer NOT NULL,
+  id integer DEFAULT nextval('repository_id_seq'::regclass)
+);
 
 
-DROP VIEW importCountView;
-CREATE VIEW importCountView AS
-  select package AS package,count(*) AS number,row_number() OVER() AS id
-  from import
-    join import_discussion
-      on import.id = import_discussion.idi
-  group by package;
+-- ######################################################################
 
 
-DROP TABLE IF EXISTS File CASCADE;
-CREATE  TABLE  IF NOT EXISTS File(
-  id SERIAL PRIMARY KEY UNIQUE,
-  path varchar(255),
-  name varchar(255),
-  size INTEGER,
-  repositoryVersionId Integer REFERENCES RepositoryVersion(id)
+CREATE TABLE repository (
+  id integer NOT NULL,
+  url character varying(255),
+  usr character varying(255),
+  pwd character varying(255),
+  localpath character varying(255),
+  subversiontype character varying(255)
 );
 
 
 
 
-DROP TABLE IF EXISTS BinaryFile CASCADE;
-CREATE  TABLE  IF NOT EXISTS BinaryFile(
-  information JSONB
-)INHERITS(File);
 
-DROP TABLE IF EXISTS TextFile CASCADE;
-CREATE  TABLE  IF NOT EXISTS TextFile(
-  information JSONB
-)INHERITS(File);
-
-DROP TABLE IF EXISTS JavaFile CASCADE;
-CREATE  TABLE  IF NOT EXISTS JavaFile(
-  information JSONB
-)INHERITS(File);
+CREATE TABLE repository_render (
+  id integer DEFAULT nextval('repository_id_seq'::regclass) NOT NULL,
+  repositoryversion integer,
+  localpath text,
+  metrictype text,
+  repository integer
+);
 
 
-DROP TABLE IF EXISTS JavaSourceObject CASCADE;
-CREATE  TABLE  IF NOT EXISTS JavaSourceObject(
-  javaFile Integer REFERENCES File(id)
-
-)INHERITS(ContainsTransverseInformation);
-
-DROP TABLE IF EXISTS JavaPackage CASCADE;
-CREATE  TABLE  IF NOT EXISTS JavaPackage(
-  information JSONB
-)INHERITS(JavaSourceObject);
-
-
-DROP TABLE IF EXISTS JavaClass CASCADE;
-CREATE  TABLE  IF NOT EXISTS JavaClass(
-  information JSONB
-)INHERITS(JavaSourceObject);
-
-DROP TABLE IF EXISTS JavaEnum CASCADE;
-CREATE  TABLE  IF NOT EXISTS JavaEnum(
-  information JSONB
-)INHERITS(JavaSourceObject);
-
-DROP TABLE IF EXISTS JavaInterface CASCADE;
-CREATE  TABLE  IF NOT EXISTS JavaInterface(
-  information JSONB
-
-)INHERITS(JavaSourceObject);
-
-DROP TABLE IF EXISTS JavaImport CASCADE;
-CREATE  TABLE  IF NOT EXISTS JavaImport(
-  information JSONB
-)INHERITS(JavaSourceObject);
-
-DROP TABLE IF EXISTS JavaSpecificComponent CASCADE;
-CREATE  TABLE  IF NOT EXISTS JavaSpecificComponent(
-  javaSource Integer REFERENCES ContainsTransverseInformation(id)
-)INHERITS(ContainsTransverseInformation);
-
-
-DROP TABLE IF EXISTS JavaField CASCADE;
-CREATE  TABLE  IF NOT EXISTS JavaField(
-  information JSONB
-)INHERITS(JavaSpecificComponent);
+CREATE TABLE binary_file (
+  id integer DEFAULT nextval('repository_id_seq'::regclass) NOT NULL,
+  repo_version integer,
+  name text,
+  size integer
+);
 
 
 
-DROP TABLE IF EXISTS JavaMethod CASCADE;
-CREATE  TABLE  IF NOT EXISTS JavaMethod(
-  information JSONB
-)INHERITS(JavaSpecificComponent);
 
 
 
-DROP TABLE IF EXISTS JavaDoc CASCADE;
-CREATE TABLE IF NOT EXISTS JavaDoc(
-  information JSONB
-)INHERITS(TransverseInformation);
+
+CREATE TABLE import_file (
+  id integer DEFAULT nextval('repository_id_seq'::regclass) NOT NULL,
+  idf integer,
+  idi integer
+);
+
+
+
+CREATE TABLE java_class (
+  id integer DEFAULT nextval('repository_id_seq'::regclass) NOT NULL,
+  java_file integer,
+  name text
+);
+
+
+
+
+
+CREATE TABLE java_doc (
+  id integer DEFAULT nextval('repository_id_seq'::regclass) NOT NULL,
+  java_file integer,
+  name text
+);
+
+
+
+CREATE TABLE java_field (
+  id integer DEFAULT nextval('repository_id_seq'::regclass) NOT NULL,
+  name text,
+  java_file integer
+);
+
+
+
+CREATE TABLE java_file (
+  id integer DEFAULT nextval('repository_id_seq'::regclass) NOT NULL,
+  path text,
+  name text,
+  repo_version integer,
+  size integer,
+  nline integer
+);
+
+
+CREATE TABLE java_interface (
+  id integer DEFAULT nextval('repository_id_seq'::regclass) NOT NULL,
+  java_file integer,
+  name text
+);
+
+
+
+
+
+CREATE TABLE java_method (
+  id integer DEFAULT nextval('repository_id_seq'::regclass) NOT NULL,
+  java_file integer,
+  name text
+);
+
+
+
+CREATE TABLE java_package (
+  id integer DEFAULT nextval('repository_id_seq'::regclass) NOT NULL,
+  java_file integer,
+  name text
+);
+
+
+
+
+
+
+CREATE TABLE method_file (
+  id integer DEFAULT nextval('repository_id_seq'::regclass) NOT NULL,
+  idf integer,
+  idm integer
+);
+
+
+CREATE TABLE repositoryversion (
+  id integer DEFAULT nextval('repository_id_seq'::regclass) NOT NULL,
+  localpath character varying(255),
+  repository integer
+);
+
+
+CREATE TABLE text_file (
+  id integer DEFAULT nextval('repository_id_seq'::regclass) NOT NULL,
+  repo_version integer,
+  name text,
+  size integer
+);
+
+

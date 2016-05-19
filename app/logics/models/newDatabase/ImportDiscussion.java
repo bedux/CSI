@@ -2,6 +2,7 @@ package logics.models.newDatabase;
 
 
 import com.avaje.ebean.annotation.CacheStrategy;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import play.db.ebean.Model;
 
 import javax.persistence.*;
@@ -18,11 +19,12 @@ public class ImportDiscussion  extends Model {
     @GeneratedValue(strategy=GenerationType.SEQUENCE, generator="repository_id_seq")
     public long id;
 
-
+    @JsonIgnore
     @ManyToOne(cascade=CascadeType.ALL)
     @JoinColumn(name="idd",referencedColumnName = "id")
     public Discussion discussion;
 
+    @JsonIgnore
     @ManyToOne(cascade=CascadeType.ALL)
     @JoinColumn(name="idi",referencedColumnName = "id")
     public JavaImport javaImport;

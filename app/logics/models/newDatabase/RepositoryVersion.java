@@ -2,6 +2,7 @@ package logics.models.newDatabase;
 
 
 import com.avaje.ebean.annotation.CacheStrategy;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import play.db.ebean.Model;
 
 import javax.persistence.*;
@@ -21,21 +22,25 @@ public class RepositoryVersion  extends Model {
 
     public String localpath;
 
-
+    @JsonIgnore
     @ManyToOne(cascade=CascadeType.ALL)
     @JoinColumn(name = "repository", columnDefinition = "repository")
     public Repository repository;
 
+    @JsonIgnore
 
     @OneToMany(mappedBy="repositoryVersion",cascade = CascadeType.ALL)
     public List<BinaryFile> binaryFileList;
 
+    @JsonIgnore
     @OneToMany(mappedBy="repositoryVersion",cascade = CascadeType.ALL)
     public List<JavaFile> javaFileList;
 
+    @JsonIgnore
     @OneToMany(mappedBy="repositoryVersion",cascade = CascadeType.ALL)
     public List<TextFile> textFileList;
 
+    @JsonIgnore
     @OneToMany(mappedBy="repositoryversion",cascade = CascadeType.ALL)
     public List<RepositoryRender> repositoryRenderList;
 

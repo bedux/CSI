@@ -1,6 +1,7 @@
 package logics.models.newDatabase;
 
 import com.avaje.ebean.annotation.CacheStrategy;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import play.db.ebean.Model;
 
 import javax.persistence.*;
@@ -18,6 +19,7 @@ public class JavaPackage  extends Model {
     public long id;
 
 
+    @JsonIgnore
     @ManyToOne(cascade=CascadeType.ALL)
     @JoinColumn(name="java_file",referencedColumnName="id")
     public JavaFile javaFile;

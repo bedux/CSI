@@ -270,7 +270,8 @@ public final class Query  {
     }
 
     public static long NumberOfFile(Long param) {
-        return JavaFile.find.all().size()+TextFile.find.all().size()+BinaryFile.find.all().size();
+        RepositoryVersion repo =(RepositoryVersion)RepositoryVersion.find.byId(param);
+        return repo.binaryFileList.size()+repo.javaFileList.size()+repo.textFileList.size();
     }
 
     public static String ProjectName(Long param) {

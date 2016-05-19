@@ -2,6 +2,7 @@ package logics.models.newDatabase;
 
 
 import com.avaje.ebean.annotation.CacheStrategy;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import play.db.ebean.Model;
 
 import javax.persistence.*;
@@ -22,10 +23,11 @@ public class Discussion  extends Model {
 
     public String url;
 
-
+    @JsonIgnore
     @OneToMany(mappedBy="discussion",cascade = CascadeType.ALL)
     List<ImportDiscussion> importDiscussionList;
 
+    @JsonIgnore
     @OneToMany(mappedBy="discussion",cascade = CascadeType.ALL)
     List<MethodDiscussion> methodDiscussionList;
 

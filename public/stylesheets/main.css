@@ -63,16 +63,24 @@ html, body {
 .filterContent{
     background-color: hsla(0, 0%, 45%, 0.38);
     overflow-y: scroll;
-    height:70%;
+    height:40%;
 }
 
 .panelFilterColor{
+    display: block;
     background-color: hsla(0, 0%, 60%, 0.38);
     width: 250px;
-    height: 90%;
+    height:70%;
 
 }
 
+.filterContainer{
+    display: flex;
+    background-color: hsla(0, 0%, 45%, 0.38);
+    overflow-y: scroll;
+    height:40%;
+
+}
 .toRight{
     float:right;
 }
@@ -96,7 +104,14 @@ html, body {
     border-radius: 60%;
     padding: 10px;
     background-color: #F6A828;
+    width: 80px;
+    height: 50px;
 
+
+}
+
+#addFilter{
+    width: 30%;
 }
 
 .filterContainer{
@@ -106,13 +121,16 @@ html, body {
     width: 250px;
     justify-content:space-around;
     overflow-y: scroll;
-    max-height: 10%;
+    max-height:40%;
+
+
+
 }
 
 .sideBarOpen{
     position: absolute;
     right: 250px;
-    top:50%;
+    top:30%;
     
 }
 
@@ -216,7 +234,7 @@ td{
 }
 
 input{
-    background: red;
+    background: white;
 }
 
 ul {

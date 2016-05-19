@@ -184,13 +184,12 @@ public class Application extends Controller {
         String data = body.asText();
         Data d = QueryBuilder.QueryBuilder(data);
         JsonNode result =(QueryBuilder.query(d));
-        return ok();
+        return ok(Json.stringify(result));
     }
 
     public static Result getFilters(int id) {
-
-        // return ok(Json.stringify(QueryBuilder.getFilters(id)));
-        return ok();
+        System.out.println(id);
+        return ok(Json.stringify(QueryBuilder.getFilters((long)id)));
     }
 
     public static Result fileContent(String path) {

@@ -129,14 +129,14 @@ class MainScene{
 
 
         let material;
-        material=new BABYLON.StandardMaterial("_texture_"+id, this.scene);
+        material=new BABYLON.StandardMaterial(id+"_texture", this.scene);
         material.diffuseColor = new BABYLON.Color3(hexToR(data.color)/255,hexToG(data.color)/255,hexToB(data.color)/255);
         if(data.action.indexOf("Hide")!=-1){
             material.alpha = 0.1;
         }
 
         for(var c in obj){
-            let current =  this.scene.models[obj[c].fileName+"_model"];
+            let current =  this.scene.models[obj[c].name+"_model"];
             current["filterMaterial"+id] =  current.material;
 
 
@@ -231,7 +231,32 @@ class MainScene{
             this.camera.position = (new BABYLON.Vector3(bbs.centerWorld.x,h,bbs.centerWorld.z));
             this.camera.setTarget(new BABYLON.Vector3(bbs.centerWorld.x,0,bbs.centerWorld.z));
 
+        }else if(e.which == 104) {
+            var pickResult = this.scene.pick(this.scene.pointerX, this.scene.pointerY);
+            if (!pickResult.hit) {
+                return;
+            }
+            console.log(pickResult)
+            $("#pathP input").val(pickResult.pickedMesh.id.substr(0, pickResult.pickedMesh.id.indexOf("_model")))
+            $('#sel1 option').filter(function () {
+                return ($(this).text() == 'Hide'); //To select Blue
+            }).prop('selected', true);
+
+            $("#appFilter").trigger("click");
+        }else if(e.which == 115) {
+            var pickResult = this.scene.pick(this.scene.pointerX, this.scene.pointerY);
+            if (!pickResult.hit) {
+                return;
+            }
+            console.log(pickResult)
+            $("#pathP input").val(pickResult.pickedMesh.id.substr(0, pickResult.pickedMesh.id.indexOf("_model")))
+            $('#sel1 option').filter(function () {
+                return ($(this).text() == 'Hide Other'); //To select Blue
+            }).prop('selected', true);
+
+            $("#appFilter").trigger("click");
         }
+
         if(this.camera.position.y > this.camera.maxZ){
             this.camera.maxZ = this.camera.position.y + 30;
         }

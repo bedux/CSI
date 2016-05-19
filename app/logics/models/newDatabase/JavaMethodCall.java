@@ -1,6 +1,7 @@
 package logics.models.newDatabase;
 
 import com.avaje.ebean.annotation.CacheStrategy;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import play.db.ebean.Model;
 
 import javax.persistence.*;
@@ -23,10 +24,11 @@ public class JavaMethodCall  extends Model {
 
     public int params;
 
+    @JsonIgnore
     @OneToMany(mappedBy="javaMethod",cascade = CascadeType.ALL)
     public List<MethodDiscussion> methodDiscussionList;
 
-
+    @JsonIgnore
     @OneToMany(mappedBy="javaMethodCall",cascade = CascadeType.ALL)
     public List<MethodFile> methodFileList;
 

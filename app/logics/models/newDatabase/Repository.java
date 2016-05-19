@@ -2,6 +2,7 @@ package logics.models.newDatabase;
 
 
 import com.avaje.ebean.annotation.CacheStrategy;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import play.db.ebean.Model;
 
 import javax.persistence.*;
@@ -32,9 +33,11 @@ public class Repository  extends Model {
 
     public static Finder find = new Finder(Long.class, Repository.class);
 
+    @JsonIgnore
     @OneToMany(mappedBy="repository",cascade = CascadeType.ALL)
     public  List<RepositoryRender> repositoryRenderList;
 
+    @JsonIgnore
     @OneToMany(mappedBy="repository",cascade = CascadeType.ALL)
     public  List<RepositoryVersion> repositoryVersionList;
 }

@@ -1,5 +1,6 @@
 package interfaces;
 
+import com.avaje.ebean.Expression;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import logics.models.tools.Data;
 
@@ -12,7 +13,7 @@ public abstract class Filter {
         return r.split("-");
     }
 
-    public abstract String getExpressionFromData(Data d);
+    public abstract Expression getExpressionFromData(Data d);
 
     public abstract ObjectNode getDescription(Long id);
 
