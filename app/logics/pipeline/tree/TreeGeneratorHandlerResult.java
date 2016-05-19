@@ -1,9 +1,8 @@
 package logics.pipeline.tree;
 
 import interfaces.HandlerResult;
-import logics.analyzer.*;
 import logics.analyzer.Package;
-import logics.models.db.RepositoryVersion;
+import logics.models.newDatabase.RepositoryVersion;
 
 /**
  * Created by bedux on 16/04/16.

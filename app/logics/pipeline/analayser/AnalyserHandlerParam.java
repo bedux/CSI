@@ -1,12 +1,9 @@
 package logics.pipeline.analayser;
 
 import interfaces.HandlerParam;
-import logics.models.db.RepositoryVersion;
-import logics.pipeline.storeASTdata.StoreASTHandlerResult;
 import logics.analyzer.Package;
-
-import java.util.ArrayList;
-import java.util.List;
+import logics.models.newDatabase.RepositoryVersion;
+import logics.pipeline.storeASTdata.StoreASTHandlerResult;
 
 /**
  * Created by bedux on 08/03/16.

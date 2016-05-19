@@ -4,13 +4,10 @@ import controllers.WebSocketConnection;
 import exception.CustomException;
 import interfaces.VersionedSystem;
 import logics.Definitions;
-import logics.models.db.Repository;
-import org.eclipse.jgit.api.CheckoutCommand;
+import logics.models.newDatabase.Repository;
 import org.eclipse.jgit.api.CloneCommand;
 import org.eclipse.jgit.api.Git;
-import org.eclipse.jgit.api.ResetCommand;
 import org.eclipse.jgit.api.errors.GitAPIException;
-import org.eclipse.jgit.revwalk.RevCommit;
 import org.eclipse.jgit.transport.UsernamePasswordCredentialsProvider;
 import play.Logger;
 import play.Play;
@@ -47,7 +44,7 @@ public class GitRepo implements VersionedSystem {
 
     public  GitRepo(Repository repo,String s){
         try {
-            git = Git.open( new File( Play.application().path().getAbsolutePath()+"/"+Definitions.repositoryPathABS+repo.getId()));
+            git = Git.open( new File( Play.application().path().getAbsolutePath()+"/"+Definitions.repositoryPathABS+repo.id));
             System.out.println("CREATEEEEE");
         } catch (IOException e) {
             e.printStackTrace();
@@ -69,17 +66,17 @@ public class GitRepo implements VersionedSystem {
         }
 
         final CloneCommand clone = Git.cloneRepository();
-        clone.setURI(repository.getUrl());
-        Logger.info(repository.getUsr() + " " + repository.getPwd());
+        clone.setURI(repository.url);
+        Logger.info(repository.usr + " " + repository.pwd);
 
         //Login require?
-        if (repository.getUsr() != null && repository.getPwd() != null) {
-            clone.setCredentialsProvider(new UsernamePasswordCredentialsProvider(repository.getUsr(), repository.getPwd()));
+        if (repository.usr != null && repository.pwd != null) {
+            clone.setCredentialsProvider(new UsernamePasswordCredentialsProvider(repository.usr, repository.pwd));
         }
 
 
         clone.setDirectory(repoFile);
-        clone.setProgressMonitor((WebSocketProgress)WebSocketConnection.availableWebSocket.get(repository.getId()));
+        clone.setProgressMonitor((WebSocketProgress)WebSocketConnection.availableWebSocket.get(repository.id));
         try {
             git = clone.call();
         } catch (GitAPIException e) {

@@ -1,13 +1,11 @@
 package logics.pipeline;
 
 import controllers.WebSocketConnection;
-import exception.CustomException;
 import logics.analyzer.analysis.ThreadManager;
-import logics.databaseCache.DatabaseModels;
-import logics.models.db.Repository;
-import logics.models.db.RepositoryVersion;
 import logics.models.form.RepoForm;
-import logics.models.modelQuery.*;
+import logics.models.modelQuery.Query;
+import logics.models.newDatabase.Repository;
+import logics.models.newDatabase.RepositoryVersion;
 import logics.pipeline.analayser.AnalyserHandler;
 import logics.pipeline.analayser.AnalyserHandlerParam;
 import logics.pipeline.analayser.MetricsCharacteristics;
@@ -15,7 +13,6 @@ import logics.pipeline.clone.CloneHandler;
 import logics.pipeline.clone.CloneHandlerParam;
 import logics.pipeline.clone.CloneHandlerResult;
 import logics.pipeline.storeASTdata.StoreASTHandleParam;
-import logics.pipeline.storeASTdata.StoreASTHandlerResult;
 import logics.pipeline.storeASTdata.StoreAstData;
 import logics.pipeline.storing.StoreHandler;
 import logics.pipeline.storing.StoreHandlerParam;
@@ -26,7 +23,6 @@ import logics.pipeline.tree.TreeGeneratorHandlerResult;
 import logics.versionUtils.WebSocketProgress;
 
 import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.ExecutionException;
 import java.util.function.Function;
 
 
@@ -34,13 +30,15 @@ public class PipelineManager {
 
     public Long runPipeline(RepoForm repoForm) {
 
-        Repository repository = DatabaseModels.getInstance().getEntity(Repository.class).get();
-        repository.setPwd(repoForm.pwd);
-        repository.setUsr(repoForm.user);
-        repository.setUrl(repoForm.uri);
-        repository.setSubversionType(repoForm.type);
+        System.out.println(repoForm.uri);
+        Repository repository = new Repository();
+        repository.pwd = (repoForm.pwd);
+        repository.usr = (repoForm.user);
+        repository.url = (repoForm.uri);
+        repository.subversiontype = (repoForm.type);
+        repository.save();
 
-        new WebSocketProgress(repository.getId());
+        new WebSocketProgress(repository.id);
 
 //        RepositoryVersion repositoryVersion =  DatabaseModels.getInstance().getEntity(RepositoryVersion.class).get();
 //        repository.addlistOfRepositoryVersion(repositoryVersion);
@@ -50,14 +48,14 @@ public class PipelineManager {
             StoreAndAnalyze(shr.repositoryVersion);
         });
         ThreadManager.instance().getExecutor().execute(task);
-        return repository.getId();
+        return repository.id;
 
     }
 
     private  CompletableFuture<Void> runTask(Function<String,Long> q1,Function<String,Long> q2,Function<String,Long> q3,String name,RepositoryVersion reooV,boolean per , boolean onPack){
         return   CompletableFuture.runAsync(()-> {
 
-            WebSocketProgress currentProgress =(WebSocketProgress)WebSocketConnection.availableWebSocket.get(reooV.getRepository().getId());
+            WebSocketProgress currentProgress =(WebSocketProgress)WebSocketConnection.availableWebSocket.get(reooV.repository.id);
             currentProgress.beginTask(name,100);
 
             TreeGeneratorHandlerResult treeForA = new TreeGenerator().process(new TreeGeneratorHandleParam(reooV));
@@ -74,9 +72,8 @@ public class PipelineManager {
 
     public Long StoreAndAnalyze(RepositoryVersion repositoryVersion){
 
-        DatabaseModels.getInstance().invalidCache();
-        new WebSocketProgress(repositoryVersion.getRepository().getId());
-        WebSocketProgress currentProgress =(WebSocketProgress)WebSocketConnection.availableWebSocket.get(repositoryVersion.getRepository().getId());
+        new WebSocketProgress(repositoryVersion.repository.id);
+        WebSocketProgress currentProgress =(WebSocketProgress)WebSocketConnection.availableWebSocket.get(repositoryVersion.repository.id);
 
         Runnable r =  ()-> {
             StoreHandlerResult shr = new StoreHandler().process(new StoreHandlerParam(repositoryVersion));
@@ -96,10 +93,11 @@ public class PipelineManager {
                     runTask(Query::CountFieldByPath, Query::CountMethodByPath, Query::JavaDocOverTotalMethods, "JavaDoc over Method Package", repositoryVersion,true,true),
                     runTask(Query::CountFieldByPath, Query::CountMethodByPath, Query::DiscussedImportMethodCounter, "Discussion only Package", repositoryVersion,false,true),
                     runTask(Query::CountFieldByPath, Query::CountMethodByPath, Query::DiscussedImportMethodCounterOverTotal, "Discussion over Method and Import  Package", repositoryVersion,true,true)
+
             );
         };
         ThreadManager.instance().getExecutor().execute(r);
-        return repositoryVersion.getRepository().getId();
+        return repositoryVersion.repository.id;
 
 
 

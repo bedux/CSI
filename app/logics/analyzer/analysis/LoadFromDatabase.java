@@ -6,7 +6,7 @@ import logics.analyzer.DataFile;
 import play.Logger;
 
 import java.util.List;
-import java.util.concurrent.*;
+import java.util.concurrent.CompletableFuture;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 

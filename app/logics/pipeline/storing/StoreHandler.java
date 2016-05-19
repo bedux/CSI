@@ -3,13 +3,9 @@ package logics.pipeline.storing;
 import exception.CustomException;
 import interfaces.Handler;
 import logics.Definitions;
-import logics.databaseCache.DatabaseModels;
-import logics.databaseUtilities.SaveClassAsTable;
-import logics.models.db.JavaFile;
-import logics.models.db.information.JavaFileInformation;
-import logics.models.db.RepositoryVersion;
-import logics.models.db.TextFile;
-import play.Logger;
+import logics.models.newDatabase.JavaFile;
+import logics.models.newDatabase.RepositoryVersion;
+import logics.models.newDatabase.TextFile;
 
 import java.nio.file.FileSystems;
 import java.nio.file.Files;
@@ -29,7 +25,7 @@ public class StoreHandler implements Handler<StoreHandlerParam, StoreHandlerResu
     public StoreHandlerResult process(StoreHandlerParam param) {
         String path = Definitions.repositoryPath;
 
-        path += param.repositoryVersion.getId();
+        path += param.repositoryVersion.id;
         try {
             Files.walk(FileSystems.getDefault().getPath(path)).forEach((x) -> {
                 String s = clearPath(x.normalize().toString(), param.repositoryVersion);
@@ -40,36 +36,23 @@ public class StoreHandler implements Handler<StoreHandlerParam, StoreHandlerResu
 //                    JavaFile javaFile = new JavaFile();
 
 
-                    JavaFile javaFile = DatabaseModels.getInstance().getEntity(JavaFile.class).get();
-                    javaFile.setPath(s);
-                    javaFile.setName(x.getFileName().toString());
-                    param.repositoryVersion.getListOfFile();
-
-                    javaFile.setJavaFileInformation( new JavaFileInformation());
-
-                    param.repositoryVersion.addFile(javaFile);
-                    try {
-                        long id = javaFile.getId();
-                        //Logger.info("Saved as Java File " + id + " " + s);
-                    } catch (Exception e) {
-
-                        throw new CustomException(e);
-                    }
+                    JavaFile javaFile = new JavaFile();
+                    javaFile.name = s;
+                 //   javaFile.setName(x.getFileName().toString()); //TODO
+                    javaFile.repositoryVersion =  param.repositoryVersion;
+                    param.repositoryVersion.javaFileList.add(javaFile);
+                    javaFile.save();
 
                 } else if (Files.isRegularFile(x)) {
 
-                    TextFile textFile = DatabaseModels.getInstance().getEntity(TextFile.class).get();
-                    textFile.setPath( s);
-                    textFile.setName( x.getFileName().toString());
-                    param.repositoryVersion.getListOfFile();
-                    param.repositoryVersion.addFile(textFile);
-                    try {
+                    TextFile textFile = new TextFile();
+                    textFile.name = s;
+                    //textFile.setName( x.getFileName().toString());//TODO
+                    textFile.repositoryVersion = param.repositoryVersion;
+                    param.repositoryVersion.textFileList.add(textFile);
 
-                        long id = textFile.getId();
-                       // Logger.info("Saved as Regular file" + id + " " + s);
-                    } catch (Exception e) {
-                        throw new CustomException(e);
-                    }
+                    textFile.save();
+
 
                 }
             });
@@ -88,7 +71,7 @@ public class StoreHandler implements Handler<StoreHandlerParam, StoreHandlerResu
      * @return
      */
     private String clearPath(String s, RepositoryVersion repository) {
-        return s.substring(s.indexOf("repoDownload/" + repository.getId()) + ("repoDownload/").length());
+        return s.substring(s.indexOf("repoDownload/" + repository.id) + ("repoDownload/").length());
 
     }
 }

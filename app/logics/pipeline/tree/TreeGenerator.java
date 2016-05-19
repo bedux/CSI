@@ -1,18 +1,14 @@
 package logics.pipeline.tree;
 
-import exception.CustomException;
 import interfaces.Handler;
 import logics.Definitions;
-import logics.analyzer.*;
+import logics.analyzer.Features;
 import logics.analyzer.Package;
-import logics.models.db.File;
-import logics.models.db.RepositoryVersion;
-import logics.models.modelQuery.Query;
-import play.Logger;
+import logics.models.newDatabase.BinaryFile;
+import logics.models.newDatabase.JavaFile;
+import logics.models.newDatabase.RepositoryVersion;
+import logics.models.newDatabase.TextFile;
 import play.Play;
-
-
-import java.util.List;
 
 
 public class TreeGenerator implements Handler<TreeGeneratorHandleParam, TreeGeneratorHandlerResult> {
@@ -24,19 +20,33 @@ public class TreeGenerator implements Handler<TreeGeneratorHandleParam, TreeGene
      */
     @Override
     public TreeGeneratorHandlerResult process(TreeGeneratorHandleParam param) {
-        List<File> components;
-        try {
-            components = Query.FileByRepositoryVersion(param.repositoryVersion.getId());
-        } catch (Exception e) {
-            throw new CustomException(e);
+
+
+
+
+        System.out.println(Play.application().path().getAbsolutePath()+"/" + Definitions.repositoryPathABS + param.repositoryVersion.id);
+
+        java.io.File fileRoot = new java.io.File(  Play.application().path().getAbsolutePath()+"/"+Definitions.repositoryPathABS + param.repositoryVersion.id);
+        Package root = new Package(new Features("root", Long.toString(param.repositoryVersion.id), fileRoot.toPath()));
+
+        for (JavaFile component : param.repositoryVersion.javaFileList) {
+            java.io.File helper = new java.io.File(  Play.application().path().getAbsolutePath()+"/"+Definitions.repositoryPathABS + component.name);
+            String s = clearPath(helper.toPath().normalize().toString(), param.repositoryVersion);
+            String dir = s.substring(0, s.indexOf('/'));
+            String remainName = s.substring(s.indexOf('/') + 1);
+            root.add(dir, helper.toPath(), remainName);
         }
 
-        System.out.println(Play.application().path().getAbsolutePath()+"/" + Definitions.repositoryPathABS + param.repositoryVersion.getId());
+        for (BinaryFile component : param.repositoryVersion.binaryFileList) {
+            java.io.File helper = new java.io.File(  Play.application().path().getAbsolutePath()+"/"+Definitions.repositoryPathABS + component.name);
+            String s = clearPath(helper.toPath().normalize().toString(), param.repositoryVersion);
+            String dir = s.substring(0, s.indexOf('/'));
+            String remainName = s.substring(s.indexOf('/') + 1);
+            root.add(dir, helper.toPath(), remainName);
+        }
 
-        java.io.File fileRoot = new java.io.File(  Play.application().path().getAbsolutePath()+"/"+Definitions.repositoryPathABS + param.repositoryVersion.getId());
-        Package root = new Package(new Features("root", Long.toString(param.repositoryVersion.getId()), fileRoot.toPath()));
-        for (logics.models.db.File component : components) {
-            java.io.File helper = new java.io.File(  Play.application().path().getAbsolutePath()+"/"+Definitions.repositoryPathABS + component.getPath());
+        for (TextFile component : param.repositoryVersion.textFileList) {
+            java.io.File helper = new java.io.File(  Play.application().path().getAbsolutePath()+"/"+Definitions.repositoryPathABS + component.name);
             String s = clearPath(helper.toPath().normalize().toString(), param.repositoryVersion);
             String dir = s.substring(0, s.indexOf('/'));
             String remainName = s.substring(s.indexOf('/') + 1);
@@ -53,7 +63,7 @@ public class TreeGenerator implements Handler<TreeGeneratorHandleParam, TreeGene
      * @return remove the absolute path of s
      */
     private String clearPath(String s, RepositoryVersion rpv) {
-        return s.substring(s.indexOf(Definitions.repositoryPathABS + rpv.getId()) + (Definitions.repositoryPathABS).length());
+        return s.substring(s.indexOf(Definitions.repositoryPathABS + rpv.id) + (Definitions.repositoryPathABS).length());
 
     }
 }

@@ -5,7 +5,6 @@ import interfaces.Component;
 import logics.analyzer.BinaryFile;
 import logics.analyzer.DataFile;
 import logics.analyzer.Package;
-import logics.models.tools.MaximumMinimumData;
 
 import java.util.List;
 import java.util.stream.Collectors;

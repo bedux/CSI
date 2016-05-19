@@ -1,8 +1,7 @@
 package logics.pipeline.clone;
 
 import interfaces.HandlerParam;
-import logics.models.db.Repository;
-import logics.models.form.RepoForm;
+import logics.models.newDatabase.Repository;
 
 
 public class CloneHandlerParam implements HandlerParam {

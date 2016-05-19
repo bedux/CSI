@@ -1,6 +1,8 @@
 package logics.analyzer.analysis;
 
-import java.util.concurrent.*;
+import java.util.concurrent.Executor;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 /**
  * Created by bedux on 15/04/16.

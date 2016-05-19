@@ -1,7 +1,7 @@
 package logics.pipeline.tree;
 
 import interfaces.HandlerParam;
-import logics.models.db.RepositoryVersion;
+import logics.models.newDatabase.RepositoryVersion;
 
 /**
  * Created by bedux on 16/04/16.

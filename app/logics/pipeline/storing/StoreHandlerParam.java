@@ -1,7 +1,7 @@
 package logics.pipeline.storing;
 
 import interfaces.HandlerParam;
-import logics.models.db.RepositoryVersion;
+import logics.models.newDatabase.RepositoryVersion;
 import logics.pipeline.clone.CloneHandlerResult;
 
 /**

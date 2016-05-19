@@ -1,21 +1,11 @@
 package logics.pipeline.storeASTdata;
 
-import exception.CustomException;
+import com.avaje.ebean.Ebean;
 import interfaces.Handler;
-import logics.Definitions;
-import logics.analyzer.Features;
-import logics.analyzer.Package;
 import logics.analyzer.analysis.ASTraversAndStore;
-import logics.analyzer.analysis.ThreadManager;
-import logics.models.db.File;
-import logics.models.db.RepositoryVersion;
-import logics.models.query.QueryList;
 import play.Logger;
 
-import java.util.List;
 import java.util.concurrent.ExecutionException;
-import java.util.concurrent.ForkJoinPool;
-import java.util.concurrent.TimeUnit;
 
 
 public class StoreAstData implements Handler<StoreASTHandleParam, StoreASTHandlerResult> {
@@ -28,13 +18,20 @@ public class StoreAstData implements Handler<StoreASTHandleParam, StoreASTHandle
     public StoreASTHandlerResult process(StoreASTHandleParam param) {
         Logger.info("AST of java file ");
         System.out.println(param.wsp);
+        Ebean.beginTransaction();
         try {
             param.root.applyFunction(new ASTraversAndStore(param.wsp)::analysis).get();
+            Ebean.commitTransaction();
+
         } catch (InterruptedException e) {
             e.printStackTrace();
         } catch (ExecutionException e) {
             e.printStackTrace();
+        }finally {
+            Ebean.endTransaction();
         }
+
+
 
 
         Logger.info("END of java file ");

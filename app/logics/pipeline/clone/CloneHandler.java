@@ -3,16 +3,8 @@ package logics.pipeline.clone;
 import exception.CustomException;
 import interfaces.Handler;
 import interfaces.VersionedSystem;
-import logics.databaseCache.DatabaseModels;
-import logics.databaseUtilities.Pair;
-import logics.databaseUtilities.SaveClassAsTable;
-import logics.models.db.Repository;
-import logics.models.db.RepositoryVersion;
-import logics.models.modelQuery.Query;
+import logics.models.newDatabase.RepositoryVersion;
 import logics.versionUtils.GitRepo;
-import play.Logger;
-
-import java.util.Optional;
 
 /**
  * Created by bedux on 07/03/16.
@@ -23,18 +15,19 @@ public class CloneHandler implements Handler<CloneHandlerParam, CloneHandlerResu
     public CloneHandlerResult process(CloneHandlerParam param)  {
 
         VersionedSystem sys = new GitRepo(param.repoForm);
-        RepositoryVersion newerRepoVersion = DatabaseModels.getInstance().getEntity(RepositoryVersion.class).get();
-        param.repoForm.addlistOfRepositoryVersion(newerRepoVersion);
+        RepositoryVersion newerRepoVersion = new RepositoryVersion();
+        param.repoForm.repositoryVersionList.add(newerRepoVersion);
+        newerRepoVersion.repository = param.repoForm;
+        newerRepoVersion.save();
+        param.repoForm.update();
+
         try {
-            sys.clone(Long.toString(newerRepoVersion.getId()));
+            sys.clone(Long.toString(newerRepoVersion.id));
         } catch (Exception e) {
             throw new CustomException(e);
         }
 
-
-
-
-        return new CloneHandlerResult(param.repoForm.getListOfRepositoryVersion().get(0));
+        return new CloneHandlerResult(param.repoForm.repositoryVersionList.get(0));
     }
 }
 

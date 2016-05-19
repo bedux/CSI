@@ -4,24 +4,16 @@ import com.fasterxml.jackson.databind.JsonNode;
 import exception.CustomException;
 import interfaces.Handler;
 import logics.Definitions;
-import logics.analyzer.Features;
 import logics.analyzer.Package;
 import logics.analyzer.analysis.*;
-import logics.databaseCache.DatabaseModels;
-import logics.databaseUtilities.SaveClassAsTable;
-import logics.models.db.RepositoryRender;
-import logics.models.db.RepositoryVersion;
-import logics.models.query.*;
+import logics.models.newDatabase.RepositoryRender;
 import logics.models.tools.MaximumMinimumData;
-import org.h2.engine.Database;
 import play.Logger;
 import play.Play;
 import play.libs.Json;
 
 import java.io.*;
 import java.nio.file.Files;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.concurrent.ExecutionException;
 import java.util.function.Function;
 
@@ -56,7 +48,7 @@ public class AnalyserHandler implements Handler<AnalyserHandlerParam, AnalyserHa
                 (computeCity(param.root, param.metricsToCompute.getWidth(),
                         param.metricsToCompute.getHeight(),
                         param.metricsToCompute.getColor(),
-                        param.metricsToCompute.getMetricType().replaceAll(" ", "_") + param.repositoryVersion.getId(),
+                        param.metricsToCompute.getMetricType().replaceAll(" ", "_") + param.repositoryVersion.id,
                         param.metricsToCompute.repositoryRender(param.repositoryVersion),
                         param));
     }
@@ -156,9 +148,9 @@ public class AnalyserHandler implements Handler<AnalyserHandlerParam, AnalyserHa
         }
         try (Writer writer = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(new File(Play.application().path().getAbsolutePath()+"/"+ Definitions.jsonPathABS +resultName + ".json"))))) {
             writer.write(Json.stringify(json));
-            repoRender.setLocalPath("/asset/" + resultName+ ".json");
+            repoRender.localpath = ("/asset/" + resultName+ ".json");
+            repoRender.save();
 
-//            new SaveClassAsTable().save(repoRender);
             writer.close();
             return  json;
 

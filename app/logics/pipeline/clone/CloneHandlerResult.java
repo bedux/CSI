@@ -1,7 +1,7 @@
 package logics.pipeline.clone;
 
 import interfaces.HandlerResult;
-import logics.models.db.RepositoryVersion;
+import logics.models.newDatabase.RepositoryVersion;
 
 /**
  * Created by bedux on 07/03/16.

@@ -1,9 +1,8 @@
 package logics.pipeline.storeASTdata;
 
 import interfaces.HandlerParam;
-import logics.analyzer.*;
 import logics.analyzer.Package;
-import logics.models.db.RepositoryVersion;
+import logics.models.newDatabase.RepositoryVersion;
 import logics.pipeline.tree.TreeGeneratorHandlerResult;
 import logics.versionUtils.WebSocketProgress;
 

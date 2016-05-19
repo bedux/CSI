@@ -1,11 +1,9 @@
 package controllers;
 
-import logics.analyzer.analysis.ThreadManager;
-import logics.models.db.RepositoryVersion;
+
 import logics.models.form.RepoForm;
 import logics.pipeline.PipelineManager;
 import play.data.Form;
-import play.libs.F;
 import play.mvc.Controller;
 import play.mvc.Result;
 import views.html.loading;

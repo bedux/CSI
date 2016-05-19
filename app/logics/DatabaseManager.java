@@ -3,8 +3,6 @@ package logics;
 import exception.CustomException;
 import logics.databaseUtilities.ConvertTableToClass;
 import play.db.DB;
-import play.libs.Json;
-import scala.util.parsing.json.JSONObject$;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;

@@ -1,13 +1,9 @@
 package logics.databaseUtilities;
 
-import com.fasterxml.jackson.databind.JsonNode;
 import exception.CustomException;
 import logics.DatabaseManager;
-import logics.models.db.BaseTable;
-import org.h2.engine.Database;
 import org.postgresql.util.PGobject;
 import play.libs.Json;
-import scala.util.parsing.json.JSONObject;
 
 import java.lang.reflect.Field;
 import java.sql.SQLException;

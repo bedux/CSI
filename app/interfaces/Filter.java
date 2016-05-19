@@ -1,8 +1,6 @@
 package interfaces;
 
-import com.avaje.ebean.Expression;
 import com.fasterxml.jackson.databind.node.ObjectNode;
-import logics.models.db.JavaFile;
 import logics.models.tools.Data;
 
 /**

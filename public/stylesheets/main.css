@@ -223,3 +223,14 @@ ul {
     list-style-type: none;
 }
 
+#table tr {
+    display : none;
+}
+tr.parent {
+    display : table-row;
+}
+tr.open {
+    display : table-row;
+}
+
+
