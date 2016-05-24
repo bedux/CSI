@@ -40,34 +40,20 @@ public class LoadFromDatabase implements Analyser< CompletableFuture<Integer>> {
      */
     @Override
     public  CompletableFuture<Integer> analysis(Component component) {
-//        CompletableFuture[] res =
-//                component.getComponentList().stream().map(
-//                        (x) -> CompletableFuture.supplyAsync(() -> x.applyFunction((new LoadFromDatabase(widthQuery.clone(), heightQuery.clone(), colorQuery.clone()))::analysis),ThreadManager.instance().getExecutor()
-//                        )
-//                ).toArray(CompletableFuture[]::new);
-
-//        component.getComponentList().stream().forEach(x -> x.applyFunction((new LoadFromDatabase(widthQuery, heightQuery, colorQuery))::analysis));
-////
-//
-//
-//        if (component instanceof DataFile) {
-//            return computeMetricsOfComponent((DataFile) component);
-//        } else {
-//            return 1;
-//        }
 
         List<CompletableFuture> list = component.getComponentList().stream().map(
                 (x) -> x.applyFunction((new LoadFromDatabase(widthQuery, heightQuery, colorQuery))::analysis))
                 .collect(Collectors.toList());
 
-        return CompletableFuture.allOf(list.toArray(new CompletableFuture[list.size()])).thenApplyAsync(
+        return CompletableFuture.allOf(list.toArray(new CompletableFuture[list.size()]))
+                .thenApplyAsync(
                 (x)->{
                     if (component instanceof DataFile) {
                         computeMetricsOfComponent((DataFile) component);
                     }
                     return 1;
                 }
-        ,ThreadManager.instance().getExecutor());
+       );
 
 
 

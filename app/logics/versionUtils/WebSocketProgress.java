@@ -22,31 +22,33 @@ public class WebSocketProgress extends WebSocket<String> implements ProgressMoni
     }
 
     @Override
-    public void start(int i) {
+    public synchronized void start(int i) {
 
         status -= i;
     }
 
     @Override
-    public void beginTask(String s, int i) {
+    public synchronized void beginTask(String s, int i) {
         sendMessage("Begin Task  "+s + "  "+i);
     }
 
     @Override
-    public void update(int i) {
+    public synchronized  void update(int i) {
         status -= i;
 
     }
 
     @Override
-    public void endTask() {
+    public synchronized void endTask() {
         sendMessage("End Task ");
         Logger.info("End Task ");
     }
-    public void endTask(String name) {
+    public synchronized void endTask(String name) {
         sendMessage("End "+name);
         Logger.info("End  "+name);
     }
+
+
 
 
     @Override
@@ -54,11 +56,21 @@ public class WebSocketProgress extends WebSocket<String> implements ProgressMoni
         return false;
     }
 
-    private void sendMessage(String message){
+    public synchronized  void  sendMessage(String message){
         if(out!=null){
             out.write(message);
         }
     }
+    public synchronized  void  sendMessage(String ... messages){
+        if(out!=null){
+            String message="";
+            for(String m:messages){
+                message+=m+" ";
+            }
+            out.write(message);
+        }
+    }
+
 
     @Override
     public void onReady(WebSocket.In<String> in, WebSocket.Out<String> out) {

@@ -2,10 +2,8 @@
 @main(""){
 
 
-    <div>
-        <ul id="greeting">
+    <div  id="greeting" style="overflow-y: auto;">
 
-            </ul>
     </div>
 
     <a  href="/">List of Repository</a>
@@ -17,7 +15,11 @@
             var sock = new WS("@routes.WebSocketConnection.sockHandler(id).webSocketURL(request)")
             
             sock.onmessage = function(event) {
-                $('#greeting').append($("<li>"+event.data+"</li>"))
+                var inputNode = $("<p>->"+event.data+"</p>");
+                $('#greeting').append(inputNode);
+                $("#greeting").animate({scrollTop: $("#greeting").get(0).scrollHeight,duration:1});
+
+
             }
 
         })

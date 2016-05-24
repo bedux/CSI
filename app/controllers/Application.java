@@ -1,5 +1,6 @@
 package controllers;
 
+import com.avaje.ebean.Ebean;
 import com.fasterxml.jackson.databind.JsonNode;
 import exception.CustomException;
 import exception.SQLnoResult;
@@ -30,6 +31,7 @@ import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.*;
 import java.util.function.Function;
+import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
 public class Application extends Controller {
@@ -41,13 +43,16 @@ public class Application extends Controller {
 
     }
 
-    private static HashMap<String,Function<String,Long>> queryAvailable = new HashMap<String,Function<String,Long>>(){{
-        put("FieldCount",Query::CountFieldByPath);
-        put("MethodsCount",Query::CountMethodByPath);
-        put("DiscussionCount",Query::DiscussedImportMethodCounter);
-        put("JavaDoc",Query::JavaDocForMethodCount);
-        put("ClassCount",Query::CountJavaClass);
-        put("InterfaceCount",Query::CountJavaInterface);
+    private static HashMap<String,Supplier<Function<String, Long>> >  queryAvailable =
+            new HashMap<String,Supplier<Function<String, Long>>>(){{
+
+
+        put("FieldCount", ()->new Query().CountFieldByPathWrap);
+        put("MethodsCount",()->new Query().CountMethodByPathWrap);
+        put("DiscussionCount",()->new Query().DiscussedImportMethodCounterWrap);
+        put("JavaDoc",()->new Query().JavaDocForMethodCountWrap);
+        put("ClassCount",()->new Query()::CountJavaClass);
+        put("InterfaceCount",()->new Query()::CountJavaInterface);
 
     }};
 
@@ -56,18 +61,24 @@ public class Application extends Controller {
     }
 
 
+    private static String getName(JavaImport ji){
+        return ji.packageName;
+    }
+
     public static Result indexGet(int id) {
 
 
+        Query q = new Query();
+        Ebean.getServerCacheManager().clearAll();
+
         Long ids = (long)id;
 
-        Optional<RepositoryVersion> repositoryVersion = Query.<RepositoryVersion>byId(new Pair<>(ids, RepositoryVersion.find));
+        Optional<RepositoryVersion> repositoryVersion = q.<RepositoryVersion>byId(new Pair<>(ids, RepositoryVersion.find));
 
         repositoryVersion.orElseThrow(()-> new SQLnoResult());
 
         Long idRun = new PipelineManager().StoreAndAnalyze(repositoryVersion.get());
         return ok(loading.render(idRun));
-
 
 
 
@@ -92,11 +103,11 @@ public class Application extends Controller {
         String heightQ  =request().body().asJson().get("height").asText();
         String colorQ  =request().body().asJson().get("color").asText();
 
-
-        RepositoryVersion repo = Query.<RepositoryVersion>byId(new Pair<>(repoId, RepositoryVersion.find)).get();
+        Query q = new Query();
+        RepositoryVersion repo = q.<RepositoryVersion>byId(new Pair<>(repoId, RepositoryVersion.find)).get();
         TreeGeneratorHandlerResult treeForG = new TreeGenerator().process(new TreeGeneratorHandleParam(repo));
         String uuid = repoId +widthQ + heightQ +colorQ;
-        Optional<RepositoryRender> repoRender = Query.<RepositoryRender>All(RepositoryRender.find).stream().filter(x->x.metrictype.equals(uuid)).findAny();
+        Optional<RepositoryRender> repoRender = q.<RepositoryRender>All(RepositoryRender.find).stream().filter(x->x.metrictype.equals(uuid)).findAny();
         if(repoRender.isPresent()){
             return  ok(new java.io.File( Play.application().path().getAbsolutePath()+repoRender.get().localpath));
         }
@@ -122,7 +133,8 @@ public class Application extends Controller {
     }
 
     public static Result getRepositories() {
-        List<RepositoryRender> repositoryVersionList = Query.All(RepositoryRender.find);
+        Query q = new Query();
+        List<RepositoryRender> repositoryVersionList = q.All(RepositoryRender.find);
 
         if(repositoryVersionList.size()<0){
             return ok(listRepository.render(new ArrayList<>()));
@@ -131,11 +143,11 @@ public class Application extends Controller {
         for(RepositoryRender v:repositoryVersionList){
 
                 v.setNameToDisplay(   v.repository.url);
-                v.setNumberOfFileToDispaly((int)Query.NumberOfFile(v.repositoryversion.id));
+                v.setNumberOfFileToDispaly((int)q.NumberOfFile(v.repositoryversion.id));
 
         }
 
-        return ok(listRepository.render( repositoryVersionList.stream().filter(x -> x.metrictype.contentEquals("Discussion and import percentage")).collect(Collectors.toList())));
+        return ok(listRepository.render( repositoryVersionList.stream().filter(x -> x.metrictype.contains("Discussion and import percentage")).collect(Collectors.toList())));
     }
 
 
@@ -143,16 +155,17 @@ public class Application extends Controller {
 
         Map<String, String> info = new HashMap<>();
 
-            info.put("size",Long.toString(Query.TotalSize(version)));
-          info.put("nol",Long.toString(Query.TotalNumberOfCodeLines(version)));
-            info.put("name",(Query.ProjectName(version)));
-            info.put("nod",Long.toString(Query.NumberOfFile(version)));
+        Query q = new Query();
+            info.put("size",Long.toString(q.TotalSize(version)));
+          info.put("nol",Long.toString(q.TotalNumberOfCodeLines(version)));
+            info.put("name",(q.ProjectName(version)));
+            info.put("nod",Long.toString(q.NumberOfFile(version)));
 
 
 
         Map<String, String> getMapMethod = new HashMap();
-        getMapMethod.put("Height","depthMetrics");
-        getMapMethod.put("Width/Depth","heightMetrics");
+        getMapMethod.put("Width/Depth","depthMetrics");
+        getMapMethod.put("Height","heightMetrics");
         getMapMethod.put("Color","colorMetrics");
 
 
@@ -162,7 +175,8 @@ public class Application extends Controller {
     }
 
     public static Result getAllRepositoryRender(Long repositoryVersion){
-       RepositoryVersion repo =  Query.<RepositoryVersion>byId(new Pair<>(repositoryVersion, RepositoryVersion.find)).orElseThrow(()-> new CustomException("T"));
+        Query q = new Query();
+       RepositoryVersion repo =  q.<RepositoryVersion>byId(new Pair<>(repositoryVersion, RepositoryVersion.find)).orElseThrow(()-> new CustomException("T"));
         List<RepositoryRender> repositoryRenders = repo.repositoryRenderList;
         System.out.println(repositoryRenders.size());
         class ResultType{
@@ -235,30 +249,30 @@ public class Application extends Controller {
 //
         final String path = request().body().asJson().get("path").asText();
         final HashMap<String,List<String>> resul = new HashMap<>();
+        Query q = new Query();
 
-
-        List<JavaMethodCall> jmc = Query.AllDiscussedMethod(path);
+        List<JavaMethodCall> jmc = q.AllDiscussedMethod(path);
         jmc.forEach(x->{
             if(!x.methodname.contains("$")) {
                 String key = computeKey(x.methodname,x.params);
                 if (resul.containsKey(key)) {
-                    resul.get(key).addAll(x.methodDiscussionList.stream().map(z -> z.discussion.url).collect(Collectors.toList()));
+                    resul.get(key).addAll(x.methodDiscussionList.stream().map(z -> z.discussion.url).limit(10).collect(Collectors.toList()));
                 } else {
                     resul.put(key, new ArrayList<>());
-                    resul.get(key).addAll(x.methodDiscussionList.stream().map(z -> z.discussion.url).collect(Collectors.toList()));
+                    resul.get(key).addAll(x.methodDiscussionList.stream().map(z -> z.discussion.url).limit(10).collect(Collectors.toList()));
                 }
             }
         });
 
 
-        List<JavaImport> ji = Query.AllDiscussedImport(path);
+        List<JavaImport> ji = q.AllDiscussedImport(path);
         ji.forEach(x->{
             if(!x.packageName.contains("$")) {
                 if (resul.containsKey(x.packageName)) {
-                    resul.get(x.packageName).addAll(x.importDiscussionList.stream().map(z -> z.discussion.url).collect(Collectors.toList()));
+                    resul.get(x.packageName).addAll(x.importDiscussionList.stream().map(z -> z.discussion.url).limit(10).collect(Collectors.toList()));
                 } else {
                     resul.put(x.packageName, new ArrayList<>());
-                    resul.get(x.packageName).addAll(x.importDiscussionList.stream().map(z -> z.discussion.url).collect(Collectors.toList()));
+                    resul.get(x.packageName).addAll(x.importDiscussionList.stream().map(z -> z.discussion.url).limit(10).collect(Collectors.toList()));
                 }
             }
         });

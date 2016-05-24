@@ -24,6 +24,7 @@ import logics.versionUtils.WebSocketProgress;
 
 import java.util.concurrent.CompletableFuture;
 import java.util.function.Function;
+import java.util.function.Supplier;
 
 
 public class PipelineManager {
@@ -39,10 +40,6 @@ public class PipelineManager {
         repository.save();
 
         new WebSocketProgress(repository.id);
-
-//        RepositoryVersion repositoryVersion =  DatabaseModels.getInstance().getEntity(RepositoryVersion.class).get();
-//        repository.addlistOfRepositoryVersion(repositoryVersion);
-
         Runnable task = (()-> {
             CloneHandlerResult shr =  new CloneHandler().process(new CloneHandlerParam(repository));
             StoreAndAnalyze(shr.repositoryVersion);
@@ -52,7 +49,7 @@ public class PipelineManager {
 
     }
 
-    private  CompletableFuture<Void> runTask(Function<String,Long> q1,Function<String,Long> q2,Function<String,Long> q3,String name,RepositoryVersion reooV,boolean per , boolean onPack){
+    private  CompletableFuture<Void> runTask(Supplier<Function<String, Long>> q1, Supplier<Function<String,Long>> q2, Supplier<Function<String,Long>> q3, String name, RepositoryVersion reooV, boolean per , boolean onPack){
         return   CompletableFuture.runAsync(()-> {
 
             WebSocketProgress currentProgress =(WebSocketProgress)WebSocketConnection.availableWebSocket.get(reooV.repository.id);
@@ -66,7 +63,7 @@ public class PipelineManager {
             new AnalyserHandler().process(result);
             currentProgress.endTask(name);
 
-        });
+        },ThreadManager.instance().getExecutor());
     }
 
 
@@ -78,21 +75,21 @@ public class PipelineManager {
         Runnable r =  ()-> {
             StoreHandlerResult shr = new StoreHandler().process(new StoreHandlerParam(repositoryVersion));
             TreeGeneratorHandlerResult generateTree = new TreeGenerator().process(new TreeGeneratorHandleParam(shr.repositoryVersion));
-            currentProgress.beginTask("AST over Files",1);
+            currentProgress.beginTask("AST over Files",(int)(new Query().NumberOfFile(repositoryVersion.id)));
             new StoreAstData().process(new StoreASTHandleParam(generateTree,currentProgress));
             currentProgress.endTask("AST over Files");
 
 //
 
             CompletableFuture.allOf(
-                    runTask(Query::CountFieldByPath, Query::CountMethodByPath, Query::DiscussedImportMethodCounter, "Discussion and import", repositoryVersion,false,false),
-                    runTask(Query::CountFieldByPath, Query::CountMethodByPath, Query::DiscussedImportMethodCounterOverTotal, "Discussion and import percentage", repositoryVersion,true,false),
-                    runTask(Query::CountFieldByPath, Query::CountMethodByPath, Query::JavaDocForMethodCount, "JavaDoc", repositoryVersion,false,false),
-                    runTask(Query::CountFieldByPath, Query::CountMethodByPath, Query::JavaDocOverTotalMethods, "JavaDoc over Method", repositoryVersion,true,false),
-                    runTask(Query::CountFieldByPath, Query::CountMethodByPath, Query::JavaDocForMethodCount, "JavaDoc only Package", repositoryVersion,false,true),
-                    runTask(Query::CountFieldByPath, Query::CountMethodByPath, Query::JavaDocOverTotalMethods, "JavaDoc over Method Package", repositoryVersion,true,true),
-                    runTask(Query::CountFieldByPath, Query::CountMethodByPath, Query::DiscussedImportMethodCounter, "Discussion only Package", repositoryVersion,false,true),
-                    runTask(Query::CountFieldByPath, Query::CountMethodByPath, Query::DiscussedImportMethodCounterOverTotal, "Discussion over Method and Import  Package", repositoryVersion,true,true)
+                    runTask(()->new Query().CountFieldByPathWrap,()->new Query().CountMethodByPathWrap,()-> new Query().DiscussedImportMethodCounterWrap, "Discussion and import", repositoryVersion,false,false),
+                    runTask(()->new Query().CountFieldByPathWrap,()->new Query().CountMethodByPathWrap,()-> new Query().DiscussedImportMethodCounterOverTotalWrap, "Discussion and import percentage", repositoryVersion,true,false),
+                    runTask(()->new Query().CountFieldByPathWrap,()-> new Query().CountMethodByPathWrap,()-> new Query().JavaDocForMethodCountWrap, "JavaDoc", repositoryVersion,false,false),
+                    runTask(()->new Query().CountFieldByPathWrap,()-> new Query().CountMethodByPathWrap,()-> new Query().JavaDocOverTotalMethodsWrap, "JavaDoc over Method", repositoryVersion,true,false),
+                    runTask(()->new Query().CountFieldByPathWrap,()-> new Query().CountMethodByPathWrap,()-> new Query().JavaDocForMethodCountWrap, "JavaDoc only Package", repositoryVersion,false,true),
+                    runTask(()->new Query().CountFieldByPathWrap,()-> new Query().CountMethodByPathWrap,()-> new Query().JavaDocOverTotalMethodsWrap, "JavaDoc over Method Package", repositoryVersion,true,true),
+                    runTask(()->new Query().CountFieldByPathWrap,()-> new Query().CountMethodByPathWrap,()-> new Query().DiscussedImportMethodCounterWrap, "Discussion only Package", repositoryVersion,false,true),
+                    runTask(()->new Query().CountFieldByPathWrap,()-> new Query().CountMethodByPathWrap,()-> new Query().DiscussedImportMethodCounterOverTotalWrap, "Discussion over Method and Import  Package", repositoryVersion,true,true)
 
             );
         };

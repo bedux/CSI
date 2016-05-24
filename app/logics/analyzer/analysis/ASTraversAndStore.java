@@ -18,17 +18,23 @@ import interfaces.Analyser;
 import interfaces.Component;
 import logics.ExtensionTool;
 import logics.analyzer.DataFile;
+import logics.analyzer.UsedData;
 import logics.models.modelQuery.Query;
 import logics.models.newDatabase.*;
 import logics.versionUtils.WebSocketProgress;
 import play.Logger;
+import play.db.ebean.Model;
 
 import java.io.*;
 import java.lang.reflect.Modifier;
 import java.nio.file.Files;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 
 /**
@@ -37,7 +43,13 @@ import java.util.stream.Collectors;
 public class ASTraversAndStore implements Analyser< CompletableFuture<Integer>> {
 
     WebSocketProgress webSocketProgress= null;
+
+
+
     public ASTraversAndStore(){
+
+
+
 
     }
     public ASTraversAndStore(WebSocketProgress webSocketProgress){
@@ -84,7 +96,7 @@ public class ASTraversAndStore implements Analyser< CompletableFuture<Integer>> 
             analyseJavaFile(currentPath);
         } else {
             try {
-                TextFile analyzedFile =  (TextFile)TextFile.find.where().eq("name", c.getFeatures().getPath()).findUnique();
+                TextFile analyzedFile =  (TextFile)TextFile.find.where().eq("name", c.getFeatures().getPath()).findList().get(0);
                 Long l = Files.size(c.getFeatures().getFilePath());
                 if (l != null) {
                     analyzedFile.size = l;
@@ -106,17 +118,18 @@ public class ASTraversAndStore implements Analyser< CompletableFuture<Integer>> 
     private void analyseJavaFile(ExtensionTool currentPath) {
         JavaFile analyzedFile;
         Logger.info("Analyse "+currentPath.getPath()+" Thread id=>"+Thread.currentThread().getId());
-        if(webSocketProgress!=null){
-            webSocketProgress.beginTask("Analyse "+currentPath.getPath(),1);
-        }
+
         try {
-            analyzedFile = Query.JavaFileByPath(currentPath.getPath()).orElseThrow(() -> new SQLnoResult());
+            Query q = new Query();
+            analyzedFile = q.JavaFileByPath(currentPath.getPath()).orElseThrow(() -> new SQLnoResult());
             Long l = Files.size(currentPath.getFilePath());
             if (l != null) {
 
                 analyzedFile.size = l;
-                analyzedFile.nline =     Files.lines(currentPath.getFilePath()).count();
-
+                try(Stream<String> stream = Files.lines(currentPath.getFilePath())) {
+                    analyzedFile.nline = stream.count();
+                }
+                analyzedFile.update();
 
 
 
@@ -130,24 +143,21 @@ public class ASTraversAndStore implements Analyser< CompletableFuture<Integer>> 
 
 
             MethodVisitorParameter mvh = new MethodVisitorParameter();
-            mvh.idFile = analyzedFile.id;
             mvh.refJavaFile = analyzedFile;
-
             new MethodVisitor().visit(p, mvh);
-
-
             is.close();
+            Ebean.save(mvh.toBeSaved);
+            analyzedFile.update();
 
         } catch (IOException e) {
-            new CustomException(e);
+            throw new CustomException(e);
         }  catch (ParseException e) {
-            new CustomException(e);
-        }finally {
+            return;
 
+        }catch (Exception e){
+            throw new CustomException(e);
         }
-        if(webSocketProgress!=null){
-            webSocketProgress.endTask(" Analyse "+currentPath.getPath());
-        }
+
 
     }
 }
@@ -156,14 +166,10 @@ public class ASTraversAndStore implements Analyser< CompletableFuture<Integer>> 
  * Only a field class for travers the AST
  */
 class MethodVisitorParameter{
-    public long idFile;
-    public long idJavaSource = -1;
-    public long idJavaDoc=0;
-    public long javaMethodId=-1;
-    public long countJavaMethod= 0;
-    public boolean isInterface  = false;
-    public boolean isEnum  = false;
     public JavaFile refJavaFile ;
+    public int idJavaDoc;
+
+    public List<Model> toBeSaved = new ArrayList<>();
 
 }
 
@@ -190,32 +196,38 @@ class MethodVisitor extends VoidVisitorAdapter<MethodVisitorParameter> {
     @Override
     public void visit(MethodCallExpr n, MethodVisitorParameter arg) {
 
-        List<JavaMethodCall> result = JavaMethodCall.find.where().eq("methodname",n.getName()).eq("params",n.getArgs().size()).findList();
+       // List<JavaMethodCall> result = JavaMethodCall.find.where().eq("methodname",n.getName()).eq("params",n.getArgs().size()).findList();
+
+        Optional<JavaMethodCall> result = UsedData.getInstance().getMethodCall(n.getName().toString(),n.getArgs().size());
+
+
         JavaMethodCall jmc;
-        if(result==null || result.size()==0){
+        if(!result.isPresent()){
             jmc = new JavaMethodCall();
             jmc.methodname = n.getName();
             jmc.params = n.getArgs().size();
 
             MethodFile mf = new MethodFile();
-            arg.refJavaFile.methodFileList.add(mf);
+//            arg.refJavaFile.methodFileList.add(mf);
             mf.javaMethodCall = jmc;
-            jmc.methodFileList.add(mf);
+//            jmc.methodFileList.add(mf);
             mf.javaFile = arg.refJavaFile;
-            Ebean.save(jmc);
-            Ebean.save(mf);
-            Ebean.update(arg.refJavaFile);
+            jmc.save();
+            mf.save();
+            UsedData.getInstance().addMethodCall(jmc);
+
+//            Ebean.update(arg.refJavaFile);
 
         }else{
-            jmc = result.get(0);
+            jmc = result.get();
             MethodFile mf = new MethodFile();
-            arg.refJavaFile.methodFileList.add(mf);
+//            arg.refJavaFile.methodFileList.add(mf);
             mf.javaMethodCall = jmc;
-            jmc.methodFileList.add(mf);
+//            jmc.methodFileList.add(mf);
             mf.javaFile = arg.refJavaFile;
-            Ebean.save(jmc);
-            Ebean.save(mf);
-            Ebean.update(arg.refJavaFile);
+
+            mf.save();
+//            Ebean.update(arg.refJavaFile);
         }
 
 
@@ -232,16 +244,11 @@ class MethodVisitor extends VoidVisitorAdapter<MethodVisitorParameter> {
 
         JavaMethod jm = new JavaMethod();
         jm.javaFile = arg.refJavaFile;
-        arg.refJavaFile.javaMethodList.add(jm);
         jm.name = n.getName();
-        Ebean.save(jm);
-        Ebean.update(arg.refJavaFile);
+        arg.toBeSaved.add(jm);
         arg.idJavaDoc = 1;
+
         super.visit(n, arg);
-
-
-
-
     }
 
 
@@ -250,27 +257,9 @@ class MethodVisitor extends VoidVisitorAdapter<MethodVisitorParameter> {
 
         JavaInterface ji = new JavaInterface();
         ji.javaFile = e.refJavaFile;
-        e.refJavaFile.javaInterfaceList.add(ji);
         ji.name = n.getName();
-        Ebean.save(ji);
-        Ebean.update(e.refJavaFile);//
-//        MethodInfoJSON thisInfo = new MethodInfoJSON();
-//        thisInfo.modifier = "PUBLIC";
-//        thisInfo.lineEnd = n.getEndLine();
-//        thisInfo.lineStart = n.getBeginLine();
-//        thisInfo.signature = clear(n.getName());
-//
-//        JavaInterface method = DatabaseModels.getInstance().getEntity(JavaInterface.class).get();
-//        JavaFile jf = DatabaseModels.getInstance().getEntity(JavaFile.class,e.idFile).get();
-//        jf.getListOfJavaInterface();
-//        jf.addListOfJavaInterface(method);
-//        method.setJson(thisInfo);
-//
-//        MethodVisitorParameter newId = new MethodVisitorParameter();
-//        newId.idFile = e.idFile;
-//        newId.idJavaSource =method.getId();
-//        newId.idJavaDoc =  newId.idJavaSource;
-//        newId.isInterface = true;
+        e.toBeSaved.add(ji);
+
         super.visit(n,e);
     }
 
@@ -280,93 +269,46 @@ class MethodVisitor extends VoidVisitorAdapter<MethodVisitorParameter> {
 
         JavaField jf = new JavaField();
         jf.javaFile =  o.refJavaFile;
-        o.refJavaFile.javaFieldList.add(jf);
         jf.name = n.getVariables().get(0).getId().getName();
-        Ebean.save(jf);
-        Ebean.update(o.refJavaFile);
 
-//        FieldsInfoJSON info = new FieldsInfoJSON();
-//        info.type = clear(n.getType().toString());
-//        info.modifier = getModifierAsString(n.getModifiers());
-//        info.name =   n.getVariables().get(0).getId().getName();
-//
-//        JavaField jf =  DatabaseModels.getInstance().getEntity(JavaField.class).get();
-//
-//        Optional<JavaClass> jsc =  DatabaseModels.getInstance().getEntity(JavaClass.class, o.idJavaSource);
-//        Optional<JavaInterface> jsi =  DatabaseModels.getInstance().getEntity(JavaInterface.class, o.idJavaSource);
-//        Optional<JavaEnum> jse =  DatabaseModels.getInstance().getEntity(JavaEnum.class, o.idJavaSource);
-//
-//        if(jsc.isPresent()){
-//            jsc.get().getListOfField();
-//            jsc.get().addListOfField(jf);
-//        }
-//        else if(jsi.isPresent()){
-//            jsi.get().getListOfField();
-//            jsi.get().addListOfField(jf);
-//        }else if(jse.isPresent()){
-//            jse.get().getListOfField();
-//            jse.get().addListOfField(jf);
-//        }
-//        else{
-//            Logger.error("Not exhaustive pattern");
-//
-//        }
-////        jsp.getListOfField();
-////        jsp.addListOfField(jf);
-//        jf.setJson(info);
-//        o.idJavaDoc =jf.getId();
-//
+        o.toBeSaved.add(jf);
 
         super.visit(n, o);
     }
 
     @Override
     public void visit(ImportDeclaration n, MethodVisitorParameter arg) {
-        List<JavaImport> result = JavaImport.find.where().eq("packageName",n.getName().toString()).findList();
+
+         final String importName = n.getName().toString() + ((n.isAsterisk())?".*":"");
+
+        Optional<JavaImport> result = UsedData.getInstance().getImport(importName);
+
         JavaImport jmc;
-        if(result==null || result.size()==0){
+        if(!result.isPresent()){
             jmc = new JavaImport();
-            jmc.packageName = n.getName().toString();
+            jmc.packageName = importName;
+
 
             ImportFile mf = new ImportFile();
             mf.javaImport = jmc;
             mf.javaFile = arg.refJavaFile;
-            arg.refJavaFile.importFileList.add(mf);
-            jmc.importFileList.add(mf);
 
-            Ebean.save(jmc);
-            Ebean.save(mf);
-            Ebean.update(arg.refJavaFile);
+
+            jmc.save();
+            mf.save();
+
+            UsedData.getInstance().addImport(jmc);
+
 
         }else{
-            jmc = result.get(0);
-
+            jmc = result.get();
             ImportFile mf = new ImportFile();
             mf.javaImport = jmc;
             mf.javaFile = arg.refJavaFile;
-            arg.refJavaFile.importFileList.add(mf);
-            jmc.importFileList.add(mf);
 
-
-            Ebean.save(jmc);
-            Ebean.save(mf);
-            Ebean.update(arg.refJavaFile);
+            mf.save();
         }
 
-
-
-
-
-//        JavaImport javaImport = DatabaseModels.getInstance().getEntity(JavaImport.class).get();
-//        JavaImportInformation json = new JavaImportInformation();
-//        json.isAsterisk = n.isAsterisk();
-//        json.isStatic = n.isStatic();
-//        json.name = n.getName().toString();
-//
-//        JavaFile jf = DatabaseModels.getInstance().getEntity(JavaFile.class, arg.idFile).get();
-//        jf.getListOfJavaImport();
-//        jf.addlistOfJavaImport(javaImport);
-//        javaImport.setJson(json);
         super.visit(n, arg);
 
 
@@ -374,24 +316,16 @@ class MethodVisitor extends VoidVisitorAdapter<MethodVisitorParameter> {
 
     @Override
     public void visit(JavadocComment n, MethodVisitorParameter e) {
-      //  if(!n.isLineComment() && e.idJavaDoc!=-1) {
 
             if(e.idJavaDoc==1) {
                 JavaDoc jc = new JavaDoc();
                 jc.javaFile = e.refJavaFile;
-                e.refJavaFile.javaDocList.add(jc);
+                //e.refJavaFile.javaDocList.add(jc);
                 jc.name = clear(n.toStringWithoutComments());
-                Ebean.save(jc);
-                Ebean.update(e.refJavaFile);
+                e.toBeSaved.add(jc);
                 e.idJavaDoc=0;
             }
-//            JavaDocIfoJSON info = new JavaDocIfoJSON();
-//            info.text = clear(n.toStringWithoutComments());
-//            JavaDoc jdc = DatabaseModels.getInstance().getEntity(JavaDoc.class).get();
-//            jdc.setJson(info);
-//            jdc.setContainsTransverseInformation( e.idJavaDoc);
 
-      //  }
         super.visit(n, e);
 
 
@@ -405,49 +339,17 @@ class MethodVisitor extends VoidVisitorAdapter<MethodVisitorParameter> {
             JavaInterface ji = new JavaInterface();
             ji.name = n.getName();
             ji.javaFile = e.refJavaFile;
+            //e.refJavaFile.javaInterfaceList.add(ji);
 
-            e.refJavaFile.javaInterfaceList.add(ji);
-            Ebean.save(ji);
-            Ebean.update(e.refJavaFile);
+            e.toBeSaved.add(ji);
         }else{
             JavaClass ji = new JavaClass();
             ji.name = n.getName();
             ji.javaFile = e.refJavaFile;
-            e.refJavaFile.javaClassList.add(ji);
-            Ebean.save(ji);
-            Ebean.update(e.refJavaFile);
+            //e.refJavaFile.javaClassList.add(ji);
+            e.toBeSaved.add(ji);
         }
 
-//        MethodInfoJSON thisInfo = new MethodInfoJSON();
-//        thisInfo.modifier = "PUBLIC";
-//        thisInfo.lineEnd = n.getEndLine();
-//        thisInfo.lineStart = n.getBeginLine();
-//        thisInfo.signature = clear(n.getName());
-//        MethodVisitorParameter newId = new MethodVisitorParameter();
-//        newId.idFile = e.idFile;
-//
-//        if (n.isInterface()) {
-//
-////           // JavaInterface method = new JavaInterface();
-////            JavaInterface method = DatabaseModels.getInstance().getEntity(JavaInterface.class).get();
-////            JavaFile jf = DatabaseModels.getInstance().getEntity(JavaFile.class,e.idFile).get();
-////            jf.getListOfJavaInterface();
-////            jf.addListOfJavaInterface(method);
-////            method.setJson(thisInfo);
-////            newId.idJavaSource =method.getId();
-////            newId.idJavaDoc =  newId.idJavaSource;
-////            newId.isInterface = true;
-//        } else {
-//          //  JavaClass method = new JavaClass();
-//            JavaClass javaClass = DatabaseModels.getInstance().getEntity(JavaClass.class).get();
-//            JavaFile jf = DatabaseModels.getInstance().getEntity(JavaFile.class,e.idFile).get();
-//            jf.getListOfJavaClass();
-//            jf.addlistOfJavaClass(javaClass);
-//            javaClass.setJson(thisInfo);
-//            newId.idJavaSource = javaClass.getId();
-//            newId.idJavaDoc =  newId.idJavaSource;
-//        }
-//        super.visit(n, newId);
         super.visit(n, e);
 
     }
@@ -457,116 +359,28 @@ class MethodVisitor extends VoidVisitorAdapter<MethodVisitorParameter> {
 
         JavaMethod jm = new JavaMethod();
         jm.javaFile =  arg.refJavaFile;
-        arg.refJavaFile.javaMethodList.add(jm);
+       // arg.refJavaFile.javaMethodList.add(jm);
         jm.name = n.getName();
-        Ebean.save(jm);
+        arg.toBeSaved.add(jm);
         arg.idJavaDoc=1;
-
-
-
-
-        Ebean.update(arg.refJavaFile);
-
         super.visit(n, arg);
-
-//        MethodInfoJSON thisInfo = new MethodInfoJSON();
-//        thisInfo.modifier = clear(getModifierAsString(n.getModifiers()));
-//        thisInfo.lineEnd = n.getEndLine();
-//        thisInfo.lineStart = n.getBeginLine();
-//        thisInfo.signature = clear(n.getName());
-//
-//       // JavaMethod method = new JavaMethod();
-//        JavaMethod method = DatabaseModels.getInstance().getEntity(JavaMethod.class).get();
-//        Optional<JavaClass> jsc =  DatabaseModels.getInstance().getEntity(JavaClass.class, arg.idJavaSource);
-//        Optional<JavaInterface> jsi =  DatabaseModels.getInstance().getEntity(JavaInterface.class, arg.idJavaSource);
-//        Optional<JavaEnum> jse =  DatabaseModels.getInstance().getEntity(JavaEnum.class, arg.idJavaSource);
-//
-//        if(jsc.isPresent()){
-//            jsc.get().getListOfMethod();
-//            jsc.get().addlistOfMethod(method);
-//        }
-//       else if(jsi.isPresent()){
-//            jsi.get().getListOfMethod();
-//            jsi.get().addlistOfMethod(method);
-//        }else if(jse.isPresent()){
-//            jse.get().getListOfMethod();
-//            jse.get().addlistOfMethod(method);
-//        }else{
-//           Logger.error("Not exhaustive pattern");
-//        }
-//
-//
-//        method.setJson(thisInfo);
-//        arg.idJavaDoc = method.getId();
-//        arg.javaMethodId =  arg.idJavaDoc;
 
     }
 
-//    @Override
-//    public void visit(EnumDeclaration n, MethodVisitorParameter arg) {
-//
-//
-////       // JavaEnum javaEnum =  new JavaEnum();
-////        JavaEnum javaEnum =  DatabaseModels.getInstance().getEntity(JavaEnum.class).get();
-////        JavaFile jf = DatabaseModels.getInstance().getEntity(JavaFile.class, arg.idFile).get();
-////
-////        jf.getListOfJavaEnum();
-////        jf.addlistOfJavaEnum(javaEnum);
-////        JavaEnumInformation json = new JavaEnumInformation();
-////        json.name = n.toString();
-////        javaEnum.setJson(json);
-////        arg.idJavaSource =javaEnum.getId();
-////        arg.idJavaDoc =  arg.idJavaSource;
-////        arg.isEnum = true;
-////        super.visit(n, arg);
-//
-//
-//    }
-
-//    @Override
-//    public void visit(EnumConstantDeclaration n, MethodVisitorParameter arg) {
-//
-//        JavaEnum javaEnum =  DatabaseModels.getInstance().getEntity(JavaEnum.class).get();
-//        JavaFile jf = DatabaseModels.getInstance().getEntity(JavaFile.class, arg.idFile).get();
-//        jf.getListOfJavaEnum();
-//        jf.addlistOfJavaEnum(javaEnum);
-//        JavaEnumInformation json = new JavaEnumInformation();
-//        json.name = n.toString();
-//        javaEnum.setJson(json);
-//        arg.idJavaSource =javaEnum.getId();
-//        arg.idJavaDoc =  arg.idJavaSource;
-//        super.visit(n, arg);
-//
-//    }
 
     @Override
     public void visit(PackageDeclaration n, MethodVisitorParameter arg) {
 
-//        JavaPackage javaPackage = DatabaseModels.getInstance().getEntity(JavaPackage.class).get();
-//        JavaFile jf = DatabaseModels.getInstance().getEntity(JavaFile.class, arg.idFile).get();
-//        jf.getListOfJavaPackage();
-//        jf.addlistOfJavaPackage(javaPackage);
-//        JavaPackageInformation json = new JavaPackageInformation();
-//        json.name = n.getName().toStringWithoutComments();
-//        javaPackage.setJson(json);
-
 
         JavaPackage jp = new JavaPackage();
         jp.javaFile = arg.refJavaFile;
-        arg.refJavaFile.javaPackageList.add(jp);
+        //arg.refJavaFile.javaPackageList.add(jp);
 
 
         jp.name = n.getName().toString();
-        Ebean.save(jp);
-        Ebean.update(arg.refJavaFile);
+        arg.toBeSaved.add(jp);
         super.visit(n, arg);
 
-
-    }
-
-    @Override
-    public void visit(VariableDeclarationExpr n, MethodVisitorParameter arg) {
-        super.visit(n, arg);
 
     }
 

@@ -10,6 +10,7 @@ var Enum = require("./types.js");
 
 class MainScene{
     constructor(){
+        this.step = 15;
         let canvas = document.getElementById('renderCanvas');
 
         this.canvas = canvas;
@@ -65,7 +66,6 @@ class MainScene{
 
         // the canvas/window resize event handler
         this.canvas.addEventListener('resize', (function(){
-            this.resize();
             this.engine.resize();
         }).bind(this));
 
@@ -190,6 +190,8 @@ class MainScene{
     }
 
     resize(){
+        this.engine.resize();
+
     }
 
     keyPress(e){
@@ -255,7 +257,32 @@ class MainScene{
             }).prop('selected', true);
 
             $("#appFilter").trigger("click");
+        }else if(e.which == 97) {
+            this.camera.position.x-=1*this.step;
         }
+        else if(e.which == 100) {
+            this.camera.position.x+=1*this.step;
+        }
+
+        else if(e.which == 119) {
+            this.camera.position.z-=1*this.step;
+        }
+        else if(e.which == 120) {
+            this.camera.position.z+=1*this.step;
+        }else if(e.which == 113) {
+            this.camera.position.y+=1*this.step;
+        }
+        else if(e.which == 122) {
+            this.camera.position.y-=1*this.step;
+        }
+        else if(e.which == 43) {
+            this.step+=1;
+        }
+        else if(e.which == 95) {
+            this.step-=1;
+        }
+
+
 
         if(this.camera.position.y > this.camera.maxZ){
             this.camera.maxZ = this.camera.position.y + 30;
@@ -438,6 +465,7 @@ function mergeInfo(data){
 
 
 window.doItForMe = function(data){
+    $("#globalSpinner").show();
     $.ajaxSetup({async:false});
     var c = [];
     for(var i in data){

@@ -20,7 +20,7 @@ public class JavaImport  extends Model {
     public long id;
 
 
-    @Column(name="package")
+    @Column(name="package",unique=true)
     public String packageName;
 
 

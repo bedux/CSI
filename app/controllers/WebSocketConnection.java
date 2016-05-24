@@ -4,13 +4,14 @@ import play.mvc.Controller;
 import play.mvc.WebSocket;
 
 import java.util.HashMap;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * Created by bedux on 05/05/16.
  */
 public class WebSocketConnection extends Controller {
 
-    public static HashMap<Long,WebSocket>  availableWebSocket = new HashMap<>();
+    public static ConcurrentHashMap<Long,WebSocket> availableWebSocket = new ConcurrentHashMap<>();
 
 
     public static WebSocket<String> sockHandler(Long id) {

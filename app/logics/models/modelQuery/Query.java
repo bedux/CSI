@@ -3,6 +3,7 @@ package logics.models.modelQuery;
 import exception.CustomException;
 import exception.SQLnoResult;
 import logics.Definitions;
+import logics.analyzer.UsedData;
 import logics.databaseUtilities.Pair;
 import logics.models.newDatabase.*;
 import play.db.ebean.Model;
@@ -13,15 +14,15 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Optional;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 
 
-public final class Query  {
+public  class Query  {
 
-    private static HashMap<String,Object> cache = new HashMap<>();
 
-    private static String computeHash(String param,String call){
+    private    String computeHash(String param,String call){
         return param+"#"+call;
     }
 
@@ -31,14 +32,14 @@ public final class Query  {
      * @param <T> The type of return
      * @return  a list of T
      */
-    public static <T extends Model> List<T> All(Model.Finder param) {
+    public    <T extends Model> List<T> All(Model.Finder param) {
         return param.all();
 
     }
 
 
 
-    public static <T> Optional<T> byId(Pair<Long,Model.Finder> param) {
+    public   <T> Optional<T> byId(Pair<Long,Model.Finder> param) {
       //  return DatabaseModels.getInstance().getEntity(param.getValue(),param.getKey());
         Object r = param.getValue().byId(param.getKey());
         if(r==null) return Optional.empty();
@@ -53,36 +54,11 @@ public final class Query  {
      * @param javaImport get A list of java import
      * @return  a list of java import discussed
      */
-    public static List<JavaImport> AllDiscussedJavaImport(List<JavaImport> javaImport) {
+    public   List<JavaImport> AllDiscussedJavaImport(List<JavaImport> javaImport) {
         return javaImport.stream().filter(x->x.importDiscussionList.size()>0).collect(Collectors.toList());
     }
 
-//    public static List<Discussion> AllDiscussionHavingMethodName(List<String> param) {
-//        return  All(MethodDiscussion.class)
-//                .stream()
-//                .filter(x->param.stream().anyMatch(y -> y.contentEquals(x.getMethodConcrete().getMethodName())))
-//                .map(x->x.getDiscussionConcrete())
-//                .collect(Collectors.toList());
-//    }
-
-//    public static List<ImportTable> AllImportTableFormJavaImport(List<JavaImport> javaImport) {
-//       return All(ImportTable.class)
-//                .stream()
-//                .filter(y -> {
-//                    long s = javaImport
-//                            .stream()
-//                            .filter(x -> x.getJson().name.contentEquals(y.getPackageDiscussion()))
-//                            .count();
-//                    return s > 0;
-//                })
-//                .collect(Collectors.toList());
-//    }
-
-//    public static List<ImportTable> AllImportFromDiscussion(Void param) {
-//        return All(ImportTable.class);
-//    }
-
-    public static List<JavaClass> AllJavaClassByJavaFile(Long id) {
+    public  List<JavaClass> AllJavaClassByJavaFile(Long id) {
 //        return All(JavaClass.class)
 //                .stream()
 //                .filter(x -> x.getJavaFileConcrete().getId() == id)
@@ -94,39 +70,45 @@ public final class Query  {
         return new ArrayList<>();
     }
 
-    public static <T> List<T> getBySome(Model.Finder f, String column, String target){
+    public <T> List<T> getBySome(Model.Finder f, String column, String target){
         return (List<T>)(f.where().eq(column,target).findList());
     }
 
-    public static List<JavaField> AllJavaFieldsFormPath(String path) {
+    public   List<JavaField> AllJavaFieldsFormPath(String path) {
          JavaFile jf = (JavaFile) getBySome(JavaFile.find,"name",path).get(0);
         return jf.javaFieldList;
     }
 
-    public static List<JavaImport> AllJavaImportFromJavaFile(Long param) {
+    public   List<JavaImport> AllJavaImportFromJavaFile(Long param) {
         JavaFile jf = (JavaFile) byId(new Pair<>(param,JavaFile.find)).get();
         return jf.importFileList.stream().map(x->x.javaImport).collect(Collectors.toList());
     }
 
-    public static List<JavaInterface> AllJavaInterfaceByJavaFile(Long id) {
+    public   List<JavaInterface> AllJavaInterfaceByJavaFile(Long id) {
         JavaFile jf = (JavaFile) byId(new Pair<>(id,JavaFile.find)).get();
         return jf.javaInterfaceList;
     }
 
-    public  static List<JavaMethodCall> AllJavaMethodCallFormPath(String path) {
+    public List<JavaMethodCall> AllJavaMethodCallFormPath(String path) {
         JavaFile jf = (JavaFile) getBySome(JavaFile.find,"name",path).get(0);
         return  jf.methodFileList.stream().map(x->x.javaMethodCall).collect(Collectors.toList());
     }
 
-    public static List<JavaMethod> AllJavaMethodFormPath(String path) {
+    public   List<JavaMethod> AllJavaMethodFormPath(String path) {
         JavaFile jf = (JavaFile) getBySome(JavaFile.find,"name",path).get(0);
         return jf.javaMethodList;
     }
 
-    public static List<JavaMethod> AllJavaMethodOfRepositoryVersion(Long id) {
+    public  List<JavaMethod> AllJavaMethodOfRepositoryVersion(Long id) {
 
         RepositoryVersion r =(RepositoryVersion)byId(new Pair<>(id,RepositoryVersion.find)).get();
-        return r.javaFileList.stream().flatMap(x->x.javaMethodList.stream()).collect(Collectors.toList());
+        return r.javaFileList.stream().flatMap(x->{
+                if(x.javaMethodList!=null)
+                    return x.javaMethodList.stream();
+                else{
+                    System.out.println(x.id);
+                    return new ArrayList<JavaMethod>().stream();}
+        }).collect(Collectors.toList());
 
     }
 
@@ -139,7 +121,7 @@ public final class Query  {
 //                .collect(Collectors.toList());
 //    }
 
-    public static List<JavaImport> AllNonLocalImport(Pair<Long, Long> param) {
+    public  List<JavaImport> AllNonLocalImport(Pair<Long, Long> param) {
         final List<JavaImport> javaImports =AllJavaImportFromJavaFile(param.getKey());
         final List<JavaPackage> packages = AllPackagesFromRepositoryVersion(param.getValue());
         return javaImports.stream().
@@ -154,21 +136,36 @@ public final class Query  {
                 ).collect(Collectors.toList());
     }
 
-    public static List<JavaPackage> AllPackagesFromRepositoryVersion(Long param) {
+    public  List<JavaPackage> AllPackagesFromRepositoryVersion(Long param) {
         RepositoryVersion jf = (RepositoryVersion) byId(new Pair<>(param,RepositoryVersion.find)).get();
-        return jf.javaFileList.stream().flatMap(x->x.javaPackageList.stream()).collect(Collectors.toList());
+        return jf.javaFileList.stream().filter(x->x.javaPackageList!=null).flatMap(x->x.javaPackageList.stream()).collect(Collectors.toList());
     }
 
-    public static List<RepositoryRender> AllRepositoryVersionRender(Void param) {
+    public   List<RepositoryRender> AllRepositoryVersionRender(Void param) {
         return All(RepositoryRender.find);
 
     }
 
-    public static Long CountFieldByPath(String param) {
+    @Deprecated
+    public  Long CountFieldByPath(String param) {
+        Function<String,Long> func = (x)->(long)AllJavaFieldsFormPath(param).size();
+
+
         return (long)AllJavaFieldsFormPath(param).size();
     }
 
-    public static Long CountJavaDocMethodsByPath(String param) {
+    public  Function<String,Long> CountFieldByPathWrap = UsedData.<String>wrapCache(
+            (x)->(long)AllJavaFieldsFormPath(x).size(),
+            (x)->x.countFieldByPath,
+            (x,y)->x.countFieldByPath=y);
+
+    public  Function<String,Long> CountMethodByPathWrap = UsedData.<String>wrapCache(
+            (x)->(long)AllJavaMethodFormPath(x).size(),
+            (x)->x.countMethodByPath,
+            (x,y)->x.countMethodByPath=y);
+
+
+    public Long CountJavaDocMethodsByPath(String param) {
         JavaFile jf = (JavaFile) getBySome(JavaFile.find,"name",param).get(0);
         return  (long)jf.javaDocList.size();
 //        List<JavaFile> jfs = All(JavaFile.class).stream().filter(x->x.getPath().equals(param)).collect(Collectors.toList());
@@ -187,11 +184,12 @@ public final class Query  {
 //                .filter(x->l.stream().anyMatch(y -> x.getContainsTransverseInformation()==y)).count();
     }
 
-    public static Long CountMethodByPath(String param) {
+    @Deprecated
+    public Long CountMethodByPath(String param) {
         return (long)AllJavaMethodFormPath(param).size();
     }
 
-    public static List<JavaMethodCall> NonProjectMethodCall(String path){
+    public  List<JavaMethodCall> NonProjectMethodCall(String path){
         final JavaFile jf =JavaFileByPath(path).orElseThrow(() -> new SQLnoResult());
         final List<JavaMethod> allJavaMethods  =  AllJavaMethodOfRepositoryVersion(jf.repositoryVersion.id).stream().distinct().collect(Collectors.toList());
         final List<JavaMethodCall> pathMethodCall = AllJavaMethodCallFormPath(path)
@@ -202,19 +200,21 @@ public final class Query  {
 
     }
 
-    public static List<JavaMethodCall> AllDiscussedMethod(String path){
+    public List<JavaMethodCall> AllDiscussedMethod(String path){
 
-       return NonProjectMethodCall(path).stream().filter(x->x.methodDiscussionList.size()>0).collect(Collectors.toList());
+       final List<JavaMethodCall> jmc =  NonProjectMethodCall(path).stream().filter(x->x.methodDiscussionList!=null).filter(x->x.methodDiscussionList.size()>0).collect(Collectors.toList());
+        return jmc;
     }
 
-    public static List<JavaImport> AllDiscussedImport(String path){
+    public List<JavaImport> AllDiscussedImport(String path){
         final JavaFile jf =JavaFileByPath(path).orElseThrow(() -> new SQLnoResult());
 
         final List<JavaImport> nonLocalImport =   AllNonLocalImport(new Pair(jf.id, jf.repositoryVersion.id));
+
         return AllDiscussedJavaImport(nonLocalImport);
     }
 
-    public static Long DiscussedImportMethodCounter(String path) {
+    public  Long DiscussedImportMethodCounter(String path) {
 
         final JavaFile jf =JavaFileByPath(path).orElseThrow(() -> new SQLnoResult());
 
@@ -229,7 +229,12 @@ public final class Query  {
 
     }
 
-    public static Long DiscussedImportMethodCounterOverTotal(String path) {
+    public  Function<String,Long> DiscussedImportMethodCounterWrap = UsedData.<String>wrapCache(
+            (x)->DiscussedImportMethodCounter(x),
+            (x)->x.discussedImportMethodCounter,
+            (x,y)->x.discussedImportMethodCounter=y);
+
+    public  Long DiscussedImportMethodCounterOverTotal(String path) {
         final JavaFile jf =JavaFileByPath(path).orElseThrow(() -> new SQLnoResult());
 
         final List<JavaMethodCall> numberOfMethod = NonProjectMethodCall(path);
@@ -239,7 +244,7 @@ public final class Query  {
         final float numberOfMethodDiscussed = numberOfMethod.stream().filter(x->x.methodDiscussionList.size()>0).count();
         final float numberOfImportDiscussed = numberOfImport.stream().filter(x->x.importDiscussionList.size()>0).count();
 
-        float t1 = 100;
+        float t1 = 0;
         if(numberOfMethod.size()!=0){
             t1 = (numberOfMethodDiscussed/numberOfMethod.size())*100;
             if(t1>100){
@@ -247,7 +252,7 @@ public final class Query  {
             }
 
         }
-        float t2 = 100;
+        float t2 = 0;
 
         if(numberOfImport.size()!=0){
             t2 =(numberOfImportDiscussed/numberOfImport.size())*100;
@@ -261,20 +266,25 @@ public final class Query  {
 
     }
 
+    public  Function<String,Long> DiscussedImportMethodCounterOverTotalWrap = UsedData.<String>wrapCache(
+            (x)->DiscussedImportMethodCounterOverTotal(x),
+            (x)->x.discussedImportMethodCounterOverTotal,
+            (x,y)->x.discussedImportMethodCounterOverTotal=y);
+
 //    public static List<File>  FileByRepositoryVersion(Long param) {
 //        return  All(File.class).stream().filter(x->x.getRepositoryVersionConcrete().getId() == param).collect(Collectors.toList());
 //    }
 
-    public static Optional<JavaFile> JavaFileByPath(String path) {
+    public  Optional<JavaFile> JavaFileByPath(String path) {
         return Optional.of((JavaFile)getBySome(JavaFile.find,"name",path).get(0)); //TODO
     }
 
-    public static long NumberOfFile(Long param) {
+    public  long NumberOfFile(Long param) {
         RepositoryVersion repo =(RepositoryVersion)RepositoryVersion.find.byId(param);
         return repo.binaryFileList.size()+repo.javaFileList.size()+repo.textFileList.size();
     }
 
-    public static String ProjectName(Long param) {
+    public  String ProjectName(Long param) {
         return ((RepositoryVersion)byId(new Pair<>(param,RepositoryVersion.find)).get()).repository.url;
 
     }
@@ -283,12 +293,12 @@ public final class Query  {
 //        return All(TextFile.class).stream().filter(x->x.getPath().equals(param)).findFirst();
 //    }
 
-    public static Long TotalNumberOfCodeLines(Long id) {
-        return Query.<RepositoryVersion>byId(new Pair<>(id,RepositoryVersion.find)).get().javaFileList.stream().map(x->x.nline).reduce((x,y)->x+y).get();
+    public  Long TotalNumberOfCodeLines(Long id) {
+        return this.<RepositoryVersion>byId(new Pair<>(id,RepositoryVersion.find)).get().javaFileList.stream().map(x->x.nline).reduce((x,y)->x+y).get();
 
     }
 
-    public static Long TotalSize(Long param) {
+    public  Long TotalSize(Long param) {
         try {
             return Files.walk(new java.io.File(Definitions.repositoryPath + param).toPath())
                     .filter(path -> !Files.isDirectory(path)).mapToLong(x -> x.toFile().length()).sum();
@@ -297,34 +307,16 @@ public final class Query  {
         }
     }
 
-    public static long JavaDocForMethodCount(String path){
+    public  long JavaDocForMethodCount(String path){
         return JavaFileByPath(path).get().javaDocList.size();
-
-//        List<JavaFile> jfs = All(JavaFile.class)
-//                            .stream()
-//                            .filter(x -> x.getPath().equals(path))
-//                            .collect(Collectors.toList());
-//
-//        final List<Long> l = jfs.stream().flatMap(x ->
-//                {
-//                    final List<JavaClass> javaClassList = x.getListOfJavaClass();
-//                    return javaClassList.stream().flatMap(y ->
-//                    {
-//                        final List<JavaMethod> javaMethods =   y.getListOfMethod();
-//                        return javaMethods.stream().map(z -> (Long) z.getId());
-//                    });
-//                }
-//        ).collect(Collectors.toList());
-//
-//        return All(JavaDoc.class)
-//                .stream()
-//                .filter(x->l.stream().anyMatch(y -> x.getContainsTransverseInformation()==y))
-//                .count();
-
-
     }
 
-    public static long JavaDocOverTotalMethods(String path){
+    public  Function<String,Long> JavaDocForMethodCountWrap = UsedData.<String>wrapCache(
+            (x)->JavaDocForMethodCount(x),
+            (x)->x.javaDocForMethodCount,
+            (x,y)->x.javaDocForMethodCount=y);
+
+    public  long JavaDocOverTotalMethods(String path){
 
         final float totJavaDoc = JavaDocForMethodCount(path);
         final float totMethod = AllJavaMethodFormPath(path).size();
@@ -336,13 +328,18 @@ public final class Query  {
 
     }
 
+    public  Function<String,Long> JavaDocOverTotalMethodsWrap = UsedData.<String>wrapCache(
+            (x)->JavaDocOverTotalMethods(x),
+            (x)->x.javaDocOverTotalMethods,
+            (x,y)->x.javaDocOverTotalMethods=y);
 
-    public static long CountJavaClass(String path){
+
+    public  long CountJavaClass(String path){
         JavaFile jf = JavaFileByPath(path).orElseThrow(() -> new CustomException(""));
         return jf.javaClassList.size();
     }
 
-    public static long CountJavaInterface(String path){
+    public  long CountJavaInterface(String path){
         JavaFile jf = JavaFileByPath(path).orElseThrow(() -> new CustomException(""));
         return jf.javaInterfaceList.size();
     }
@@ -352,16 +349,16 @@ public final class Query  {
 //        return jf.getListOfJavaEnum().size();
 //    }
 
-    public static long CountJavaImport(String path){
+    public  long CountJavaImport(String path){
         JavaFile jf = JavaFileByPath(path).orElseThrow(() -> new CustomException(""));
         return jf.importFileList.size();
     }
-    public static long CountMethodCall(String path){
+    public  long CountMethodCall(String path){
         return AllJavaMethodCallFormPath(path).size();
 
     }
 
-    private static boolean listCOntains(List<String> list,String s){
+    private  boolean listCOntains(List<String> list,String s){
         for(String s1:list){
             if(s1.contentEquals(s)){
                 return true;
