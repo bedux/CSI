@@ -28,10 +28,13 @@ html, body {
 #dropdownMenu1{
 
     background-color: white;
+
 }
 
 #bar{
     position:absolute;
+    bottom: 90px;
+    right: 0;
 }
 .tableInfoColor{
     background-color: hsla(0, 0%, 60%, 0.38);
@@ -63,24 +66,23 @@ html, body {
 .filterContent{
     background-color: hsla(0, 0%, 45%, 0.38);
     overflow-y: scroll;
-    height:40%;
+    height: 50%;
+    width: 100%;
+
 }
 
 .panelFilterColor{
-    display: block;
+    display: flex;
+    flex-direction: column;
     background-color: hsla(0, 0%, 60%, 0.38);
     width: 250px;
-    height:70%;
+    height:60%;
+    padding: 5px;
+
 
 }
 
-.filterContainer{
-    display: flex;
-    background-color: hsla(0, 0%, 45%, 0.38);
-    overflow-y: scroll;
-    height:40%;
 
-}
 .toRight{
     float:right;
 }
@@ -104,8 +106,6 @@ html, body {
     border-radius: 60%;
     padding: 10px;
     background-color: #F6A828;
-    width: 80px;
-    height: 50px;
 
 
 }
@@ -115,22 +115,23 @@ html, body {
 }
 
 .filterContainer{
-
-    display:flex;
-    flex-wrap:wrap;
-    width: 250px;
+	display: flex;
     justify-content:space-around;
     overflow-y: scroll;
-    max-height:40%;
+    flex-wrap:wrap; 
+    max-height: 40%;
+    background-color: hsla(0, 0%, 45%, 0.38);
 
 
 
 }
 
+
 .sideBarOpen{
     position: absolute;
     right: 250px;
     top:30%;
+    padding: 10px
     
 }
 
@@ -213,23 +214,24 @@ td{
     bottom: 0;
     margin-top: auto;
     margin-bottom: auto;
-    width: 60px;
-    height: 64px;
+    width: 100px;
+    height: 100px;
 
-    background: url("../images/loading.gif");
-    background-size: 60px 64px;
+    background: url("../images/icon.png");
+    background-size: 100px 100px;
 
-    /*animation-name: spin;*/
-    /*animation-duration: 4000ms;*/
-    /*animation-iteration-count: infinite;*/
-    /*animation-timing-function: linear;*/
+    animation: spin 3s infinite;
 }
 @keyframes spin {
     from {
-        transform:rotate(0deg);
+        /*transform:rotate(0deg);*/
+        transform:rotateY(0deg);
+
     }
     to {
-        transform:rotate(360deg);
+        /*transform:rotate(360deg);*/
+        transform:rotateY(360deg);
+
     }
 }
 

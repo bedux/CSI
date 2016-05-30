@@ -23,8 +23,6 @@ remembre range value!!
     <div class="container-fluid filterContent" >
 
         <form id = "myForm">
-
-
             @for(a <- (filters.get("filter")).elements()) {
                 @if(a.get("Type").toString.contains("RANGE")) {
 
@@ -63,17 +61,15 @@ remembre range value!!
 
         </form>
 
-
     </div>
-    <div class="applyContainer" >
+    @*<div class="applyContainer" >*@
 
 
         <input  id="appFilter" type="button" value="Apply" onclick="send()" class="centered"/>
 
 
-    </div>
+    @*</div>*@
 
-    <hr>
 
     <div class="filterContainer " id="addFilters">
     </div>

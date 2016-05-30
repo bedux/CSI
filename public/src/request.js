@@ -75,7 +75,7 @@ module.exports = {
                                 c1 = c1.replace(".json","");
                                 c1 = c1.substring(c1.lastIndexOf("/")+1);
                                 c1 = "http://stackoverflow.com/questions/"+c1;
-                                var column = $('<span></span>').append($('<a href=" '+c1+' " target="_blank"></a>').text(c1+"  "));
+                                var column = $('<span style="display:block;" ></span>').append($('<a href=" '+c1+' " target="_blank"></a>').text(c1+"  "));
                                 c.append(column)
                             }
                             row.append(c);

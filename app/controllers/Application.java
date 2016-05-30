@@ -50,8 +50,11 @@ public class Application extends Controller {
         put("FieldCount", ()->new Query().CountFieldByPathWrap);
         put("MethodsCount",()->new Query().CountMethodByPathWrap);
         put("DiscussionCount",()->new Query().DiscussedImportMethodCounterWrap);
+                put("DiscussionCountPerc",()->new Query().DiscussedImportMethodCounterOverTotalWrap);
         put("JavaDoc",()->new Query().JavaDocForMethodCountWrap);
-        put("ClassCount",()->new Query()::CountJavaClass);
+                put("JavaDocPerc",()->new Query().JavaDocForMethodCountWrap);
+
+                put("ClassCount",()->new Query()::CountJavaClass);
         put("InterfaceCount",()->new Query()::CountJavaInterface);
 
     }};
@@ -98,6 +101,7 @@ public class Application extends Controller {
 
 
     public static Result customComputation(){
+
         Long repoId  = request().body().asJson().get("repositoryId").asLong();
         String widthQ  = request().body().asJson().get("width").asText();
         String heightQ  =request().body().asJson().get("height").asText();
@@ -142,7 +146,7 @@ public class Application extends Controller {
 
         for(RepositoryRender v:repositoryVersionList){
 
-                v.setNameToDisplay(   v.repository.url);
+                v.setNameToDisplay(v.repository.url);
                 v.setNumberOfFileToDispaly((int)q.NumberOfFile(v.repositoryversion.id));
 
         }
@@ -164,8 +168,8 @@ public class Application extends Controller {
 
 
         Map<String, String> getMapMethod = new HashMap();
-        getMapMethod.put("Width/Depth","depthMetrics");
-        getMapMethod.put("Height","heightMetrics");
+        getMapMethod.put("Width: Field Count","depthMetrics");
+        getMapMethod.put("Height: Method  Count","heightMetrics");
         getMapMethod.put("Color","colorMetrics");
 
 

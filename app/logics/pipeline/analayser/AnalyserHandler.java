@@ -50,10 +50,6 @@ public class AnalyserHandler implements Handler<AnalyserHandlerParam, AnalyserHa
         final String resultName = param.metricsToCompute.getMetricType().replaceAll(" ", "_") + param.repositoryVersion.id;
         RepositoryRender repoRender = param.metricsToCompute.repositoryRender(param.repositoryVersion);
 
-
-
-
-
         try {
 
             currentProgress.sendMessage("Loading Data from Database",param.metricsToCompute.getMetricType());

@@ -17,11 +17,6 @@ public class AnalysePackageColor implements Analyser<Integer> {
 
 
 
-    public AnalysePackageColor() {
-
-    }
-
-
     /***
      * Compute the color of a given Component. It cast the type and call different function depending the type of the Component
      *

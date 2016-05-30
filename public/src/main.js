@@ -75,11 +75,17 @@ class MainScene{
         this.canvas.addEventListener("dblclick",this.getBlockOfCode.bind(this));
         this.canvas.addEventListener("mousemove",this.sceneInformation.bind(this));
         this.canvas.addEventListener("mouseout",this.mouseOut.bind(this));
-
+        this.canvas.addEventListener("wheel", this.whell.bind(this));
 
 
     }
 
+    whell(e){
+
+
+        this.camera.fov +=e.deltaY*0.001;
+
+    }
     updateScene(data){
 
         var first = true;
@@ -331,7 +337,7 @@ class MainScene{
 
 
         for(var i in arr){
-            if(arr[i].id && arr[i].id!="") {
+            if(arr[i].id && arr[i].id!="" && arr[i].id.indexOf("TitleTab")==-1) {
                 arr[i].innerHTML = info.features[arr[i].id];
             }
         }

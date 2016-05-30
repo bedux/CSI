@@ -1,5 +1,6 @@
 package logics.models.modelQuery;
 
+import com.avaje.ebean.Ebean;
 import exception.CustomException;
 import exception.SQLnoResult;
 import logics.Definitions;
@@ -10,10 +11,7 @@ import play.db.ebean.Model;
 
 import java.io.IOException;
 import java.nio.file.Files;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
@@ -58,11 +56,12 @@ public  class Query  {
         return javaImport.stream().filter(x->x.importDiscussionList.size()>0).collect(Collectors.toList());
     }
 
+    /**
+     * All Java Class By File Path
+     * @param id
+     * @return
+     */
     public  List<JavaClass> AllJavaClassByJavaFile(Long id) {
-//        return All(JavaClass.class)
-//                .stream()
-//                .filter(x -> x.getJavaFileConcrete().getId() == id)
-//                .collect(Collectors.toList());
         Optional<JavaFile> res  = byId(new Pair<>(id,JavaFile.find));
         if(res.isPresent()){
             return res.get().javaClassList;
@@ -70,34 +69,73 @@ public  class Query  {
         return new ArrayList<>();
     }
 
+    /**
+     * Like select * from f where column=target
+     * @param f
+     * @param column
+     * @param target
+     * @param <T>
+     * @return
+     */
     public <T> List<T> getBySome(Model.Finder f, String column, String target){
         return (List<T>)(f.where().eq(column,target).findList());
     }
 
+    /**
+     * get all fields for a given files
+     * @param path
+     * @return
+     */
     public   List<JavaField> AllJavaFieldsFormPath(String path) {
          JavaFile jf = (JavaFile) getBySome(JavaFile.find,"name",path).get(0);
         return jf.javaFieldList;
     }
 
+    /**
+     * Get all import for a given java file id
+     * @param param
+     * @return
+     */
     public   List<JavaImport> AllJavaImportFromJavaFile(Long param) {
         JavaFile jf = (JavaFile) byId(new Pair<>(param,JavaFile.find)).get();
         return jf.importFileList.stream().map(x->x.javaImport).collect(Collectors.toList());
     }
 
+    /***
+     * Get all interface giveb a java file id
+     * @param id
+     * @return
+     */
     public   List<JavaInterface> AllJavaInterfaceByJavaFile(Long id) {
         JavaFile jf = (JavaFile) byId(new Pair<>(id,JavaFile.find)).get();
         return jf.javaInterfaceList;
     }
 
+    /***
+     * get all methodCall from a given path
+     * @param path
+     * @return
+     */
     public List<JavaMethodCall> AllJavaMethodCallFormPath(String path) {
         JavaFile jf = (JavaFile) getBySome(JavaFile.find,"name",path).get(0);
         return  jf.methodFileList.stream().map(x->x.javaMethodCall).collect(Collectors.toList());
     }
 
+    /**
+     * Get all java method from a given path
+     * @param path
+     * @return
+     */
     public   List<JavaMethod> AllJavaMethodFormPath(String path) {
         JavaFile jf = (JavaFile) getBySome(JavaFile.find,"name",path).get(0);
         return jf.javaMethodList;
     }
+
+    /**
+     * Get all java method of a project given the repository id
+     * @param id
+     * @return
+     */
 
     public  List<JavaMethod> AllJavaMethodOfRepositoryVersion(Long id) {
 
@@ -112,15 +150,12 @@ public  class Query  {
 
     }
 
-//    public static List<JavaMethodCall> AllMethodDiscussed(List<String> param) {
-//        return  All(MethodDiscussion.class)
-//                .stream()
-//                .filter(x->param.stream().filter(y -> y.equals(x.getMethodName())).count()>0)
-//                .map(x->x.getMethodConcrete())
-//                .distinct()
-//                .collect(Collectors.toList());
-//    }
 
+    /**
+     * Get all non local import given
+     * @param param
+     * @return
+     */
     public  List<JavaImport> AllNonLocalImport(Pair<Long, Long> param) {
         final List<JavaImport> javaImports =AllJavaImportFromJavaFile(param.getKey());
         final List<JavaPackage> packages = AllPackagesFromRepositoryVersion(param.getValue());
@@ -135,6 +170,7 @@ public  class Query  {
                         }
                 ).collect(Collectors.toList());
     }
+
 
     public  List<JavaPackage> AllPackagesFromRepositoryVersion(Long param) {
         RepositoryVersion jf = (RepositoryVersion) byId(new Pair<>(param,RepositoryVersion.find)).get();
@@ -157,12 +193,12 @@ public  class Query  {
     public  Function<String,Long> CountFieldByPathWrap = UsedData.<String>wrapCache(
             (x)->(long)AllJavaFieldsFormPath(x).size(),
             (x)->x.countFieldByPath,
-            (x,y)->x.countFieldByPath=y);
+            (x,y)->{x.countFieldByPath=y;Ebean.update(x,new HashSet<String>(Arrays.asList("countFieldByPath")));});
 
     public  Function<String,Long> CountMethodByPathWrap = UsedData.<String>wrapCache(
             (x)->(long)AllJavaMethodFormPath(x).size(),
             (x)->x.countMethodByPath,
-            (x,y)->x.countMethodByPath=y);
+            (x,y)->{x.countMethodByPath=y;Ebean.update(x,new HashSet<String>(Arrays.asList("countMethodByPath")));});
 
 
     public Long CountJavaDocMethodsByPath(String param) {
@@ -232,7 +268,8 @@ public  class Query  {
     public  Function<String,Long> DiscussedImportMethodCounterWrap = UsedData.<String>wrapCache(
             (x)->DiscussedImportMethodCounter(x),
             (x)->x.discussedImportMethodCounter,
-            (x,y)->x.discussedImportMethodCounter=y);
+            (x,y)->{x.discussedImportMethodCounter=y;
+                Ebean.update(x,new HashSet<String>(Arrays.asList("discussedImportMethodCounter")));});
 
     public  Long DiscussedImportMethodCounterOverTotal(String path) {
         final JavaFile jf =JavaFileByPath(path).orElseThrow(() -> new SQLnoResult());
@@ -269,7 +306,7 @@ public  class Query  {
     public  Function<String,Long> DiscussedImportMethodCounterOverTotalWrap = UsedData.<String>wrapCache(
             (x)->DiscussedImportMethodCounterOverTotal(x),
             (x)->x.discussedImportMethodCounterOverTotal,
-            (x,y)->x.discussedImportMethodCounterOverTotal=y);
+            (x,y)->{x.discussedImportMethodCounterOverTotal=y;Ebean.update(x,new HashSet<String>(Arrays.asList("discussedImportMethodCounterOverTotal")));});
 
 //    public static List<File>  FileByRepositoryVersion(Long param) {
 //        return  All(File.class).stream().filter(x->x.getRepositoryVersionConcrete().getId() == param).collect(Collectors.toList());
@@ -314,7 +351,7 @@ public  class Query  {
     public  Function<String,Long> JavaDocForMethodCountWrap = UsedData.<String>wrapCache(
             (x)->JavaDocForMethodCount(x),
             (x)->x.javaDocForMethodCount,
-            (x,y)->x.javaDocForMethodCount=y);
+            (x,y)->{x.javaDocForMethodCount=y; Ebean.update(x,new HashSet<String>(Arrays.asList("javaDocForMethodCount")));});
 
     public  long JavaDocOverTotalMethods(String path){
 
@@ -331,7 +368,7 @@ public  class Query  {
     public  Function<String,Long> JavaDocOverTotalMethodsWrap = UsedData.<String>wrapCache(
             (x)->JavaDocOverTotalMethods(x),
             (x)->x.javaDocOverTotalMethods,
-            (x,y)->x.javaDocOverTotalMethods=y);
+            (x,y)->{x.javaDocOverTotalMethods=y; Ebean.update(x,new HashSet<String>(Arrays.asList("javaDocOverTotalMethods")));});
 
 
     public  long CountJavaClass(String path){

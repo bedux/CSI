@@ -2,7 +2,7 @@
 <div  id="contMetricx">
 
 
-@components.panelShowHide("MetricsType"){MetricsType} {
+@components.panelShowHide("MetricsType"){Information Coverage } {
 
     <div id="listOfmetrics">
         <ul>
@@ -100,6 +100,10 @@
             }
         }
 
+     $('#TitleTabcolorMetrics').text("Color: ");
+     $('#TitleTabdepthMetrics').text("Width: Field Count")
+
+     $('#TitleTabheightMetrics').text("Height: Method Count")
         console.log(arrrOfReqFile);
         doItForMe(arrrOfReqFile);
 
@@ -112,6 +116,14 @@
         var wt = $( "#widthM option:selected" ).val();
         var ht = $( "#heightM option:selected" ).val();
         var ct = $("#colorM option:selected" ).val();
+
+
+        $('#TitleTabcolorMetrics').text("Color: "+$( "#colorM option:selected" ).get(0).innerText)
+        $('#TitleTabdepthMetrics').text("Width: "+$( "#widthM option:selected" ).get(0).innerText)
+
+        $('#TitleTabheightMetrics').text("Height: "+$( "#heightM option:selected" ).get(0).innerText)
+
+
         applyYourMetrics(wt,ht,ct);
     }
 
@@ -120,23 +132,27 @@
         <div>
             <p> Width </p>
             <select id="widthM">
-                <option value="FieldCount">FieldCount</option>
+                <option value="FieldCount" selected>FieldCount</option>
                 <option value="MethodsCount">MethodsCount</option>
                 <option value="DiscussionCount">DiscussionCount</option>
                 <option value="JavaDoc">Java Doc</option>
                 <option value="ClassCount">N of class</option>
                 <option value="InterfaceCount">N of Interfaces</option>
+                <option value="DiscussionCountPerc">Discussion over Methods</option>
+                <option value="JavaDocPerc">Java Doc Over Methods</option>
 
 
             </select>
             <p> Height </p>
             <select id="heightM">
                 <option value="FieldCount">FieldCount</option>
-                <option value="MethodsCount">MethodsCount</option>
+                <option value="MethodsCount" selected>MethodsCount</option>
                 <option value="DiscussionCount">DiscussionCount</option>
                 <option value="JavaDoc">Java Doc</option>
                 <option value="ClassCount">N of class</option>
                 <option value="InterfaceCount">N of Interfaces</option>
+                <option value="DiscussionCountPerc">Discussion over Methods</option>
+                <option value="JavaDocPerc">Java Doc Over Methods</option>
 
             </select>
             <p> Color </p>
@@ -147,6 +163,8 @@
                 <option value="JavaDoc">Java Doc</option>
                 <option value="ClassCount">N of class</option>
                 <option value="InterfaceCount">N of Interfaces</option>
+                <option value="DiscussionCountPerc" selected>Discussion over Methods</option>
+                <option value="JavaDocPerc">Java Doc Over Methods</option>
 
             </select>
             <button onclick="blackMagic()" value="apply">Apply</button>

@@ -13,7 +13,7 @@
         <table class="table tableInfoColor" id="tabInfo" >
             <tr><th> Path </th> <th id="pathIdTab"></th></tr>
             @for((key, value) <- args) {
-                <tr id="TableElem@value" > <td> @key </td> <td id="@value"></td></tr>
+                <tr id="TableElem@value" > <td id="TitleTab@value"> @key </td> <td id="@value"></td></tr>
             }
         </table>
     </div>
@@ -21,7 +21,7 @@
 </div>
 
 <script type="text/javascript">
-    $("#tabInfo").hide();
+//    $("#tabInfo").hide();
     function disappear(){
             if($("#tabInfo").is(":visible") ){
                  $("#tabInfo").hide();

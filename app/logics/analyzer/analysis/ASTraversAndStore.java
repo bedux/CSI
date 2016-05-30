@@ -45,13 +45,17 @@ public class ASTraversAndStore implements Analyser< CompletableFuture<Integer>> 
     WebSocketProgress webSocketProgress= null;
 
 
-
+    /***
+     * Default constructor
+     */
     public ASTraversAndStore(){
-
-
-
-
     }
+
+    /***
+     *
+     * Constructor used for instantiate the progress monitor
+     * @param webSocketProgress the progress monitor
+     */
     public ASTraversAndStore(WebSocketProgress webSocketProgress){
         this.webSocketProgress = webSocketProgress;
     }
@@ -181,18 +185,24 @@ class MethodVisitor extends VoidVisitorAdapter<MethodVisitorParameter> {
         return s.replaceAll("[\u0000]", "");
     }
 
-    private String getModifierAsString
-            (int m) {
-        if (Modifier.isPrivate(m)) {
-            return "PRIVATE";
-        } else if (Modifier.isPublic(m)) {
-            return "PUBLIC";
-        } else if (Modifier.isProtected(m)) {
-            return "PROTECTED";
-        }
-        return "UNDEF";
-    }
+//    private String getModifierAsString
+//            (int m) {
+//        if (Modifier.isPrivate(m)) {
+//            return "PRIVATE";
+//        } else if (Modifier.isPublic(m)) {
+//            return "PUBLIC";
+//        } else if (Modifier.isProtected(m)) {
+//            return "PROTECTED";
+//        }
+//        return "UNDEF";
+//    }
 
+
+    /**
+     * Visit call Expression
+     * @param n
+     * @param arg
+     */
     @Override
     public void visit(MethodCallExpr n, MethodVisitorParameter arg) {
 
@@ -239,6 +249,11 @@ class MethodVisitor extends VoidVisitorAdapter<MethodVisitorParameter> {
 
     }
 
+    /**
+     * Visit MethodDeclaration
+     * @param n
+     * @param arg
+     */
     @Override
     public void visit(MethodDeclaration n, MethodVisitorParameter arg) {
 
@@ -252,6 +267,11 @@ class MethodVisitor extends VoidVisitorAdapter<MethodVisitorParameter> {
     }
 
 
+    /**
+     * Visit AnnotationDeclaration use as interfaces
+     * @param n
+     * @param e
+     */
     @Override
     public void visit(AnnotationDeclaration n, MethodVisitorParameter e) {
 
@@ -263,7 +283,11 @@ class MethodVisitor extends VoidVisitorAdapter<MethodVisitorParameter> {
         super.visit(n,e);
     }
 
-
+    /**
+     * Visit FieldDeclaration
+     * @param n
+     * @param arg
+     */
     @Override
     public void visit(FieldDeclaration n, MethodVisitorParameter o) {
 
@@ -276,6 +300,13 @@ class MethodVisitor extends VoidVisitorAdapter<MethodVisitorParameter> {
         super.visit(n, o);
     }
 
+    /**
+     * Visit ImportDeclaration
+     * Search add import only if doesn't exist
+     * relation with file is added
+     * @param n
+     * @param arg
+     */
     @Override
     public void visit(ImportDeclaration n, MethodVisitorParameter arg) {
 
@@ -314,6 +345,12 @@ class MethodVisitor extends VoidVisitorAdapter<MethodVisitorParameter> {
 
     }
 
+    /**
+     * Visit java comment
+     * set idJavaDoc to 1 if the child before is a method
+     * @param n
+     * @param e
+     */
     @Override
     public void visit(JavadocComment n, MethodVisitorParameter e) {
 
@@ -330,6 +367,12 @@ class MethodVisitor extends VoidVisitorAdapter<MethodVisitorParameter> {
 
 
     }
+
+    /**
+     * Class or interface?
+     * @param n
+     * @param e
+     */
 
     @Override
     public void visit(ClassOrInterfaceDeclaration n, MethodVisitorParameter e) {
@@ -354,6 +397,11 @@ class MethodVisitor extends VoidVisitorAdapter<MethodVisitorParameter> {
 
     }
 
+    /**
+     * Constructor is count as Method
+     * @param n
+     * @param arg
+     */
     @Override
     public void visit(ConstructorDeclaration n, MethodVisitorParameter arg) {
 
@@ -367,7 +415,11 @@ class MethodVisitor extends VoidVisitorAdapter<MethodVisitorParameter> {
 
     }
 
-
+    /**
+     * Used for compute the package that belong to the project
+     * @param n
+     * @param arg
+     */
     @Override
     public void visit(PackageDeclaration n, MethodVisitorParameter arg) {
 

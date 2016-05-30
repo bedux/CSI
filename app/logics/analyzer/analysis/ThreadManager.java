@@ -17,22 +17,28 @@ public class ThreadManager {
             Executors.newFixedThreadPool(8);
 
 
-
+    /***
+     * SINGLETON
+     */
     private ThreadManager(){
-
     }
 
+    /***
+     *
+     * @return the current instance of the ThreadManager
+     */
     public static ThreadManager instance(){
         return threadManager;
     }
 
+    /**
+     *
+     * @return get the current executor scheduler
+     */
     public ExecutorService getExecutor(){
         return scheduler;
     }
 
-    public Executor getExecutorSingle(){
-        return schedulerSingle;
-    }
 
 
 
