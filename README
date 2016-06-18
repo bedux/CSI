@@ -1,0 +1,58 @@
+CSI:Cub8 
+	Augmenting Software System Representation with Corollary Information
+
+
+
+
+The project is available at :
+
+	http://rio.inf.usi.ch:51001/
+
+
+	
+Manual Installation 
+
+install PostgreSQL (https://www.postgresql.org/)
+
+Import the database:
+
+1) open pgAdmin III
+2) create a new database 
+3) press (right key) on the database create and select restore
+4) select the file templateDB (you have to enable all File)
+5) press restore
+
+
+
+Change Play Configuration
+
+1) go to conf/application.conf line 37
+2) insert the data
+	db.default.url="jdbc:postgresql://localhost:<port>/<Name of your database>"
+	db.default.user=<account username>
+	db.default.password=<account_password>
+
+
+
+Set up working directory
+
+1) create a new folder call asset in the root 
+2) create a new folder call asset in the repoDownload 
+
+Run the project 
+
+1) ./activator ~run
+
+
+
+Load the discussion on the database (keeps a lot of hours)
+1) go to ./CSI/StormedImporter/src/main/scala/database/DatabaseConnection.scala and change the database configuration:(line 19)
+   url = jdbc:postgresql://localhost:<port>/<name of your database>,user = <User Name>, password = <Password>
+2) run: sbt assembly 
+3) java -jar <path of assebly> <path of jsons> // the path of assembly is wrote at the last line of the previws command.
+ Usually is like CSI/StormedImporter/target/scala-2.11/StormedImporter-assembly-1.0.jar
+ The jsons are the stormed dataset
+
+
+
+
