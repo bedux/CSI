@@ -36,18 +36,7 @@
                         <li @if(request().path().toString().equals(routes.Application.index().toString())){ class="active"}><a href="@routes.Application.getRepositories()">Repositories <span class="sr-only">(current)</span></a></li>
                         <li repoRegistrationTemplate @if(request().path().toString().equals(routes.Registration.repoRegistrationTemplate().toString())){ class="active"}
                         ><a href="@routes.Registration.repoRegistrationTemplate()">Add Repository</a></li>
-                        <li class="dropdown">
-                            <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Dropdown <span class="caret"></span></a>
-                            <ul class="dropdown-menu">
-                                <li><a href="#">Action</a></li>
-                                <li><a href="#">Another action</a></li>
-                                <li><a href="#">Something else here</a></li>
-                                <li role="separator" class="divider"></li>
-                                <li><a href="#">Separated link</a></li>
-                                <li role="separator" class="divider"></li>
-                                <li><a href="#">One more separated link</a></li>
-                            </ul>
-                        </li>
+
                     </ul>
 
 

@@ -64,7 +64,11 @@ public class Package implements Component {
     @Override
     public RenderChild getRenderJSON() {
         RenderChild[] renderComponent = componentList.stream().map((x) -> x.getRenderJSON()).toArray(x -> new RenderChild[x]);
-        return new RenderChild(new float[]{features.getRendererLeft(), 0, features.getRendererTop()}, new RenderComponent(features, renderComponent));
+
+        features.setColorMetrics(safeNumber(features.getColorMetrics()));
+        features.setColor(safeNumber(features.getColor()));
+
+        return new RenderChild(new float[]{safeNumber(features.getRendererLeft()), 0, safeNumber(features.getRendererTop())}, new RenderComponent(features, renderComponent));
     }
 
 

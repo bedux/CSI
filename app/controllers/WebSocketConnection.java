@@ -1,5 +1,6 @@
 package controllers;
 
+import logics.versionUtils.WebSocketProgress;
 import play.mvc.Controller;
 import play.mvc.WebSocket;
 
@@ -11,8 +12,12 @@ import java.util.concurrent.ConcurrentHashMap;
  */
 public class WebSocketConnection extends Controller {
 
-    public static ConcurrentHashMap<Long,WebSocket> availableWebSocket = new ConcurrentHashMap<>();
+    private static ConcurrentHashMap<Long,WebSocket> availableWebSocket = new ConcurrentHashMap<>();
 
+
+    public static void PutWebSocket(Long id,WebSocket w){
+        availableWebSocket.putIfAbsent(id,w);
+    }
 
     public static WebSocket<String> sockHandler(Long id) {
         System.out.println("Are there any socket??");
@@ -23,13 +28,7 @@ public class WebSocketConnection extends Controller {
 
         }
 
-        return new WebSocket<String>() {
-            @Override
-            public void onReady(In<String> in, Out<String> out) {
-                System.out.println("Fuck ypou!");
-                out.write("Fuck youu");
-            }
-        };
+        return new WebSocketProgress(id);
 
     }
 }

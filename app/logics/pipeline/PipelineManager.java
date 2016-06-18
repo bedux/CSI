@@ -52,7 +52,7 @@ public class PipelineManager {
     private  CompletableFuture<Void> runTask(Supplier<Function<String, Long>> q1, Supplier<Function<String,Long>> q2, Supplier<Function<String,Long>> q3, String name, RepositoryVersion reooV, boolean per , boolean onPack){
         return   CompletableFuture.runAsync(()-> {
 
-            WebSocketProgress currentProgress =(WebSocketProgress)WebSocketConnection.availableWebSocket.get(reooV.repository.id);
+            WebSocketProgress currentProgress =(WebSocketProgress)WebSocketConnection.sockHandler(reooV.repository.id);
             currentProgress.beginTask(name,100);
 
             TreeGeneratorHandlerResult treeForA = new TreeGenerator().process(new TreeGeneratorHandleParam(reooV));
@@ -70,7 +70,7 @@ public class PipelineManager {
     public Long StoreAndAnalyze(RepositoryVersion repositoryVersion){
 
         new WebSocketProgress(repositoryVersion.repository.id);
-        WebSocketProgress currentProgress =(WebSocketProgress)WebSocketConnection.availableWebSocket.get(repositoryVersion.repository.id);
+        WebSocketProgress currentProgress =(WebSocketProgress)WebSocketConnection.sockHandler(repositoryVersion.repository.id);
 
         Runnable r =  ()-> {
             StoreHandlerResult shr = new StoreHandler().process(new StoreHandlerParam(repositoryVersion));

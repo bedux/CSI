@@ -41,6 +41,9 @@ public class DataFile implements Component {
      */
     @Override
     public RenderChild getRenderJSON() {
+
+        features.setColorMetrics(safeNumber(features.getColorMetrics()));
+        features.setColor(safeNumber(features.getColor()));
         return new RenderChild(new float[]{features.getRendererLeft(), 0, features.getRendererTop()}, new RenderComponent(features, null));
     }
 

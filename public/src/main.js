@@ -379,7 +379,10 @@ window.deleteFilter = function(id){
 }
 
 window.reloadStuff= function(data,name){
+    console.log("Reload")
     if($("#globalSpinner").is(":visible")){
+        console.log("return")
+
         return;
     }
     $("#TableElemcolorMetrics td" ).text(name);

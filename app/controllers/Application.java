@@ -281,40 +281,6 @@ public class Application extends Controller {
             }
         });
 
-
-//        Query.AllDiscussedMethod(path)
-//                .stream()
-//                .flatMap(x ->x.methodDiscussionList.stream()).collect(Collectors.toList())
-//                .forEach(x->{
-//                    if(resul.containsKey(x.javaMethod.name)){
-//                        resul.get(x.javaMethod.name).add(x.discussion.url);
-//                    }else{
-//                        resul.put(x.javaMethod.name,new ArrayList<>());
-//                        resul.get(x.javaMethod.name).add(x.discussion.url);
-//
-//                    }
-//                });
-//        final HashMap<String,List<String>> resul = new HashMap<>();
-//        Query.AllDiscussedMethod(path)
-//                .stream()
-//                .map(x -> new Pair<String,List<String>>(x.methodname, x.getListOfMethodDiscussion().stream().map(y -> y.getDiscussionConcrete().getDiscussionURL()).collect(Collectors.toList())))
-//                .forEach(x->{
-//                    if(resul.containsKey(x.getKey())){
-//                        resul.get(x.getKey()).addAll(x.getValue());
-//                    }else{
-//                        resul.put(x.getKey(),x.getValue());
-//                    }
-//                });
-//        Query.AllDiscussedImport(path)
-//                .stream()
-//                .map(x -> new Pair<String,List<String>>(x.getPackageDiscussion(), x.getListOfImportDiscussion().stream().map(y -> y.getDiscussionConcrete().getDiscussionURL()).collect(Collectors.toList())))
-//                .forEach(x -> {
-//                    if (resul.containsKey(x.getKey())) {
-//                        resul.get(x.getKey()).addAll(x.getValue());
-//                    } else {
-//                        resul.put(x.getKey(), x.getValue());
-//                    }
-//                });
                return ok(Json.stringify(Json.toJson(resul)));
 
     }

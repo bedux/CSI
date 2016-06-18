@@ -76,7 +76,7 @@ public class GitRepo implements VersionedSystem {
 
 
         clone.setDirectory(repoFile);
-        clone.setProgressMonitor((WebSocketProgress)WebSocketConnection.availableWebSocket.get(repository.id));
+        clone.setProgressMonitor((WebSocketProgress)WebSocketConnection.sockHandler(repository.id));
         try {
             git = clone.call();
         } catch (GitAPIException e) {

@@ -44,15 +44,15 @@ public class AnalyserHandler implements Handler<AnalyserHandlerParam, AnalyserHa
      * @return
      */
     private JsonNode computeCity(AnalyserHandlerParam param){
-        WebSocketProgress currentProgress =(WebSocketProgress) WebSocketConnection.availableWebSocket.get(param.repositoryVersion.repository.id);
+        WebSocketProgress currentProgress =(WebSocketProgress) WebSocketConnection.sockHandler(param.repositoryVersion.repository.id);
 
         final Package root = param.root;
         final String resultName = param.metricsToCompute.getMetricType().replaceAll(" ", "_") + param.repositoryVersion.id;
         RepositoryRender repoRender = param.metricsToCompute.repositoryRender(param.repositoryVersion);
 
         try {
+                currentProgress.sendMessage("Loading Data from Database",param.metricsToCompute.getMetricType());
 
-            currentProgress.sendMessage("Loading Data from Database",param.metricsToCompute.getMetricType());
 
 
             root.applyFunction(new LoadFromDatabase(param.metricsToCompute.getWidth(), param.metricsToCompute.getHeight(), param.metricsToCompute.getColor())::analysis).exceptionally(x->{

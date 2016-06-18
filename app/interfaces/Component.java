@@ -23,5 +23,9 @@ public interface Component {
 
     List<Component> getComponentList();
 
+    default float safeNumber(float number){
+        return (Float.isNaN(number))?0:number;
+
+    }
 
 }

@@ -18,7 +18,7 @@ public class WebSocketProgress extends WebSocket<String> implements ProgressMoni
     private Out<String> out = null;
     public WebSocketProgress(Long id){
         this.id = id;
-        WebSocketConnection.availableWebSocket.putIfAbsent(id, this);
+        WebSocketConnection.PutWebSocket(id, this);
     }
 
     @Override
@@ -29,7 +29,7 @@ public class WebSocketProgress extends WebSocket<String> implements ProgressMoni
 
     @Override
     public synchronized void beginTask(String s, int i) {
-        sendMessage("Begin Task  "+s + "  "+i);
+        sendMessage("Begin Task  "+s + "  ");
     }
 
     @Override
