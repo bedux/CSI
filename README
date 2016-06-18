@@ -49,7 +49,7 @@ Load the discussion on the database (keeps a lot of hours)
 1) go to ./CSI/StormedImporter/src/main/scala/database/DatabaseConnection.scala and change the database configuration:(line 19)
    url = jdbc:postgresql://localhost:<port>/<name of your database>,user = <User Name>, password = <Password>
 2) run: sbt assembly 
-3) java -jar <path of assebly> <path of jsons> // the path of assembly is wrote at the last line of the previws command.
+3) java -jar <path of assebly> <path of jsons> // the path of assembly is wrote at the last line of the previews command.
  Usually is like CSI/StormedImporter/target/scala-2.11/StormedImporter-assembly-1.0.jar
  The jsons are the stormed dataset
 
