@@ -4,13 +4,33 @@ CSI:Cub8
 
 
 
-The project is available at :
+The project is online at :
 
 	http://rio.inf.usi.ch:51001/
 
 
-	
-Manual Installation 
+ How to use
+
+ 1) Open the link 	http://rio.inf.usi.ch:51001/
+ 2) the first page shows a list at all analysed repository, by clicking over the name, it will be open the 3d city.
+ 3) the AddRepo section allow you to load a repository from a git url, leave User and Password empty if is not required
+ 4) When you open a project:
+ 	4.1) The information coverage panel allows you to mix different metric
+ 	4.2) The your metrics panel allows you to  decide the mapping
+ 	4.3) by pressing to the filter icon you can filter the city by finding file by name.
+ 	4.4) use the mouse with the left button pressed to rotate the camera, and the arrows for moving
+ 	4.5) Short-cat
+ 		4.5.1) by pressing two time to a building, you access to a code preview and the list of related discussion
+ 		4.5.2) the yellow block is the one that you point to, by pressing H you will hide the block and its children, with S you will hide 		the others block.
+ 		4.5.3) use 1, 2 , 3, 4 to select 4 different lateral views 
+ 		4.5.4) highlight an entity and press 5 to move the camera over the entity
+ 		4.5.5) press 0 for the top view 
+
+for any problem:
+write me: bedulm@usi.ch
+
+
+Manual Installation (you can skip and use the link)
 
 install PostgreSQL (https://www.postgresql.org/)
 
@@ -52,6 +72,12 @@ Load the discussion on the database (keeps a lot of hours)
 3) java -jar <path of assebly> <path of jsons> // the path of assembly is wrote at the last line of the previews command.
  Usually is like CSI/StormedImporter/target/scala-2.11/StormedImporter-assembly-1.0.jar
  The jsons are the stormed dataset
+
+
+
+
+
+
 
 
 
